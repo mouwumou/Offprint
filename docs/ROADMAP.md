@@ -10,7 +10,7 @@
 - [x] P0-2 `site.config.ts` + `defineConfig` zod schema（profile、modules、theme、i18n、runtime）
 - [x] P0-3 posts / pages schema（CONTENT-CONTRACT §2、§6a，`lang` 必填）+ 合规/不合规样本单测
 - [x] P0-4 `FsStore` + `Manifest` + `ContentProvider`（内存缓存、revalidate）+ 单测
-- [ ] P0-5 markdown 管线（remark/rehype + KaTeX 服务端 + Shiki 自定义主题）+ 快照测试
+- [x] P0-5 markdown 管线（remark/rehype + KaTeX 服务端 + Shiki 自定义主题）+ 快照测试
 - [ ] P0-6 Post 页移植（DESIGN-REFERENCE），用原型三篇示例文章渲染；路由含语言前缀 `[...lang]/blog/[urlname]`
 - [ ] P0-7 `astro.config` 读 `RUNTIME_MODE`；`build:static` 与 `build:server`（node adapter）均通过（验证双模式可行即可，server 细节留阶段 2）
 - [ ] P0-8 静态 Docker：`docker/web.Dockerfile`（Caddy 伺服 dist/）跑通
