@@ -56,5 +56,5 @@ pnpm lint && pnpm typecheck
 
 ## 当前状态
 
-所有 ADR 已定（2026-08-22），唯一未决的小项：`site.config.i18n.default` 取 `en` 还是 `zh`（ADR-007），开工前向维护者确认一次，确认前按 `en` 实现。
-从 `docs/ROADMAP.md` 阶段 0 的 P0-1 开始。
+所有 ADR 已定（2026-08-22）；`site.config.i18n.default = en`（2026-08-22 维护者确认）。
+进度以 `docs/ROADMAP.md` 勾选为准，当前在阶段 0。

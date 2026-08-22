@@ -1,11 +1,12 @@
 // @ts-check
 import js from '@eslint/js'
+import { defineConfig } from 'eslint/config'
 import astro from 'eslint-plugin-astro'
 import importPlugin from 'eslint-plugin-import'
 import globals from 'globals'
 import tseslint from 'typescript-eslint'
 
-export default tseslint.config(
+export default defineConfig(
   {
     ignores: [
       'dist/',
@@ -17,8 +18,8 @@ export default tseslint.config(
     ],
   },
   js.configs.recommended,
-  ...tseslint.configs.recommended,
-  ...astro.configs['flat/recommended'],
+  tseslint.configs.recommended,
+  astro.configs['flat/recommended'],
   {
     // Node context: build/tool configs, e2e runner, sync CLI (runs in Node, not the browser).
     files: ['*.config.{js,mjs,ts}', 'e2e/**/*.ts', 'src/sync/**/*.ts'],
