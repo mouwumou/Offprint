@@ -1,3 +1,355 @@
+@import '@fontsource-variable/newsreader';
+@import '@fontsource-variable/newsreader/wght-italic.css';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/jetbrains-mono';
 @import 'tailwindcss';
 
-/* Design tokens (colors, fonts, radii) land here from DESIGN-REFERENCE.md in P0-6. */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Scholarly typeset theme (DESIGN-REFERENCE §1, locked by ADR-011) — a
+   typeset-paper ground, old-style serif reading, neo-grotesque interface
+   chrome, mono for technical signals, claret accent.
+   --------------------------------------------------------------------------- */
+:root {
+  --background: #faf8f3;
+  --foreground: #1c1a16;
+  --card: #ffffff;
+  --card-foreground: #1c1a16;
+  --primary: #6f2232;
+  --primary-foreground: #faf8f3;
+  --secondary: #efece4;
+  --secondary-foreground: #3a3730;
+  --muted: #f2efe8;
+  --muted-foreground: #6c675c;
+  --accent: #6f2232;
+  --accent-foreground: #faf8f3;
+  --border: #e4dfd4;
+  --ring: #6f2232;
+  --radius: 3px;
+}
+
+.dark {
+  --background: #16150f;
+  --foreground: #ebe6da;
+  --card: #1e1c15;
+  --card-foreground: #ebe6da;
+  --primary: #cf9aa4;
+  --primary-foreground: #16150f;
+  --secondary: #26241b;
+  --secondary-foreground: #d6d0c2;
+  --muted: #221f18;
+  --muted-foreground: #a29c8c;
+  --accent: #cf9aa4;
+  --accent-foreground: #16150f;
+  --border: #322e23;
+  --ring: #cf9aa4;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Newsreader Variable', ui-serif, Georgia, 'Times New Roman', serif;
+  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+
+  --radius-sm: calc(var(--radius) - 1px);
+  --radius-md: var(--radius);
+  --radius-lg: calc(var(--radius) + 3px);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: 'ss01', 'cv01';
+  }
+  ::selection {
+    background-color: color-mix(in srgb, var(--primary) 22%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: transparent;
+    border-radius: 8px;
+  }
+  *:hover::-webkit-scrollbar-thumb {
+    background-color: color-mix(in srgb, var(--muted-foreground) 40%, transparent);
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Prose — typeset article body produced by the markdown pipeline.
+   --------------------------------------------------------------------------- */
+.prose {
+  font-family: var(--font-serif);
+  font-size: 1.1875rem;
+  line-height: 1.72;
+  color: var(--foreground);
+  font-weight: 380;
+}
+.prose > * + * {
+  margin-top: 1.35em;
+}
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-family: var(--font-serif);
+  font-weight: 560;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
+  scroll-margin-top: 6rem;
+}
+.prose h2 {
+  font-size: 1.7rem;
+  margin-top: 2.4em;
+  padding-bottom: 0.3em;
+  border-bottom: 1px solid var(--border);
+}
+.prose h3 {
+  font-size: 1.34rem;
+  margin-top: 2em;
+}
+.prose h4 {
+  font-size: 1.12rem;
+  margin-top: 1.6em;
+}
+.prose a {
+  color: var(--primary);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  text-decoration-color: color-mix(in srgb, var(--primary) 40%, transparent);
+  transition: text-decoration-color 0.15s ease;
+}
+.prose a:hover {
+  text-decoration-color: var(--primary);
+}
+.prose strong {
+  font-weight: 640;
+}
+.prose blockquote {
+  border-left: 2px solid var(--primary);
+  padding-left: 1.25rem;
+  color: var(--muted-foreground);
+  font-style: italic;
+}
+.prose ul,
+.prose ol {
+  padding-left: 1.5rem;
+}
+.prose ul {
+  list-style: none;
+}
+.prose ul > li {
+  position: relative;
+}
+.prose ul > li::before {
+  content: '';
+  position: absolute;
+  left: -1.1rem;
+  top: 0.72em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--primary);
+}
+.prose ol {
+  list-style: decimal;
+}
+.prose li + li {
+  margin-top: 0.4em;
+}
+.prose ol li::marker {
+  color: var(--muted-foreground);
+  font-family: var(--font-mono);
+  font-size: 0.85em;
+}
+.prose img {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  margin-inline: auto;
+}
+.prose hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin-block: 2.5em;
+}
+.prose table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-sans);
+  font-size: 0.95rem;
+}
+.prose th,
+.prose td {
+  border: 1px solid var(--border);
+  padding: 0.55rem 0.85rem;
+  text-align: left;
+}
+.prose th {
+  background-color: var(--muted);
+  font-weight: 600;
+}
+.prose :not(pre) > code {
+  font-family: var(--font-mono);
+  font-size: 0.86em;
+  background-color: var(--muted);
+  padding: 0.12em 0.4em;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+}
+.prose pre {
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  background-color: var(--card);
+  color: var(--foreground);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.15rem 1.3rem;
+  overflow-x: auto;
+}
+.prose pre code {
+  font-family: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+/* Shiki dual themes: light colors are inlined; .dark switches to the vars
+   emitted by the offprint-dark theme (see core/content/shiki-themes.ts). */
+.dark .prose pre.shiki,
+.dark .prose pre.shiki span {
+  color: var(--shiki-dark) !important;
+  background-color: var(--shiki-dark-bg) !important;
+  font-style: var(--shiki-dark-font-style) !important;
+  font-weight: var(--shiki-dark-font-weight) !important;
+  text-decoration: var(--shiki-dark-text-decoration) !important;
+}
+
+/* Footnotes */
+.prose section[data-footnotes] {
+  margin-top: 3em;
+  border-top: 1px solid var(--border);
+  padding-top: 1.5em;
+  font-size: 0.95rem;
+  color: var(--muted-foreground);
+}
+
+/* Directive containers (:::note / :::warning / :::theorem …); full styling in P3-3 */
+.prose .directive {
+  border: 1px solid var(--border);
+  border-left: 2px solid var(--primary);
+  border-radius: var(--radius);
+  padding: 1rem 1.25rem;
+  background-color: color-mix(in srgb, var(--muted) 40%, transparent);
+}
+.prose .directive[data-title]::before {
+  content: attr(data-title);
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  color: var(--muted-foreground);
+  margin-bottom: 0.5em;
+}
+
+/* Heading anchor links (rehype-autolink-headings) */
+.prose .heading-anchor {
+  margin-left: 0.4em;
+  color: var(--muted-foreground);
+  text-decoration: none;
+  font-weight: 400;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+.prose h2:hover .heading-anchor,
+.prose h3:hover .heading-anchor,
+.prose h4:hover .heading-anchor,
+.prose .heading-anchor:focus-visible {
+  opacity: 1;
+}
+
+/* KaTeX display blocks scroll instead of overflowing */
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: 0.35rem;
+}
+
+/* ---------------------------------------------------------------------------
+   Print — turns the CV route into a clean, ink-on-paper document for
+   "Download PDF" (window.print → Save as PDF). Chrome is stripped away.
+   --------------------------------------------------------------------------- */
+@media print {
+  header,
+  footer,
+  .print-hide {
+    display: none !important;
+  }
+  html,
+  body {
+    background: #fff !important;
+    color: #000 !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  a {
+    color: #000 !important;
+    text-decoration: none !important;
+  }
+  .border-border,
+  [class*='border-t'],
+  [class*='border-b'] {
+    border-color: #ccc !important;
+  }
+  .text-muted-foreground {
+    color: #444 !important;
+  }
+  .text-primary {
+    color: #000 !important;
+  }
+  section,
+  article,
+  li {
+    break-inside: avoid;
+  }
+  @page {
+    margin: 1.6cm;
+  }
+}

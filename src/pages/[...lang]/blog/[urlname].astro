@@ -1,0 +1,150 @@
+---
+import katexCss from 'katex/dist/katex.min.css?url'
+import siteConfig from '../../../../site.config'
+import { getProvider } from '../../../core/content'
+import { renderMarkdown } from '../../../core/content/markdown'
+import { formatDate, useTranslations } from '../../../core/i18n'
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+
+// Static mode: one path per published post × language; the default language
+// lives at the root, others get a prefix (ADR-007). Server mode ignores this
+// and resolves from params per request — the body below serves both.
+export async function getStaticPaths() {
+  const posts = await getProvider().listPosts()
+  return posts.map((post) => ({
+    params: {
+      lang: post.lang === siteConfig.i18n.default ? undefined : post.lang,
+      urlname: post.urlname,
+    },
+  }))
+}
+
+const { lang: langParam, urlname = '' } = Astro.params
+const lang = langParam ?? siteConfig.i18n.default
+
+const validLang =
+  siteConfig.i18n.locales.includes(lang) &&
+  (langParam === undefined || langParam !== siteConfig.i18n.default)
+const post = validLang ? await getProvider().getPost(urlname, lang) : null
+
+if (!post || post.draft) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const t = useTranslations(lang)
+const rendered = await renderMarkdown(post.body)
+const showMath = rendered.hasMath || post.math === true
+const showUpdated = post.updated.getTime() !== post.date.getTime()
+const kicker = post.categories[0]
+const langPrefix = langParam === undefined ? '' : `/${langParam}`
+---
+
+<BaseLayout lang={lang} title={post.title} description={post.description}>
+  <Fragment slot="head">{showMath && <link rel="stylesheet" href={katexCss} />}</Fragment>
+
+  <div
+    class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12 xl:grid xl:grid-cols-[1fr_15rem] xl:gap-12"
+  >
+    <article class="mx-auto w-full max-w-3xl pt-14 pb-20 lg:pt-20 xl:mx-0 xl:justify-self-end">
+      <a
+        href={`${langPrefix}/blog`}
+        class="font-mono text-xs tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-primary"
+      >
+        {t('post.back')}
+      </a>
+
+      <header class="mt-6 border-b border-border pb-8">
+        {
+          kicker && (
+            <p class="font-mono text-xs tracking-[0.18em] text-primary uppercase">{kicker}</p>
+          )
+        }
+        <h1 class="mt-3 font-serif text-4xl leading-[1.12] tracking-tight sm:text-[2.75rem]">
+          {post.title}
+        </h1>
+        {
+          post.description && (
+            <p class="mt-4 font-serif text-xl leading-relaxed text-muted-foreground">
+              {post.description}
+            </p>
+          )
+        }
+        <div
+          class="mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 font-mono text-xs text-muted-foreground"
+        >
+          <time datetime={post.date.toISOString()}>{formatDate(post.date, lang)}</time>
+          <span aria-hidden="true">·</span>
+          <span>{rendered.readingTimeMinutes} {t('post.minRead')}</span>
+          <span aria-hidden="true">·</span>
+          <span>{rendered.wordCount.toLocaleString('en-US')} {t('post.words')}</span>
+          {
+            showUpdated && (
+              <>
+                <span aria-hidden="true">·</span>
+                <span>
+                  {t('post.updated')} {formatDate(post.updated, lang)}
+                </span>
+              </>
+            )
+          }
+        </div>
+      </header>
+
+      {
+        post.cover && (
+          <img
+            src={post.cover}
+            alt=""
+            loading="lazy"
+            class="mt-8 aspect-[16/9] w-full rounded-md border border-border bg-muted object-cover"
+          />
+        )
+      }
+
+      <div class="prose mt-10" set:html={rendered.html} />
+
+      {
+        post.tags.length > 0 && (
+          <div class="mt-14 flex flex-wrap gap-2 border-t border-border pt-6">
+            {post.tags.map((tag) => (
+              <span class="rounded-full border border-border px-3 py-1 font-mono text-[11px] text-muted-foreground">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        )
+      }
+
+      <div class="mt-10 rounded-md border border-border bg-muted/40 px-5 py-4">
+        <p class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          {t('post.colophon')}
+        </p>
+        <p class="mt-1.5 text-sm text-muted-foreground">{t('post.colophonText')}</p>
+      </div>
+    </article>
+
+    {
+      rendered.toc.length > 0 && (
+        <aside class="hidden pt-24 xl:block">
+          <nav aria-label={t('post.onThisPage')}>
+            <p class="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">
+              {t('post.onThisPage')}
+            </p>
+            <ul class="mt-4 space-y-2 border-l border-border pl-4 text-sm">
+              {rendered.toc.map((entry) => (
+                <li class:list={[entry.depth > 2 && 'pl-3']}>
+                  <a
+                    href={`#${entry.id}`}
+                    class="text-muted-foreground transition-colors hover:text-primary"
+                  >
+                    {entry.text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        </aside>
+      )
+    }
+  </div>
+</BaseLayout>

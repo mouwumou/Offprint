@@ -1,21 +1,11 @@
 ---
-import '../core/theme/global.css'
+import BaseLayout from '../layouts/BaseLayout.astro'
 
-// Placeholder scaffold page (P0-1). Replaced by the real Home page in P1-2;
-// site text must then come from src/core/i18n (ADR-007).
+// Placeholder scaffold page. Replaced by the real Home page in P1-2.
 ---
 
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="generator" content={Astro.generator} />
-    <title>Offprint</title>
-  </head>
-  <body>
-    <main class="mx-auto max-w-2xl p-8">
-      <h1 class="text-2xl font-semibold">Offprint</h1>
-    </main>
-  </body>
-</html>
+<BaseLayout lang="en" title="Offprint">
+  <div class="mx-auto max-w-2xl p-8">
+    <h1 class="font-serif text-2xl font-semibold">Offprint</h1>
+  </div>
+</BaseLayout>

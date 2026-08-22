@@ -1,0 +1,31 @@
+---
+import '../core/theme/global.css'
+
+interface Props {
+  lang: string
+  title: string
+  description?: string | undefined
+}
+
+const { lang, title, description } = Astro.props
+
+// Bare document shell for phase 0. Header/footer/skip-link/theme toggle land
+// in P1-1; the SEO Head component (canonical/OG/JSON-LD/hreflang) in P1-7.
+---
+
+<!doctype html>
+<html lang={lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    <slot name="head" />
+  </head>
+  <body>
+    <main>
+      <slot />
+    </main>
+  </body>
+</html>
