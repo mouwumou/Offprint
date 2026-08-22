@@ -57,7 +57,7 @@ offprint/
 └─ scripts/                  # build-static.sh（sync → build → 原子切换，自托管用）
 ```
 
-边界由 eslint `no-restricted-imports` 守住：`src/core/**` 不得引用 `src/sync/**`、`src/site/**`、`src/pages/**`；`src/sync/**` 只能引用 `src/core/schema/**`。阶段 4 拆包时按目录平移。
+边界由 eslint-plugin-import 的 `import/no-restricted-paths`（zones 按解析后的真实文件路径判定，比 `no-restricted-imports` 的导入字符串匹配可靠）守住：`src/core/**` 不得引用 `src/sync/**`、`src/site/**`、`src/pages/**`；`src/sync/**` 只能引用 `src/core/schema/**`。阶段 4 拆包时按目录平移。
 
 ## 3. 关键接口
 

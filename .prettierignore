@@ -1,0 +1,12 @@
+dist/
+.astro/
+node_modules/
+coverage/
+playwright-report/
+test-results/
+pnpm-lock.yaml
+content/
+
+# hand-maintained prose, not code — do not churn
+*.md
+

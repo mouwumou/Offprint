@@ -1,0 +1,60 @@
+{
+  "name": "offprint",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Pluggable academic personal website: homepage + blog + projects + CV. Content authored in Notion, published as markdown.",
+  "license": "MIT",
+  "author": "Q <mouwumou@gmail.com>",
+  "engines": {
+    "node": ">=22"
+  },
+  "packageManager": "pnpm@10.33.4",
+  "scripts": {
+    "dev": "astro dev",
+    "build:static": "cross-env RUNTIME_MODE=static astro build",
+    "build:server": "cross-env RUNTIME_MODE=server astro build",
+    "preview": "astro preview",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "astro check"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "sharp",
+      "unrs-resolver"
+    ]
+  },
+  "dependencies": {
+    "@astrojs/node": "^11.1.4",
+    "@astrojs/react": "^6.0.4",
+    "@tailwindcss/vite": "^4.3.3",
+    "astro": "^7.2.4",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.10",
+    "@eslint/js": "^10.0.1",
+    "@playwright/test": "^1.62.1",
+    "@types/node": "^26.2.0",
+    "@types/react": "^19.2.18",
+    "@types/react-dom": "^19.2.4",
+    "cross-env": "^10.1.0",
+    "eslint": "^10.9.0",
+    "eslint-import-resolver-typescript": "^4.4.5",
+    "eslint-plugin-astro": "^3.1.0",
+    "eslint-plugin-import": "^2.32.0",
+    "globals": "^17.11.0",
+    "prettier": "^3.9.6",
+    "prettier-plugin-astro": "^0.14.1",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8.67.0",
+    "vitest": "^4.1.11"
+  }
+}
