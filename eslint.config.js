@@ -10,6 +10,8 @@ export default defineConfig(
   {
     ignores: [
       'dist/',
+      'dist-static/',
+      'dist-server/',
       '.astro/',
       'node_modules/',
       'coverage/',

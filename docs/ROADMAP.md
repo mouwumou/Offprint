@@ -15,7 +15,7 @@
 - [x] P0-7 `astro.config` 读 `RUNTIME_MODE`；`build:static` 与 `build:server`（node adapter）均通过（P0-1 实现，P0-6 带真实文章页复验）
 - [ ] P0-8 静态 Docker：`docker/web.Dockerfile`（Caddy 伺服 dist/）跑通（文件已建于 2026-08-22；开发环境无 Docker，`docker build` 验证待维护者机器）
 - [ ] P0-9 用真实 Notion 数据库跑一次 elog（含 type / lang 列），对照契约记录差异到 CONTENT-CONTRACT §7
-- [ ] P0-10 Playwright 双模式 HTML 比对脚手架（哪怕只有一页）
+- [x] P0-10 Playwright 双模式 HTML 比对脚手架（哪怕只有一页）（覆盖首页 + en/zh 文章页三条路由，归一化后逐字节一致）
 
 退出标准：一篇 elog 产出的文章在两种模式下渲染一致，静态 Docker 可运行。
 
