@@ -8,7 +8,7 @@
 
 - [x] P0-1 脚手架：单包 Astro 5 + Tailwind 4 + React integration，`src/core` / `src/sync` / `src/site` 目录与 eslint 边界规则，TypeScript strict，prettier，vitest，playwright，`.env.example`，MIT LICENSE（实际装的是 Astro 7.2，ADR-005 的 "Astro 5+" 允许；astro.config 已读 `RUNTIME_MODE` 且双模式构建通过，P0-7 到时只需复核）
 - [x] P0-2 `site.config.ts` + `defineConfig` zod schema（profile、modules、theme、i18n、runtime）
-- [ ] P0-3 posts / pages schema（CONTENT-CONTRACT §2、§6a，`lang` 必填）+ 合规/不合规样本单测
+- [x] P0-3 posts / pages schema（CONTENT-CONTRACT §2、§6a，`lang` 必填）+ 合规/不合规样本单测
 - [ ] P0-4 `FsStore` + `Manifest` + `ContentProvider`（内存缓存、revalidate）+ 单测
 - [ ] P0-5 markdown 管线（remark/rehype + KaTeX 服务端 + Shiki 自定义主题）+ 快照测试
 - [ ] P0-6 Post 页移植（DESIGN-REFERENCE），用原型三篇示例文章渲染；路由含语言前缀 `[...lang]/blog/[urlname]`
