@@ -9,6 +9,7 @@ import { uniformAlternates } from '../../../../core/seo/alternates'
 import BaseLayout from '../../../../layouts/BaseLayout.astro'
 
 export async function getStaticPaths() {
+  if (!siteConfig.modules.blog) return []
   const categories = collectCategories(await getProvider().listPosts())
   return siteConfig.i18n.locales.flatMap((locale) =>
     categories.map((category) => ({
@@ -22,7 +23,11 @@ export async function getStaticPaths() {
 
 const { lang: langParam, category: categoryParam = '' } = Astro.params
 const lang = langParam ?? siteConfig.i18n.default
-if (!siteConfig.i18n.locales.includes(lang) || langParam === siteConfig.i18n.default) {
+if (
+  !siteConfig.modules.blog ||
+  !siteConfig.i18n.locales.includes(lang) ||
+  langParam === siteConfig.i18n.default
+) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 

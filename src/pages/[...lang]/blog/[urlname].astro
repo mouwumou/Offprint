@@ -12,6 +12,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro'
 // lives at the root, others get a prefix (ADR-007). Server mode ignores this
 // and resolves from params per request — the body below serves both.
 export async function getStaticPaths() {
+  if (!siteConfig.modules.blog) return []
   const posts = await getProvider().listPosts()
   return posts.map((post) => ({
     params: {
@@ -25,6 +26,7 @@ const { lang: langParam, urlname = '' } = Astro.params
 const lang = langParam ?? siteConfig.i18n.default
 
 const validLang =
+  siteConfig.modules.blog &&
   siteConfig.i18n.locales.includes(lang) &&
   (langParam === undefined || langParam !== siteConfig.i18n.default)
 const post = validLang ? await getProvider().getPost(urlname, lang) : null

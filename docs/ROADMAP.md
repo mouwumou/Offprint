@@ -31,7 +31,7 @@
 - [x] P1-7b i18n：语言前缀路由、UI 字符串表、语言切换器、译本互链、`{en,zh}` 字段解析
 - [x] P1-7c pages 模块：Notion type=Page 的独立页面 + 导航注入
 - [x] P1-8 首页 Selected work 的 JSON-LD `ScholarlyArticle`（Highwire meta 随阶段 3 出版物页一起做）
-- [ ] P1-9 模块开关生效（关掉的模块无路由/导航/打包）
+- [x] P1-9 模块开关生效（关掉的模块无路由/导航/打包）（实测全关配置：仅产出 2 个首页，无导航/feed/CTA/section；完整路由注入 integration 留阶段 4）
 - [ ] P1-10 `redirects.yaml` → 各平台重定向产物（GH Pages 用 meta refresh 页、Vercel/Netlify/CF 原生、node 中间件）
 - [ ] P1-11 CI：双模式构建 + 单测 + e2e + 内容校验
 - [ ] P1-12 GH Pages 与 Vercel 两条部署 workflow
