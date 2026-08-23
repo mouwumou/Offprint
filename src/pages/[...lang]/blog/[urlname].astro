@@ -133,6 +133,7 @@ const jsonLd = blogPostingJsonLd(
   modifiedTime={post.updated}
   alternates={alternates}
   jsonLd={jsonLd}
+  canonical={post.canonical}
 >
   <Fragment slot="head">{showMath && <style set:html={katexCss} />}</Fragment>
 

@@ -18,10 +18,21 @@ interface Props {
   modifiedTime?: Date | undefined
   alternates?: Alternate[]
   jsonLd?: object | object[]
+  canonical?: string | undefined
 }
 
-const { lang, title, description, type, image, publishedTime, modifiedTime, alternates, jsonLd } =
-  Astro.props
+const {
+  lang,
+  title,
+  description,
+  type,
+  image,
+  publishedTime,
+  modifiedTime,
+  alternates,
+  jsonLd,
+  canonical,
+} = Astro.props
 const t = useTranslations(lang)
 const prefix = langPrefix(config, lang)
 ---
@@ -40,6 +51,7 @@ const prefix = langPrefix(config, lang)
       image={image}
       publishedTime={publishedTime}
       modifiedTime={modifiedTime}
+      canonical={canonical}
       alternates={alternates ?? []}
       jsonLd={jsonLd}
     />

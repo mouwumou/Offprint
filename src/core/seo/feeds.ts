@@ -6,6 +6,8 @@ export interface FeedItem {
   title: string
   url: string
   date: Date
+  /** Last content revision; feeds surface it separately from the pub date. */
+  updated: Date
   description?: string | undefined
   categories?: string[]
 }
@@ -39,6 +41,10 @@ export function buildRss(meta: FeedMeta, items: FeedItem[]): string {
     </item>`,
     )
     .join('\n')
+  const lastBuild = items.reduce(
+    (max, item) => (item.updated > max ? item.updated : max),
+    items[0]?.updated ?? new Date(0),
+  )
   return `<?xml version="1.0" encoding="UTF-8"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
@@ -46,6 +52,7 @@ export function buildRss(meta: FeedMeta, items: FeedItem[]): string {
     <link>${escapeXml(meta.siteUrl)}</link>
     <description>${escapeXml(meta.description)}</description>
     <language>${escapeXml(meta.lang)}</language>
+    <lastBuildDate>${lastBuild.toUTCString()}</lastBuildDate>
     <atom:link href="${escapeXml(meta.feedUrl)}" rel="self" type="application/rss+xml"/>
 ${entries}
   </channel>
@@ -54,14 +61,18 @@ ${entries}
 }
 
 export function buildAtom(meta: FeedMeta, items: FeedItem[]): string {
-  const updated = items[0]?.date ?? new Date(0)
+  const updated = items.reduce(
+    (max, item) => (item.updated > max ? item.updated : max),
+    items[0]?.updated ?? new Date(0),
+  )
   const entries = items
     .map(
       (item) => `  <entry>
     <title>${escapeXml(item.title)}</title>
     <link href="${escapeXml(item.url)}"/>
     <id>${escapeXml(item.url)}</id>
-    <updated>${item.date.toISOString()}</updated>${
+    <published>${item.date.toISOString()}</published>
+    <updated>${item.updated.toISOString()}</updated>${
       item.description ? `\n    <summary>${escapeXml(item.description)}</summary>` : ''
     }
   </entry>`,
@@ -94,6 +105,7 @@ export function buildJsonFeed(meta: FeedMeta, items: FeedItem[]): string {
         url: item.url,
         title: item.title,
         date_published: item.date.toISOString(),
+        date_modified: item.updated.toISOString(),
         ...(item.description ? { summary: item.description } : {}),
         ...(item.categories?.length ? { tags: item.categories } : {}),
       })),

@@ -19,10 +19,19 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
   const provider = getProvider()
   const urls: SiteUrl[] = []
 
+  // The static build emits directory URLs, so its sitemap ends every loc in
+  // a slash — mirror that exactly (dual-mode parity for sitemaps).
+  const slash = (path: string): string => (path.endsWith('/') ? path : `${path}/`)
+  const push = (path: string, alternates: Alternate[]): void => {
+    urls.push({
+      path: slash(path),
+      alternates: alternates.map((alternate) => ({ ...alternate, path: slash(alternate.path) })),
+    })
+  }
   const uniform = (path: string): void => {
     const alternates = uniformAlternates(siteConfig, path)
     for (const alternate of alternates) {
-      urls.push({ path: alternate.path, alternates })
+      push(alternate.path, alternates)
     }
   }
 
@@ -38,6 +47,7 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
 
   if (siteConfig.modules.blog.enabled) {
     uniform('/blog')
+    uniform('/search')
     const posts = await provider.listPosts()
     // Tags/categories exist per language (ADR-007 list rule); alternates
     // interlink only the languages that actually carry the term.
@@ -58,7 +68,7 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
           path: `${langPrefix(siteConfig, locale)}/blog/${kind}/${filterSlug(term)}`,
         }))
         for (const alternate of alternates) {
-          urls.push({ path: alternate.path, alternates })
+          push(alternate.path, alternates)
         }
       }
     }
@@ -74,7 +84,7 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
         path: `${langPrefix(siteConfig, lang)}/blog/${urlname}/`,
       }))
       for (const alternate of alternates) {
-        urls.push({ path: alternate.path, alternates })
+        push(alternate.path, alternates)
       }
     }
   }
@@ -91,7 +101,7 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
         path: `${langPrefix(siteConfig, lang)}/${slug}`,
       }))
       for (const alternate of alternates) {
-        urls.push({ path: alternate.path, alternates })
+        push(alternate.path, alternates)
       }
     }
   }

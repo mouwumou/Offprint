@@ -32,6 +32,7 @@ export async function feedData(
       title: post.title,
       url: new URL(`${prefix}/blog/${post.urlname}/`, site).toString(),
       date: post.date,
+      updated: post.updated,
       description: post.description,
       categories: post.tags,
     })),

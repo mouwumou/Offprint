@@ -16,6 +16,8 @@ interface Props {
   alternates?: Alternate[]
   /** One or more JSON-LD payloads. */
   jsonLd?: object | object[]
+  /** Canonical override (e.g. a syndicated post's original home). */
+  canonical?: string | undefined
 }
 
 const {
@@ -28,12 +30,13 @@ const {
   modifiedTime,
   alternates = [],
   jsonLd,
+  canonical: canonicalOverride,
 } = Astro.props
 
 const site = Astro.site ?? new URL('https://example.com')
 const siteName = resolveLocalized(config.profile.name, lang, config.i18n.default) ?? 'Offprint'
 const fullTitle = title === siteName ? siteName : `${title} · ${siteName}`
-const canonical = new URL(Astro.url.pathname, site).toString()
+const canonical = canonicalOverride ?? new URL(Astro.url.pathname, site).toString()
 const absoluteImage = image ? new URL(image, site).toString() : undefined
 const ogLocale = lang === 'zh' ? 'zh_CN' : lang === 'en' ? 'en_US' : lang
 const payloads = jsonLd === undefined ? [] : Array.isArray(jsonLd) ? jsonLd : [jsonLd]
