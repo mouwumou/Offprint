@@ -62,9 +62,17 @@
   --color-border: var(--border);
   --color-ring: var(--ring);
 
-  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-serif: 'Newsreader Variable', ui-serif, Georgia, 'Times New Roman', serif;
-  --font-mono: 'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', monospace;
+  /* Chinese fallbacks ride the system fonts (DESIGN-REFERENCE §1): a CJK
+     webfont would cost megabytes for no design win. */
+  --font-sans:
+    'Inter Variable', ui-sans-serif, system-ui, 'PingFang SC', 'Hiragino Sans GB',
+    'Noto Sans CJK SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
+  --font-serif:
+    'Newsreader Variable', ui-serif, Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC',
+    'Noto Serif SC', SimSun, serif;
+  --font-mono:
+    'JetBrains Mono Variable', ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'PingFang SC',
+    'Noto Sans CJK SC', 'Microsoft YaHei', monospace;
 
   --radius-sm: calc(var(--radius) - 1px);
   --radius-md: var(--radius);

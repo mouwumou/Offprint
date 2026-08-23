@@ -6,7 +6,8 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 2 : 0,
   use: {
-    baseURL: 'http://localhost:4321',
+    // Dedicated port so orphaned `pnpm preview` (4321) never collides.
+    baseURL: 'http://localhost:4331',
     trace: 'on-first-retry',
   },
   projects: [
@@ -16,8 +17,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm build:static && pnpm preview',
-    port: 4321,
+    command: 'pnpm build:static && pnpm preview --port 4331',
+    port: 4331,
     reuseExistingServer: !process.env.CI,
   },
 })

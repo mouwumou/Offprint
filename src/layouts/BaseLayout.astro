@@ -1,4 +1,7 @@
 ---
+import Footer from '../core/components/Footer.astro'
+import Header from '../core/components/Header.astro'
+import { useTranslations } from '../core/i18n'
 import '../core/theme/global.css'
 
 interface Props {
@@ -8,9 +11,9 @@ interface Props {
 }
 
 const { lang, title, description } = Astro.props
+const t = useTranslations(lang)
 
-// Bare document shell for phase 0. Header/footer/skip-link/theme toggle land
-// in P1-1; the SEO Head component (canonical/OG/JSON-LD/hreflang) in P1-7.
+// The SEO Head component (canonical/OG/JSON-LD/hreflang) lands in P1-7.
 ---
 
 <!doctype html>
@@ -21,11 +24,35 @@ const { lang, title, description } = Astro.props
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     {description && <meta name="description" content={description} />}
+    <script is:inline>
+      // Anti-flash: apply the stored/system theme before first paint.
+      ;(() => {
+        try {
+          const stored = localStorage.getItem('theme')
+          const dark =
+            stored === 'dark' ||
+            (stored !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
+          document.documentElement.classList.toggle('dark', dark)
+        } catch {
+          /* storage unavailable */
+        }
+      })()
+    </script>
     <slot name="head" />
   </head>
   <body>
-    <main>
-      <slot />
-    </main>
+    <div class="flex min-h-screen flex-col">
+      <a
+        href="#main-content"
+        class="sr-only rounded-md bg-primary px-4 py-2 font-mono text-xs tracking-[0.12em] text-primary-foreground uppercase focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50"
+      >
+        {t('layout.skipToContent')}
+      </a>
+      <Header lang={lang} />
+      <main id="main-content" tabindex="-1" class="flex-1 outline-none">
+        <slot />
+      </main>
+      <Footer lang={lang} />
+    </div>
   </body>
 </html>

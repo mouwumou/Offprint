@@ -1,0 +1,61 @@
+---
+import config from '../config/current'
+import { langPrefix } from '../config/nav'
+import { useTranslations } from '../i18n'
+import { resolveLocalized } from '../schema'
+
+interface Props {
+  lang: string
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+const prefix = langPrefix(config, lang)
+const name = resolveLocalized(config.profile.name, lang, config.i18n.default)
+const affiliation = resolveLocalized(config.profile.affiliation, lang, config.i18n.default)
+const links = config.profile.links.map((link) => ({
+  href: link.href,
+  label: resolveLocalized(link.label, lang, config.i18n.default),
+}))
+const year = new Date().getFullYear()
+---
+
+<footer class="mt-24 border-t border-border">
+  <div
+    class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-10 sm:flex-row sm:items-end sm:justify-between sm:px-8 lg:px-12"
+  >
+    <div>
+      <p class="font-serif text-base">{name}</p>
+      {affiliation && <p class="mt-1 max-w-sm text-sm text-muted-foreground">{affiliation}</p>}
+    </div>
+    <div class="flex flex-col gap-2 sm:items-end">
+      <div class="flex flex-wrap gap-x-4 gap-y-1">
+        {
+          links.map((link) => (
+            <a
+              href={link.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              class="font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase transition-colors hover:text-primary"
+            >
+              {link.label}
+            </a>
+          ))
+        }
+        {
+          config.modules.blog && (
+            <a
+              href={`${prefix}/rss.xml`}
+              class="font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase transition-colors hover:text-primary"
+            >
+              {t('layout.rss')}
+            </a>
+          )
+        }
+      </div>
+      <p class="font-mono text-[11px] text-muted-foreground">
+        {t('layout.colophon')} · © {year}
+      </p>
+    </div>
+  </div>
+</footer>

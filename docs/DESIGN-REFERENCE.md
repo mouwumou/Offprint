@@ -30,6 +30,7 @@
 ```
 
 字体：serif `Newsreader`（正文、标题、姓名）；sans `Inter`（界面、表格）；mono `JetBrains Mono`（标签、日期、导航、kicker）。
+中文回退栈（2026-08-23 补，ADR-007 双语要求；不引入中文 webfont，体积不划算，走系统字体）：serif → `Songti SC` / `Noto Serif CJK SC` / `Noto Serif SC` / `SimSun`；sans → `PingFang SC` / `Hiragino Sans GB` / `Noto Sans CJK SC` / `Microsoft YaHei`；mono 中文回退到 sans 栈（等宽字体不含汉字为通例）。
 代码高亮色：comment = muted-foreground 斜体；keyword = primary；string `#4f7a4f` / dark `#9ec49e`；number `#9a6a2f` / `#d8a765`；title `#3a5a8c` / `#8fb0dd`。移植到 Shiki 时做一个同色自定义主题。
 
 ## 2. 版式规则

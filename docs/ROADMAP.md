@@ -21,7 +21,7 @@
 
 ## 阶段 1 — 自用 MVP（2–3 周）
 
-- [ ] P1-1 Layout（Header/Footer/skip link/主题切换防闪烁）
+- [x] P1-1 Layout（Header/Footer/skip link/主题切换防闪烁）
 - [ ] P1-2 Home 页
 - [ ] P1-3 Blog 列表页（tag/category 过滤走 URL 参数、置顶、草稿隐藏）
 - [ ] P1-4 publications：YAML loader（Notion 导出）+ 作者高亮 + 首页 Selected work（独立页与 Cite 留阶段 3）
