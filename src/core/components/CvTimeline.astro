@@ -5,6 +5,7 @@ export interface TimelineRow {
   org: string
   location?: string | undefined
   detail?: string | undefined
+  highlights?: string[] | undefined
 }
 
 interface Props {
@@ -27,6 +28,13 @@ const { entries } = Astro.props
           </p>
           {entry.detail && (
             <p class="mt-1 text-sm leading-relaxed text-muted-foreground">{entry.detail}</p>
+          )}
+          {(entry.highlights?.length ?? 0) > 0 && (
+            <ul class="mt-2 list-disc space-y-1 pl-4 text-sm leading-relaxed text-muted-foreground marker:text-border">
+              {entry.highlights?.map((highlight) => (
+                <li>{highlight}</li>
+              ))}
+            </ul>
           )}
         </div>
       </div>

@@ -19,6 +19,11 @@ work:
     summary:
       en: Modelling uncertainty representation in cortical circuits; mentoring two doctoral students.
       zh: 研究皮层环路中不确定性表征的建模；指导两名博士生。
+    highlights:
+      - en: Led the population-geometry project across two labs (5 people).
+        zh: 主持横跨两个实验室的群体几何项目（5 人）。
+      - en: Secured an SNSF Spark grant for uncertainty benchmarking.
+        zh: 获得 SNSF Spark 不确定性基准评测项目资助。
   - name: DeepMind
     position: { en: Research Intern, zh: 研究实习生 }
     location: { en: 'London, UK', zh: 英国伦敦 }

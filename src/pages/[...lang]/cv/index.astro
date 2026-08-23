@@ -53,12 +53,15 @@ const period = (entry: {
       : `${entry.startDate} – ${entry.endDate ?? t('cv.present')}`
     : '')
 
+const highlights = (entries: { highlights: Parameters<typeof r>[0][] }): string[] =>
+  entries.highlights.map((h) => r(h)).filter((h): h is string => Boolean(h))
 const appointments: TimelineRow[] = cv.work.map((entry) => ({
   period: period(entry),
   title: r(entry.position),
   org: r(entry.name),
   location: r(entry.location) || undefined,
   detail: r(entry.summary) || undefined,
+  highlights: highlights(entry),
 }))
 const education: TimelineRow[] = cv.education.map((entry) => ({
   period: period(entry),
@@ -79,12 +82,16 @@ const teaching: TimelineRow[] = cv.teaching.map((entry) => ({
   org: r(entry.name),
   location: r(entry.location) || undefined,
   detail: r(entry.summary) || undefined,
+  highlights: highlights(entry),
 }))
 
 const publications =
   cv.publicationsFromSite && siteConfig.modules.publications.enabled
     ? await provider.listPublications()
     : []
+// JSON-Resume-style inline list; used when the CV does not pull the site's
+// publications collection.
+const inlinePublications = cv.publicationsFromSite ? [] : cv.publications
 
 const name = r(siteConfig.profile.name)
 const role = r(siteConfig.profile.role)
@@ -134,6 +141,42 @@ const description = `${copy.title} — ${name}`
               <CvTimeline entries={section.entries} />
             </section>
           ),
+      )
+    }
+
+    {
+      inlinePublications.length > 0 && (
+        <section class="grid gap-4 border-t border-border py-8 md:grid-cols-[180px_1fr] md:gap-10 md:py-10 lg:gap-12">
+          <SectionLabel text={t('cv.publications')} />
+          <ol class="space-y-4">
+            {inlinePublications.map((pub) => (
+              <li class="grid gap-1 sm:grid-cols-[140px_1fr] sm:gap-6">
+                <span class="pt-0.5 font-mono text-xs text-muted-foreground">
+                  {pub.releaseDate}
+                </span>
+                <div>
+                  <h3 class="font-serif text-lg leading-snug">
+                    {pub.url ? (
+                      <a href={pub.url} class="transition-colors hover:text-primary">
+                        {r(pub.name)}
+                      </a>
+                    ) : (
+                      r(pub.name)
+                    )}
+                  </h3>
+                  {r(pub.publisher) && (
+                    <p class="text-sm text-muted-foreground italic">{r(pub.publisher)}</p>
+                  )}
+                  {r(pub.summary) && (
+                    <p class="mt-1 text-sm leading-relaxed text-muted-foreground">
+                      {r(pub.summary)}
+                    </p>
+                  )}
+                </div>
+              </li>
+            ))}
+          </ol>
+        </section>
       )
     }
 

@@ -10,6 +10,7 @@
   year: 2023–now
   status: active
   repo: https://github.com/example/manifold-lab
+  image: assets/cover-geometry.png
 - name: elog-scholar
   blurb:
     en: The Notion → markdown pipeline that publishes this very blog.
