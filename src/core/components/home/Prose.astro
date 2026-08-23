@@ -1,0 +1,25 @@
+---
+import type { RenderedMarkdown } from '../../content/markdown'
+import SectionShell from './SectionShell.astro'
+
+// A standalone page's markdown rendered inline as a homepage section
+// (ADR-015). `title: false` in the section config drops the label column.
+interface Props {
+  title: string | null
+  rendered: RenderedMarkdown
+}
+
+const { title, rendered } = Astro.props
+---
+
+{
+  title !== null ? (
+    <SectionShell label={title}>
+      <div class="prose max-w-2xl" set:html={rendered.html} />
+    </SectionShell>
+  ) : (
+    <section class="border-t border-border py-12 md:py-14">
+      <div class="prose max-w-2xl" set:html={rendered.html} />
+    </section>
+  )
+}

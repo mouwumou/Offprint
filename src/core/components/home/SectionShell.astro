@@ -1,0 +1,22 @@
+---
+import SectionLabel from '../SectionLabel.astro'
+
+// Shared frame for every labelled homepage section (ADR-015): the label
+// column plus the content column. Extra label-column content (e.g. an
+// "all posts" link) goes into the `aside` slot.
+interface Props {
+  label: string
+}
+
+const { label } = Astro.props
+---
+
+<section
+  class="grid gap-6 border-t border-border py-12 md:grid-cols-[200px_1fr] md:gap-10 md:py-14 lg:gap-16"
+>
+  <div>
+    <SectionLabel text={label} />
+    <slot name="aside" />
+  </div>
+  <slot />
+</section>

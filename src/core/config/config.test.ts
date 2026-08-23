@@ -149,3 +149,43 @@ describe('header/footer chrome (ADR-015)', () => {
     ).toThrow()
   })
 })
+
+describe('home sections (ADR-015)', () => {
+  it('defaults to the built-in hero/about/publications/posts sequence', () => {
+    const config = defineConfig(minimal)
+    expect(config.home.sections).toEqual([
+      { type: 'hero' },
+      { type: 'about' },
+      { type: 'selected-publications', others: true },
+      { type: 'recent-posts', count: 3 },
+    ])
+  })
+
+  it('accepts a custom sequence with per-section options', () => {
+    const config = defineConfig({
+      ...minimal,
+      home: {
+        sections: [
+          { type: 'hero' },
+          { type: 'prose', page: 'about', title: false },
+          { type: 'recent-posts', count: 5, title: { en: 'Notes' } },
+          { type: 'projects' },
+        ],
+      },
+    })
+    expect(config.home.sections[1]).toEqual({ type: 'prose', page: 'about', title: false })
+    expect(config.home.sections[2]).toEqual({ type: 'recent-posts', count: 5, title: { en: 'Notes' } })
+  })
+
+  it('rejects unknown section types and out-of-range counts', () => {
+    expect(() =>
+      defineConfig({ ...minimal, home: { sections: [{ type: 'carousel' }] } as never }),
+    ).toThrow()
+    expect(() =>
+      defineConfig({
+        ...minimal,
+        home: { sections: [{ type: 'recent-posts', count: 40 }] } as never,
+      }),
+    ).toThrow()
+  })
+})

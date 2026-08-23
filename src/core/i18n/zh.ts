@@ -5,6 +5,8 @@ export const zh: Record<MessageKey, string> = {
   'home.selectedWork': '代表作',
   'home.recentWriting': '近期文章',
   'home.allPosts': '全部文章 →',
+  'home.projects': '项目',
+  'home.allProjects': '全部项目 →',
   'home.readWriting': '阅读文章',
   'home.viewCV': '查看简历',
   'home.affiliation': '所属机构',

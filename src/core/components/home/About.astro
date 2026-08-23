@@ -1,0 +1,35 @@
+---
+import siteConfig from '../../config/current'
+import { resolveLocalized } from '../../schema'
+import SectionShell from './SectionShell.astro'
+
+interface Props {
+  lang: string
+  title: string
+}
+
+const { lang, title } = Astro.props
+const profile = siteConfig.profile
+const r = (value: Parameters<typeof resolveLocalized>[0]) =>
+  resolveLocalized(value, lang, siteConfig.i18n.default)
+
+const bio = profile.bio.map((paragraph) => r(paragraph))
+const interests = profile.interests.map((interest) => r(interest))
+---
+
+<SectionShell label={title}>
+  <div class="max-w-2xl space-y-4">
+    {bio.map((paragraph) => <p class="font-serif text-lg leading-relaxed">{paragraph}</p>)}
+    {
+      interests.length > 0 && (
+        <div class="flex flex-wrap gap-2 pt-2">
+          {interests.map((interest) => (
+            <span class="rounded-full border border-border px-3 py-1 font-mono text-[11px] tracking-wide text-muted-foreground">
+              {interest}
+            </span>
+          ))}
+        </div>
+      )
+    }
+  </div>
+</SectionShell>

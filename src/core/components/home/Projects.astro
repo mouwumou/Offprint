@@ -1,0 +1,52 @@
+---
+import siteConfig from '../../config/current'
+import { langPrefix } from '../../config/nav'
+import type { Project } from '../../schema'
+import { resolveLocalized } from '../../schema'
+import { useTranslations } from '../../i18n'
+import SectionShell from './SectionShell.astro'
+
+interface Props {
+  lang: string
+  title: string
+  projects: Project[]
+}
+
+const { lang, title, projects } = Astro.props
+const t = useTranslations(lang)
+const prefix = langPrefix(siteConfig, lang)
+const r = (value: Parameters<typeof resolveLocalized>[0]) =>
+  resolveLocalized(value, lang, siteConfig.i18n.default)
+---
+
+<SectionShell label={title}>
+  <a
+    slot="aside"
+    href={`${prefix}/projects`}
+    class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
+  >
+    {t('home.allProjects')}
+  </a>
+  <div class="grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2">
+    {
+      projects.map((project) => (
+        <article class="flex flex-col bg-card p-6 transition-colors hover:bg-muted/50">
+          <div class="flex items-baseline justify-between gap-4">
+            <h3 class="font-mono text-lg font-medium tracking-tight">{project.name}</h3>
+            <span class="shrink-0 font-mono text-xs text-muted-foreground">{project.year}</span>
+          </div>
+          <p class="mt-2 font-serif leading-snug">{r(project.blurb)}</p>
+          {
+            project.tags.length > 0 && (
+              <div class="mt-3 flex flex-wrap gap-x-3 gap-y-1">
+                {project.tags.map((tag) => (
+                  <span class="font-mono text-[11px] text-muted-foreground">{tag}</span>
+                ))}
+              </div>
+            )
+          }
+        </article>
+      ))
+    }
+  </div>
+</SectionShell>

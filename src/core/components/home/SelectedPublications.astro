@@ -1,0 +1,60 @@
+---
+import siteConfig from '../../config/current'
+import { langPrefix } from '../../config/nav'
+import type { Publication } from '../../schema'
+import { resolveLocalized } from '../../schema'
+import Authors from '../Authors.astro'
+import PublicationLinks from '../PublicationLinks.astro'
+import SectionShell from './SectionShell.astro'
+
+interface Props {
+  lang: string
+  title: string
+  selected: Publication[]
+  rest: Publication[]
+}
+
+const { lang, title, selected, rest } = Astro.props
+const prefix = langPrefix(siteConfig, lang)
+const r = (value: Parameters<typeof resolveLocalized>[0]) =>
+  resolveLocalized(value, lang, siteConfig.i18n.default)
+---
+
+<SectionShell label={title}>
+  <div class="space-y-8">
+    {
+      selected.map((pub) => (
+        <article>
+          <div class="flex items-baseline gap-3">
+            <span class="font-mono text-xs text-primary">{pub.year}</span>
+            <span class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+              {pub.venue}
+            </span>
+          </div>
+          <h3 class="mt-1.5 font-serif text-xl leading-snug">
+            <a href={`${prefix}/publications/${pub.key}`} class="transition-colors hover:text-primary">
+              {r(pub.title)}
+            </a>
+          </h3>
+          <Authors authors={pub.authors} />
+          <PublicationLinks publication={pub} lang={lang} />
+        </article>
+      ))
+    }
+    {
+      rest.length > 0 && (
+        <ul class="space-y-3 border-t border-border pt-5">
+          {rest.map((pub) => (
+            <li class="flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline">
+              <span class="shrink-0 font-mono text-xs text-muted-foreground">{pub.year}</span>
+              <span class="font-serif">
+                {r(pub.title)}
+                <span class="text-muted-foreground"> — {pub.venue}</span>
+              </span>
+            </li>
+          ))}
+        </ul>
+      )
+    }
+  </div>
+</SectionShell>

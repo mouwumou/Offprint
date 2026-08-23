@@ -81,6 +81,54 @@ export const modulesSchema = z.strictObject({
 export type ModuleName = keyof z.output<typeof modulesSchema>
 export type ModuleSetting = z.output<typeof moduleToggle>
 
+// ── home composition (ADR-015: the homepage is a section sequence) ───────────
+
+/**
+ * One homepage section. Every variant's `title` overrides the theme's i18n
+ * default. Sections whose module is disabled, or whose data is empty, are
+ * skipped at render time rather than failing the build.
+ */
+export const homeSectionSchema = z.discriminatedUnion('type', [
+  /** Profile hero with the meta strip (affiliation / contact / elsewhere). */
+  z.strictObject({ type: z.literal('hero') }),
+  /** profile.bio paragraphs + interests chips. */
+  z.strictObject({ type: z.literal('about'), title: localizedString.optional() }),
+  /** A standalone page's markdown rendered inline; false hides the label. */
+  z.strictObject({
+    type: z.literal('prose'),
+    page: z.string().min(1),
+    title: z.union([z.literal(false), localizedString]).optional(),
+  }),
+  z.strictObject({
+    type: z.literal('selected-publications'),
+    title: localizedString.optional(),
+    /** Also list the non-selected publications compactly below. */
+    others: z.boolean().default(true),
+  }),
+  z.strictObject({
+    type: z.literal('recent-posts'),
+    title: localizedString.optional(),
+    count: z.number().int().min(1).max(12).default(3),
+  }),
+  z.strictObject({
+    type: z.literal('projects'),
+    title: localizedString.optional(),
+    count: z.number().int().min(1).max(12).optional(),
+  }),
+])
+
+export type HomeSection = z.output<typeof homeSectionSchema>
+
+export const homeSchema = z.strictObject({
+  /** The default sequence reproduces the built-in homepage. */
+  sections: z.array(homeSectionSchema).prefault([
+    { type: 'hero' },
+    { type: 'about' },
+    { type: 'selected-publications' },
+    { type: 'recent-posts' },
+  ]),
+})
+
 // ── navigation (ADR-015: nav is data, not module wiring) ─────────────────────
 
 /**
@@ -197,6 +245,7 @@ export const siteConfigSchema = z.strictObject({
   modules: modulesSchema.prefault({}),
   /** Absent → theme default: home, enabled modules, then nav:true pages. */
   nav: z.array(navEntrySchema).optional(),
+  home: homeSchema.prefault({}),
   header: headerSchema.prefault({}),
   footer: footerSchema.prefault({}),
   theme: themeSchema.prefault({}),

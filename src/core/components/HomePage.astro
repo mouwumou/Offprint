@@ -1,49 +1,73 @@
 ---
 import siteConfig from '../config/current'
-import { langPrefix } from '../config/nav'
-import Authors from './Authors.astro'
-import PublicationLinks from './PublicationLinks.astro'
-import SectionLabel from './SectionLabel.astro'
+import type { Page } from '../content'
 import { getProvider } from '../content'
+import { renderMarkdown, type RenderedMarkdown } from '../content/markdown'
 import { postsForLanguage } from '../content/posts-view'
-import { formatDate, useTranslations } from '../i18n'
-import { resolveLocalized } from '../schema'
+import { useTranslations, type MessageKey } from '../i18n'
+import { resolveLocalized, type LocalizedString } from '../schema'
 import { uniformAlternates } from '../seo/alternates'
 import { personJsonLd, scholarlyArticlesJsonLd } from '../seo/jsonld'
+import { katexCss } from '../theme/katex'
 import BaseLayout from './BaseLayout.astro'
+import About from './home/About.astro'
+import Hero from './home/Hero.astro'
+import Projects from './home/Projects.astro'
+import Prose from './home/Prose.astro'
+import RecentPosts from './home/RecentPosts.astro'
+import SelectedPublications from './home/SelectedPublications.astro'
 
 interface Props {
   lang: string
 }
 
 const { lang } = Astro.props
-
 const t = useTranslations(lang)
-const prefix = langPrefix(siteConfig, lang)
 const fallback = siteConfig.i18n.default
 const profile = siteConfig.profile
-const r = (value: Parameters<typeof resolveLocalized>[0]) => resolveLocalized(value, lang, fallback)
-
-const name = r(profile.name)
 const provider = getProvider()
-const publications = siteConfig.modules.publications.enabled ? await provider.listPublications() : []
+const modules = siteConfig.modules
+const sections = siteConfig.home.sections
+
+const name = resolveLocalized(profile.name, lang, fallback)
+
+// Data is fetched once per section kind actually present in the sequence;
+// sections whose module is off or whose data is empty are skipped at render.
+const wantsPubs =
+  modules.publications.enabled && sections.some((s) => s.type === 'selected-publications')
+const publications = wantsPubs ? await provider.listPublications() : []
 const selected = publications.filter((pub) => pub.selected)
 const rest = publications.filter((pub) => !pub.selected)
-const recent = siteConfig.modules.blog.enabled
-  ? postsForLanguage(await provider.listPosts(), lang).slice(0, 3)
-  : []
-const bio = profile.bio.map((paragraph) => r(paragraph))
-const interests = profile.interests.map((interest) => r(interest))
-const links = profile.links.map((link) => ({ href: link.href, label: r(link.label) }))
 
-const postHref = (post: { urlname: string; lang: string }) =>
-  `${langPrefix(siteConfig, post.lang)}/blog/${post.urlname}`
+const wantsPosts = modules.blog.enabled && sections.some((s) => s.type === 'recent-posts')
+const posts = wantsPosts ? postsForLanguage(await provider.listPosts(), lang) : []
+
+const wantsProjects = modules.projects.enabled && sections.some((s) => s.type === 'projects')
+const projects = wantsProjects ? await provider.listProjects() : []
+
+// Prose sections resolve their page in the requested language, falling back
+// to the default language.
+const prose = new Map<number, { page: Page; rendered: RenderedMarkdown }>()
+if (modules.pages.enabled) {
+  for (const [index, section] of sections.entries()) {
+    if (section.type !== 'prose') continue
+    const page =
+      (await provider.getPage(section.page, lang)) ??
+      (await provider.getPage(section.page, fallback))
+    if (page === null) continue
+    prose.set(index, { page, rendered: await renderMarkdown(page.body) })
+  }
+}
+const hasMath = [...prose.values()].some((entry) => entry.rendered.hasMath)
+
+const sectionTitle = (title: LocalizedString | undefined, key: MessageKey): string =>
+  resolveLocalized(title, lang, fallback) ?? t(key)
 ---
 
 <BaseLayout
   lang={lang}
   title={name ?? 'Offprint'}
-  description={r(profile.tagline)}
+  description={resolveLocalized(profile.tagline, lang, fallback)}
   image={profile.photo}
   alternates={uniformAlternates(siteConfig, '/')}
   jsonLd={[
@@ -51,221 +75,63 @@ const postHref = (post: { urlname: string; lang: string }) =>
     ...scholarlyArticlesJsonLd(siteConfig, selected, lang),
   ]}
 >
+  <Fragment slot="head">{hasMath && <style set:html={katexCss} />}</Fragment>
+
   <div class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12">
-    <!-- Hero -->
-    <section class="pt-16 pb-12 lg:pt-24">
-      <div class="grid gap-8 sm:grid-cols-[220px_1fr] sm:items-center sm:gap-12">
-        {
-          profile.photo && (
-            <figure class="group relative max-w-[220px]">
-              <img
-                src={profile.photo}
-                alt={name}
-                class="aspect-[4/5] w-full rounded-md border border-border bg-muted object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
-              />
-            </figure>
+    {
+      sections.map((section, index) => {
+        if (section.type === 'hero') return <Hero lang={lang} />
+        if (section.type === 'about')
+          return (
+            profile.bio.length > 0 && (
+              <About lang={lang} title={sectionTitle(section.title, 'home.about')} />
+            )
           )
-        }
-        <div>
-          {
-            profile.role && (
-              <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">
-                {r(profile.role)}
-              </p>
+        if (section.type === 'selected-publications')
+          return (
+            publications.length > 0 && (
+              <SelectedPublications
+                lang={lang}
+                title={sectionTitle(section.title, 'home.selectedWork')}
+                selected={selected}
+                rest={section.others ? rest : []}
+              />
             )
-          }
-          <h1 class="mt-3 font-serif text-4xl leading-[1.06] tracking-tight sm:text-5xl">{name}</h1>
-          {
-            profile.field && (
-              <p class="mt-3 font-serif text-xl text-muted-foreground">{r(profile.field)}</p>
+          )
+        if (section.type === 'recent-posts')
+          return (
+            posts.length > 0 && (
+              <RecentPosts
+                lang={lang}
+                title={sectionTitle(section.title, 'home.recentWriting')}
+                posts={posts.slice(0, section.count)}
+              />
             )
-          }
-          {
-            profile.tagline && (
-              <p class="mt-5 max-w-xl font-serif text-lg leading-relaxed">{r(profile.tagline)}</p>
+          )
+        if (section.type === 'projects')
+          return (
+            projects.length > 0 && (
+              <Projects
+                lang={lang}
+                title={sectionTitle(section.title, 'home.projects')}
+                projects={section.count === undefined ? projects : projects.slice(0, section.count)}
+              />
             )
-          }
-          <div class="mt-7 flex flex-wrap gap-3">
-            {
-              siteConfig.modules.blog.enabled && (
-                <a
-                  href={`${prefix}/blog`}
-                  class="rounded-md bg-primary px-4 py-2 font-mono text-xs tracking-[0.12em] text-primary-foreground uppercase transition-opacity hover:opacity-90"
-                >
-                  {t('home.readWriting')}
-                </a>
-              )
-            }
-            {
-              siteConfig.modules.cv.enabled && (
-                <a
-                  href={`${prefix}/cv`}
-                  class="rounded-md border border-border px-4 py-2 font-mono text-xs tracking-[0.12em] text-foreground uppercase transition-colors hover:bg-secondary"
-                >
-                  {t('home.viewCV')}
-                </a>
-              )
-            }
-          </div>
-        </div>
-      </div>
-
-      <!-- Meta strip -->
-      <dl class="mt-12 grid gap-6 border-t border-border pt-6 sm:grid-cols-3 sm:gap-8">
-        <div>
-          <dt class="font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase">
-            {t('home.affiliation')}
-          </dt>
-          <dd class="mt-1.5 font-serif leading-snug">{r(profile.affiliation)}</dd>
-          <dd class="text-sm text-muted-foreground">{r(profile.location)}</dd>
-        </div>
-        <div>
-          <dt class="font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase">
-            {t('home.contact')}
-          </dt>
-          <dd class="mt-1.5">
-            <a
-              href={`mailto:${profile.email}`}
-              class="font-serif text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
-            >
-              {profile.email}
-            </a>
-          </dd>
-        </div>
-        <div>
-          <dt class="font-mono text-[11px] tracking-[0.18em] text-muted-foreground uppercase">
-            {t('home.elsewhere')}
-          </dt>
-          <dd class="mt-2 flex flex-wrap gap-x-4 gap-y-1">
-            {
-              links.map((link) => (
-                <a
-                  href={link.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="font-mono text-xs text-muted-foreground transition-colors hover:text-primary"
-                >
-                  {link.label}
-                </a>
-              ))
-            }
-          </dd>
-        </div>
-      </dl>
-    </section>
-
-    <!-- About -->
-    {
-      bio.length > 0 && (
-        <section class="grid gap-6 border-t border-border py-12 md:grid-cols-[200px_1fr] md:gap-10 md:py-14 lg:gap-16">
-          <SectionLabel text={t('home.about')} />
-          <div class="max-w-2xl space-y-4">
-            {bio.map((paragraph) => (
-              <p class="font-serif text-lg leading-relaxed">{paragraph}</p>
-            ))}
-            {interests.length > 0 && (
-              <div class="flex flex-wrap gap-2 pt-2">
-                {interests.map((interest) => (
-                  <span class="rounded-full border border-border px-3 py-1 font-mono text-[11px] tracking-wide text-muted-foreground">
-                    {interest}
-                  </span>
-                ))}
-              </div>
-            )}
-          </div>
-        </section>
-      )
-    }
-
-    <!-- Selected work -->
-    {
-      publications.length > 0 && (
-        <section class="grid gap-6 border-t border-border py-12 md:grid-cols-[200px_1fr] md:gap-10 md:py-14 lg:gap-16">
-          <SectionLabel text={t('home.selectedWork')} />
-          <div class="space-y-8">
-            {selected.map((pub) => (
-              <article>
-                <div class="flex items-baseline gap-3">
-                  <span class="font-mono text-xs text-primary">{pub.year}</span>
-                  <span class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-                    {pub.venue}
-                  </span>
-                </div>
-                <h3 class="mt-1.5 font-serif text-xl leading-snug">
-                  <a
-                    href={`${prefix}/publications/${pub.key}`}
-                    class="transition-colors hover:text-primary"
-                  >
-                    {r(pub.title)}
-                  </a>
-                </h3>
-                <Authors authors={pub.authors} />
-                <PublicationLinks publication={pub} lang={lang} />
-              </article>
-            ))}
-            {rest.length > 0 && (
-              <ul class="space-y-3 border-t border-border pt-5">
-                {rest.map((pub) => (
-                  <li class="flex flex-col gap-x-4 gap-y-0.5 sm:flex-row sm:items-baseline">
-                    <span class="shrink-0 font-mono text-xs text-muted-foreground">{pub.year}</span>
-                    <span class="font-serif">
-                      {r(pub.title)}
-                      <span class="text-muted-foreground"> — {pub.venue}</span>
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-        </section>
-      )
-    }
-
-    <!-- Recent writing -->
-    {
-      recent.length > 0 && (
-        <section class="grid gap-6 border-t border-border py-12 md:grid-cols-[200px_1fr] md:gap-10 md:py-14 lg:gap-16">
-          <div>
-            <SectionLabel text={t('home.recentWriting')} />
-            <a
-              href={`${prefix}/blog`}
-              class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
-            >
-              {t('home.allPosts')}
-            </a>
-          </div>
-          <div class="divide-y divide-border">
-            {recent.map((post) => (
-              <a href={postHref(post)} class="group block py-5 first:pt-0">
-                <div class="flex items-baseline gap-3">
-                  <time
-                    datetime={post.date.toISOString()}
-                    class="font-mono text-xs text-muted-foreground"
-                  >
-                    {formatDate(post.date, lang)}
-                  </time>
-                  {post.categories[0] && (
-                    <span class="font-mono text-[11px] tracking-[0.14em] text-primary uppercase">
-                      {post.categories[0]}
-                    </span>
-                  )}
-                  {post.lang !== lang && (
-                    <span class="rounded-sm border border-border px-1.5 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                      {post.lang}
-                    </span>
-                  )}
-                </div>
-                <h3 class="mt-1.5 font-serif text-xl leading-snug transition-colors group-hover:text-primary">
-                  {post.title}
-                </h3>
-                {post.description && (
-                  <p class="mt-1 max-w-2xl text-muted-foreground">{post.description}</p>
-                )}
-              </a>
-            ))}
-          </div>
-        </section>
-      )
+          )
+        const entry = prose.get(index)
+        return (
+          entry !== undefined && (
+            <Prose
+              title={
+                section.title === false
+                  ? null
+                  : (resolveLocalized(section.title, lang, fallback) ?? entry.page.title)
+              }
+              rendered={entry.rendered}
+            />
+          )
+        )
+      })
     }
   </div>
 </BaseLayout>

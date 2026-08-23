@@ -3,6 +3,8 @@ export const en = {
   'home.selectedWork': 'Selected work',
   'home.recentWriting': 'Recent writing',
   'home.allPosts': 'All posts →',
+  'home.projects': 'Projects',
+  'home.allProjects': 'All projects →',
   'home.readWriting': 'Read the writing',
   'home.viewCV': 'View CV',
   'home.affiliation': 'Affiliation',
