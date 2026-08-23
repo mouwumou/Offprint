@@ -5,6 +5,8 @@ import BaseLayout from '../../../core/components/BaseLayout.astro'
 import PublicationLinks from '../../../core/components/PublicationLinks.astro'
 import { langPrefix } from '../../../core/config/nav'
 import { getProvider } from '../../../core/content'
+import CiteDialog from '../../../core/components/CiteDialog'
+import { citationFormats } from '../../../core/cite/formats'
 import { useTranslations } from '../../../core/i18n'
 import { resolveLocalized } from '../../../core/schema'
 import { uniformAlternates } from '../../../core/seo/alternates'
@@ -46,6 +48,13 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
 const title = r(publication.title) ?? publication.key
 const abstract = r(publication.abstract)
 const meta = highwireMeta(siteConfig, publication, lang)
+const formats = citationFormats(publication, lang)
+const citeLabels = {
+  cite: t('pub.cite'),
+  copy: t('cite.copy'),
+  copied: t('cite.copied'),
+  close: t('cite.close'),
+}
 ---
 
 <BaseLayout
@@ -89,6 +98,9 @@ const meta = highwireMeta(siteConfig, publication, lang)
       </h1>
       <Authors authors={publication.authors} />
       <PublicationLinks publication={publication} lang={lang} />
+      <div class="mt-4">
+        <CiteDialog client:load formats={formats} labels={citeLabels} />
+      </div>
     </header>
 
     {
