@@ -7,6 +7,19 @@ import { getProvider } from '../core/content'
 import { renderMarkdown } from '../core/content/markdown'
 import type { Alternate } from '../core/seo/alternates'
 
+// ADR-015 tier 2: a file at src/site/widgets/<section-type>.astro replaces
+// the built-in homepage widget of that type. Collected here — not in core —
+// because core must not import src/site (ADR-006); the pages layer may.
+const widgetModules = import.meta.glob<{ default: unknown }>('../site/widgets/*.astro', {
+  eager: true,
+})
+const widgets = Object.fromEntries(
+  Object.entries(widgetModules).map(([path, module]) => [
+    path.replace(/^.*\/([^/]+)\.astro$/, '$1'),
+    module.default,
+  ]),
+)
+
 // Catch-all for the language homes and standalone pages. One route resolves
 // bare locale paths (/zh) AND page slugs (/about, /zh/about) — two separate
 // dynamic routes were ambiguous in server mode ('/zh' matched
@@ -65,6 +78,6 @@ if (page !== null) {
   page !== null && rendered !== null ? (
     <StandalonePage lang={lang} page={page} rendered={rendered} alternates={alternates} />
   ) : (
-    <HomePage lang={lang} />
+    <HomePage lang={lang} widgets={widgets} />
   )
 }

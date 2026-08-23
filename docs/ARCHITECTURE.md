@@ -44,13 +44,13 @@ offprint/
 │  │  ├─ i18n/               # en.ts zh.ts + 工具
 │  │  ├─ seo/                # Head、JSON-LD、Highwire、OG 图、feed、sitemap
 │  │  ├─ theme/              # token CSS、字体、dark mode
-│  │  ├─ components/         # .astro + React islands
+│  │  ├─ components/         # .astro + React islands；home/ 下是首页部件（可被 src/site/widgets 覆盖）
 │  │  └─ server/             # 阶段 2：端点、watch、运行时索引（static 构建不打包）
 │  ├─ sync/                  # 未来的 @offprint/sync：elog 封装，只依赖 src/core/schema
 │  │  └─ { cli.ts, run.ts, elog-config.ts, manifest.ts, validate.ts, notify.ts }
 │  ├─ pages/                 # Astro 路由：[...lang]/ 下 blog / projects / cv / pages
 │  ├─ layouts/
-│  └─ site/                  # 维护者站点级覆盖（样式、自定义组件）
+│  └─ site/                  # 维护者站点级覆盖（widgets/<type>.astro 替换首页部件；样式、自定义组件）
 ├─ docker/                   # web.Dockerfile compose.static.yaml (site.Dockerfile compose.server.yaml 阶段 2)
 ├─ docs/
 ├─ .github/workflows/        # ci.yml sync.yml deploy-pages.yml
@@ -63,6 +63,21 @@ offprint/
 
 - `ContentStore` / `Manifest` / `ContentProvider`：见 `DYNAMIC-PUBLISHING.md` §3，接口定义以那里为准，实现放 `src/core/store` 与 `src/core/content`。
 - `defineConfig(siteConfig)`：zod 校验后导出类型化配置；`modules.<name>` 为 `false` 时 integration 不注入该模块的路由与导航。
+
+### 3.1 编排层与三级定制（ADR-015）
+
+配置里的每个自由度都有 zod 形状与缺省值，缺省值精确复刻内置设计（"可塑但不可坏"）：
+
+- `modules.<name>: boolean | { title?, description?, colophon? }`——布尔开关拓宽为设置对象；文案覆盖经 `moduleCopy()`（`src/core/config/copy.ts`）解析，i18n 字典只做主题缺省值。
+- `nav?: Array<{module, label?} | {page, label?} | {href, label}>`——导航即数据（`resolveNav()`，`src/core/config/nav.ts`）。缺省时自动生成：首页 + 启用模块 + `nav: true` 的独立页面；显式给出时以作者列表为准，指向关闭模块 / 不存在页面的条目跳过而非报错。
+- `header` / `footer`——`title`/`subtitle`/`colophon` 为 `false | LocalizedString`（隐藏 / 覆盖 / 缺省回落 profile 与 i18n），另有 `search`/`themeToggle`/`languageSwitcher`/`rss`/`enabled` 开关。
+- `home.sections`——首页是 section 序列（discriminated union）：`hero | about | prose | selected-publications | recent-posts | projects`，各自带 `title` 覆盖与少量选项；`prose` 内联渲染一个独立页面。模块关闭或数据为空的 section 渲染期跳过。
+
+三级定制阶梯：
+
+1. **配置**：上述 `site.config.ts` 字段，够用则到此为止。
+2. **部件覆盖**：`src/site/widgets/<section-type>.astro` 替换同名内置首页部件。收集点在 pages 层（`src/pages/[...path].astro` 的 `import.meta.glob`），因为 core 不得 import src/site（ADR-006）；覆盖组件收到与内置部件完全相同的 props（内置实现在 `src/core/components/home/`，即 props 契约）。
+3. **主题包**：阶段 5 的整套替换。
 - 模块接口（内部，阶段 5 才对外）：
 
 ```ts

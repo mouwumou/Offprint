@@ -17,11 +17,26 @@ import Prose from './home/Prose.astro'
 import RecentPosts from './home/RecentPosts.astro'
 import SelectedPublications from './home/SelectedPublications.astro'
 
+// ADR-015 tier 2: the pages layer may pass site-local widget components
+// (from src/site/widgets/<type>.astro) that replace the built-ins below.
+// Each override receives exactly the props of the built-in it replaces.
+type Widgets = Partial<Record<import('../config/schema').HomeSection['type'], unknown>>
+
 interface Props {
   lang: string
+  widgets?: Widgets
 }
 
-const { lang } = Astro.props
+const { lang, widgets = {} } = Astro.props
+const impl = {
+  hero: (widgets.hero ?? Hero) as typeof Hero,
+  about: (widgets.about ?? About) as typeof About,
+  prose: (widgets.prose ?? Prose) as typeof Prose,
+  'selected-publications': (widgets['selected-publications'] ??
+    SelectedPublications) as typeof SelectedPublications,
+  'recent-posts': (widgets['recent-posts'] ?? RecentPosts) as typeof RecentPosts,
+  projects: (widgets.projects ?? Projects) as typeof Projects,
+}
 const t = useTranslations(lang)
 const fallback = siteConfig.i18n.default
 const profile = siteConfig.profile
@@ -80,17 +95,23 @@ const sectionTitle = (title: LocalizedString | undefined, key: MessageKey): stri
   <div class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12">
     {
       sections.map((section, index) => {
-        if (section.type === 'hero') return <Hero lang={lang} />
-        if (section.type === 'about')
+        if (section.type === 'hero') {
+          const Widget = impl.hero
+          return <Widget lang={lang} />
+        }
+        if (section.type === 'about') {
+          const Widget = impl.about
           return (
             profile.bio.length > 0 && (
-              <About lang={lang} title={sectionTitle(section.title, 'home.about')} />
+              <Widget lang={lang} title={sectionTitle(section.title, 'home.about')} />
             )
           )
-        if (section.type === 'selected-publications')
+        }
+        if (section.type === 'selected-publications') {
+          const Widget = impl['selected-publications']
           return (
             publications.length > 0 && (
-              <SelectedPublications
+              <Widget
                 lang={lang}
                 title={sectionTitle(section.title, 'home.selectedWork')}
                 selected={selected}
@@ -98,30 +119,36 @@ const sectionTitle = (title: LocalizedString | undefined, key: MessageKey): stri
               />
             )
           )
-        if (section.type === 'recent-posts')
+        }
+        if (section.type === 'recent-posts') {
+          const Widget = impl['recent-posts']
           return (
             posts.length > 0 && (
-              <RecentPosts
+              <Widget
                 lang={lang}
                 title={sectionTitle(section.title, 'home.recentWriting')}
                 posts={posts.slice(0, section.count)}
               />
             )
           )
-        if (section.type === 'projects')
+        }
+        if (section.type === 'projects') {
+          const Widget = impl.projects
           return (
             projects.length > 0 && (
-              <Projects
+              <Widget
                 lang={lang}
                 title={sectionTitle(section.title, 'home.projects')}
                 projects={section.count === undefined ? projects : projects.slice(0, section.count)}
               />
             )
           )
+        }
+        const Widget = impl.prose
         const entry = prose.get(index)
         return (
           entry !== undefined && (
-            <Prose
+            <Widget
               title={
                 section.title === false
                   ? null
