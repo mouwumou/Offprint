@@ -121,6 +121,7 @@ export interface ContentProvider {
   getTranslations(urlname: string): Promise<{ lang: string }[]>
   listTags(): Promise<{ tag: string; count: number }[]>
   listPages(lang?: string): Promise<PageSummary[]>
+  getPage(slug: string, lang: string): Promise<Page | null>   // 2026-08-23 补：pages 模块（P1-7c）
   listPublications(): Promise<Publication[]>
   listProjects(): Promise<Project[]>          // 2026-08-23 补：projects 模块（P1-5）
   getCV(): Promise<Resume | null>             // 2026-08-23 改：文件缺失返回 null（P1-6）

@@ -1,6 +1,8 @@
 ---
 import config from '../config/current'
 import { buildNav, langPrefix, type NavItem } from '../config/nav'
+import { getProvider } from '../content'
+import { pagesForLanguage } from '../content/posts-view'
 import { selfLabel, useTranslations } from '../i18n'
 import { resolveLocalized } from '../schema'
 import type { Alternate } from '../seo/alternates'
@@ -27,6 +29,16 @@ const switcher = config.i18n.locales.map((locale) => ({
 const t = useTranslations(lang)
 const prefix = langPrefix(config, lang)
 const nav = buildNav(config, lang)
+
+// P1-7c: standalone pages with nav:true join the navigation, ordered.
+if (config.modules.pages) {
+  const navPages = pagesForLanguage(await getProvider().listPages(), lang).filter(
+    (page) => page.nav,
+  )
+  for (const page of navPages) {
+    nav.push({ href: `${langPrefix(config, page.lang)}/${page.slug}`, label: page.title })
+  }
+}
 const name = resolveLocalized(config.profile.name, lang, config.i18n.default)
 const field = resolveLocalized(config.profile.field, lang, config.i18n.default)
 const fieldShort = field?.split(/\s*[&＆]\s*/)[0]

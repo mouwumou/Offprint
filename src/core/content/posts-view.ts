@@ -1,4 +1,4 @@
-import type { PostSummary } from './provider'
+import type { PageSummary, PostSummary } from './provider'
 
 /**
  * ADR-007 list rule: every list shows each article once — in the requested
@@ -6,6 +6,18 @@ import type { PostSummary } from './provider'
  * caller renders a language badge when `post.lang` differs). Input order
  * (pinned-first, newest-first) is preserved by first occurrence.
  */
+/** ADR-007 list rule for standalone pages, keyed by slug. */
+export function pagesForLanguage(pages: readonly PageSummary[], lang: string): PageSummary[] {
+  const bySlug = new Map<string, PageSummary>()
+  for (const page of pages) {
+    const existing = bySlug.get(page.slug)
+    if (existing === undefined || (existing.lang !== lang && page.lang === lang)) {
+      bySlug.set(page.slug, page)
+    }
+  }
+  return [...bySlug.values()].sort((a, b) => a.order - b.order || a.slug.localeCompare(b.slug))
+}
+
 /** Distinct categories across published posts, in first-seen order. */
 export function collectCategories(posts: readonly PostSummary[]): string[] {
   return [...new Set(posts.flatMap((post) => post.categories))]

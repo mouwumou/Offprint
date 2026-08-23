@@ -29,7 +29,7 @@
 - [x] P1-6 CV：JSON Resume loader + 页面 + 打印样式
 - [x] P1-7 SEO：Head 组件（canonical/OG/Twitter/JSON-LD Person & BlogPosting/hreflang）、sitemap、RSS/Atom/JSON feed（按语言）
 - [x] P1-7b i18n：语言前缀路由、UI 字符串表、语言切换器、译本互链、`{en,zh}` 字段解析
-- [ ] P1-7c pages 模块：Notion type=Page 的独立页面 + 导航注入
+- [x] P1-7c pages 模块：Notion type=Page 的独立页面 + 导航注入
 - [ ] P1-8 首页 Selected work 的 JSON-LD `ScholarlyArticle`（Highwire meta 随阶段 3 出版物页一起做）
 - [ ] P1-9 模块开关生效（关掉的模块无路由/导航/打包）
 - [ ] P1-10 `redirects.yaml` → 各平台重定向产物（GH Pages 用 meta refresh 页、Vercel/Netlify/CF 原生、node 中间件）

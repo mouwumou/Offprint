@@ -34,6 +34,7 @@ export interface ContentProvider {
   getTranslations(urlname: string): Promise<{ lang: string }[]>
   listTags(): Promise<{ tag: string; count: number }[]>
   listPages(lang?: string): Promise<PageSummary[]>
+  getPage(slug: string, lang: string): Promise<Page | null>
   listPublications(): Promise<Publication[]>
   listProjects(): Promise<Project[]>
   getCV(): Promise<Resume | null>
@@ -180,6 +181,10 @@ export function createProvider(store: ContentStore): ContentProvider {
         .filter((page) => (lang === undefined ? true : page.lang === lang))
         .sort((a, b) => a.order - b.order || a.title.localeCompare(b.title))
         .map(({ body: _body, ...summary }) => summary)
+    },
+
+    async getPage(slug, lang) {
+      return load(`pages/${slug}.${lang}.md`, parsePage)
     },
 
     async listPublications() {

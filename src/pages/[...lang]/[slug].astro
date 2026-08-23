@@ -1,0 +1,66 @@
+---
+import katexCss from 'katex/dist/katex.min.css?url'
+import siteConfig from '../../core/config/current'
+import { langPrefix } from '../../core/config/nav'
+import { getProvider } from '../../core/content'
+import { renderMarkdown } from '../../core/content/markdown'
+import { formatDate, useTranslations } from '../../core/i18n'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+
+// Standalone pages (Notion type=Page): /about, /zh/about, /now …
+export async function getStaticPaths() {
+  if (!siteConfig.modules.pages) return []
+  const pages = await getProvider().listPages()
+  return pages.map((page) => ({
+    params: {
+      lang: page.lang === siteConfig.i18n.default ? undefined : page.lang,
+      slug: page.slug,
+    },
+  }))
+}
+
+const { lang: langParam, slug = '' } = Astro.params
+const lang = langParam ?? siteConfig.i18n.default
+if (
+  !siteConfig.modules.pages ||
+  !siteConfig.i18n.locales.includes(lang) ||
+  langParam === siteConfig.i18n.default
+) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const page = await getProvider().getPage(slug, lang)
+if (!page) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const t = useTranslations(lang)
+const rendered = await renderMarkdown(page.body)
+const showMath = rendered.hasMath
+
+const translations = (await getProvider().listPages()).filter((entry) => entry.slug === slug)
+const alternates = translations.map((entry) => ({
+  lang: entry.lang,
+  path: `${langPrefix(siteConfig, entry.lang)}/${slug}`,
+}))
+---
+
+<BaseLayout lang={lang} title={page.title} alternates={alternates}>
+  <Fragment slot="head">{showMath && <link rel="stylesheet" href={katexCss} />}</Fragment>
+
+  <article class="mx-auto w-full max-w-3xl px-5 pt-14 pb-20 sm:px-8 lg:pt-20">
+    <header class="border-b border-border pb-8">
+      <h1 class="font-serif text-4xl leading-[1.12] tracking-tight sm:text-[2.75rem]">
+        {page.title}
+      </h1>
+      {
+        page.updated && (
+          <p class="mt-4 font-mono text-xs text-muted-foreground">
+            {t('post.updated')} {formatDate(page.updated, lang)}
+          </p>
+        )
+      }
+    </header>
+    <div class="prose mt-10" set:html={rendered.html} />
+  </article>
+</BaseLayout>
