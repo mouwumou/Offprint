@@ -1,11 +1,14 @@
 import { createHash } from 'node:crypto'
 import matter from 'gray-matter'
+import YAML from 'yaml'
 import { z } from 'zod'
 import {
   pageFrontmatterSchema,
   postFrontmatterSchema,
+  publicationsFileSchema,
   type PageFrontmatter,
   type PostFrontmatter,
+  type Publication,
 } from '../schema'
 import type { ContentStore, Manifest } from '../store'
 
@@ -13,8 +16,8 @@ export type PostSummary = PostFrontmatter
 export type Post = PostFrontmatter & { body: string }
 export type PageSummary = PageFrontmatter
 export type Page = PageFrontmatter & { body: string }
-/** Shaped in P1-4 (publications loader) and P1-6 (JSON Resume). */
-export type Publication = Record<string, unknown>
+export type { Publication } from '../schema'
+/** Shaped in P1-6 (JSON Resume loader). */
 export type Resume = Record<string, unknown>
 
 /**
@@ -110,6 +113,14 @@ export function createProvider(store: ContentStore): ContentProvider {
     return page
   }
 
+  function parsePublications(raw: string, path: string): Publication[] {
+    const result = publicationsFileSchema.safeParse(YAML.parse(raw))
+    if (!result.success) {
+      throw new Error(`Invalid ${path}:\n${z.prettifyError(result.error)}`)
+    }
+    return result.data
+  }
+
   async function loadAllPosts(): Promise<Post[]> {
     const paths = (await store.list('posts')).filter((path) => path.endsWith('.md'))
     const posts = await Promise.all(paths.map((path) => load(path, parsePost)))
@@ -161,7 +172,12 @@ export function createProvider(store: ContentStore): ContentProvider {
     },
 
     async listPublications() {
-      throw new Error('publications loader is not implemented yet (P1-4)')
+      // An absent file is a template without a publications export, not an
+      // error; the module toggle decides whether anything renders at all.
+      const publications = await load('publications.yaml', parsePublications)
+      return (publications ?? [])
+        .slice()
+        .sort((a, b) => b.year - a.year || a.key.localeCompare(b.key))
     },
 
     async getCV() {

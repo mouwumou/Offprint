@@ -124,9 +124,43 @@ describe('createProvider · pages', () => {
   })
 })
 
+describe('createProvider · publications', () => {
+  it('returns an empty list when publications.yaml is absent', async () => {
+    expect(await provider.listPublications()).toEqual([])
+  })
+
+  it('parses, validates, and sorts publications newest-first', async () => {
+    await writeFile(
+      join(root, 'publications.yaml'),
+      [
+        '- key: old2023',
+        '  title: Older work',
+        '  authors: [A. Person]',
+        '  year: 2023',
+        '  venue: Journal of Examples',
+        '  type: journal',
+        '- key: new2025',
+        '  title: Newer work',
+        '  authors: [A. Person, B. Other]',
+        '  year: 2025',
+        '  venue: NeurIPS',
+        '  type: conference',
+        '  selected: true',
+      ].join('\n'),
+    )
+    const pubs = await provider.listPublications()
+    expect(pubs.map((p) => p.key)).toEqual(['new2025', 'old2023'])
+    expect(pubs[0]?.selected).toBe(true)
+  })
+
+  it('rejects an invalid publications file loudly', async () => {
+    await writeFile(join(root, 'publications.yaml'), '- key: only-a-key\n')
+    await expect(provider.listPublications()).rejects.toThrow(/publications\.yaml/)
+  })
+})
+
 describe('createProvider · stubs', () => {
-  it('publications and CV loaders announce their phase', async () => {
-    await expect(provider.listPublications()).rejects.toThrow(/P1-4/)
+  it('the CV loader announces its phase', async () => {
     await expect(provider.getCV()).rejects.toThrow(/P1-6/)
   })
 })

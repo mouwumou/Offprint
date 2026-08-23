@@ -24,7 +24,7 @@
 - [x] P1-1 Layout（Header/Footer/skip link/主题切换防闪烁）
 - [ ] P1-2 Home 页
 - [ ] P1-3 Blog 列表页（tag/category 过滤走 URL 参数、置顶、草稿隐藏）
-- [ ] P1-4 publications：YAML loader（Notion 导出）+ 作者高亮 + 首页 Selected work（独立页与 Cite 留阶段 3）
+- [x] P1-4 publications：YAML loader（Notion 导出）+ 作者高亮 + 首页 Selected work（独立页与 Cite 留阶段 3）
 - [ ] P1-5 projects：YAML loader + 页面
 - [ ] P1-6 CV：JSON Resume loader + 页面 + 打印样式
 - [ ] P1-7 SEO：Head 组件（canonical/OG/Twitter/JSON-LD Person & BlogPosting/hreflang）、sitemap、RSS/Atom/JSON feed（按语言）

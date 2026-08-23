@@ -1,0 +1,36 @@
+# Sample publications (template data, ADR-010). In production this file is
+# exported by sync from the maintainer's Notion publications database.
+- key: voss2025geometry
+  title: 'The geometry of uncertainty: curved manifolds in cortical population codes'
+  authors: [M. E. Voss, R. Nakamura, D. Feldmann]
+  year: 2025
+  venue: Nature Neuroscience
+  type: journal
+  selected: true
+  doi: 10.1038/s41593-025-01234-5
+  pdf: https://example.edu/papers/voss2025geometry.pdf
+  code: https://github.com/example/manifold-lab
+  data: https://zenodo.org/records/0000000
+- key: voss2024amortized
+  title: Amortized inference for high-dimensional electrophysiology with structured priors
+  authors: [M. E. Voss, A. Kowalski]
+  year: 2024
+  venue: NeurIPS
+  type: conference
+  pdf: https://example.edu/papers/voss2024amortized.pdf
+  code: https://github.com/example/priorbox
+- key: voss2024linear
+  title: When do linear readouts fail? A stress test for neural decoding
+  authors: [M. E. Voss, D. Feldmann, S. Ortega]
+  year: 2024
+  venue: arXiv
+  type: preprint
+  arxiv: '2403.11928'
+- key: ortega2023temporal
+  title: Temporal scaling in recurrent representations of interval timing
+  authors: [S. Ortega, M. E. Voss]
+  year: 2023
+  venue: Cosyne (Workshop)
+  type: workshop
+  poster: https://example.edu/posters/ortega2023temporal.pdf
+  award: Best Poster
