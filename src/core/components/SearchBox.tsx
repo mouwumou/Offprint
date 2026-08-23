@@ -24,8 +24,11 @@ interface Props {
 let pagefindPromise: Promise<PagefindApi | null> | undefined
 
 function loadPagefind(): Promise<PagefindApi | null> {
-  // @ts-expect-error runtime-only asset: exists only in static deployments
-  pagefindPromise ??= import(/* @vite-ignore */ '/pagefind/pagefind.js')
+  // The specifier must be a variable: esbuild strips the @vite-ignore comment
+  // from .tsx, and a literal path would make Vite's import analysis try to
+  // resolve this build-output-only asset (breaking `pnpm dev`).
+  const runtimeOnlyPath = '/pagefind/pagefind.js'
+  pagefindPromise ??= import(/* @vite-ignore */ runtimeOnlyPath)
     .then((module: PagefindApi) => module)
     .catch(() => null)
   return pagefindPromise
@@ -52,23 +55,29 @@ export default function SearchBox({ lang, placeholder, noResults }: Props) {
     }
     timer.current = setTimeout(() => {
       void (async () => {
-        const pagefind = await loadPagefind()
-        if (pagefind) {
-          const result = await pagefind.search(q)
-          const data = await Promise.all(result.results.slice(0, 10).map((r) => r.data()))
-          setHits(
-            data.map((d) => ({ url: d.url, title: d.meta.title ?? d.url, excerpt: d.excerpt })),
-          )
-        } else {
-          const response = await fetch(
-            `/api/search?q=${encodeURIComponent(q)}&lang=${encodeURIComponent(lang)}`,
-          )
-          const body = (await response.json()) as { results?: Hit[] }
-          // API excerpts are plain text; escape them since pagefind's
-          // (trusted, <mark>-bearing) excerpts share the innerHTML path.
-          const escape = (text: string) =>
-            text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-          setHits((body.results ?? []).map((hit) => ({ ...hit, excerpt: escape(hit.excerpt) })))
+        try {
+          const pagefind = await loadPagefind()
+          if (pagefind) {
+            const result = await pagefind.search(q)
+            const data = await Promise.all(result.results.slice(0, 10).map((r) => r.data()))
+            setHits(
+              data.map((d) => ({ url: d.url, title: d.meta.title ?? d.url, excerpt: d.excerpt })),
+            )
+          } else {
+            const response = await fetch(
+              `/api/search?q=${encodeURIComponent(q)}&lang=${encodeURIComponent(lang)}`,
+            )
+            const body = (await response.json()) as { results?: Hit[] }
+            // API excerpts are plain text; escape them since pagefind's
+            // (trusted, <mark>-bearing) excerpts share the innerHTML path.
+            const escape = (text: string) =>
+              text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            setHits((body.results ?? []).map((hit) => ({ ...hit, excerpt: escape(hit.excerpt) })))
+          }
+        } catch {
+          // Neither backend available (e.g. `pnpm dev`: the pagefind index
+          // only exists in build output, /api/search only in server mode).
+          setHits([])
         }
         setSearched(true)
       })()
