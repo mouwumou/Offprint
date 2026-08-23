@@ -34,7 +34,7 @@ M834 80h400000v40h-400000z"></path></svg></span></span></span><span class="vlist
 <pre class="shiki shiki-themes offprint-light offprint-dark" style="background-color:#ffffff;--shiki-dark-bg:#1e1c15;color:#1c1a16;--shiki-dark:#ebe6da" tabindex="0"><code><span class="line"><span style="color:#6C675C;--shiki-light-font-style:italic;--shiki-dark:#A29C8C;--shiki-dark-font-style:italic">// a comment</span></span>
 <span class="line"><span style="color:#6F2232;--shiki-dark:#CF9AA4">const</span><span style="color:#1C1A16;--shiki-dark:#EBE6DA"> answer</span><span style="color:#6F2232;--shiki-dark:#CF9AA4">:</span><span style="color:#1C1A16;--shiki-dark:#EBE6DA"> number </span><span style="color:#6F2232;--shiki-dark:#CF9AA4">=</span><span style="color:#9A6A2F;--shiki-dark:#D8A765"> 42</span></span>
 <span class="line"><span style="color:#1C1A16;--shiki-dark:#EBE6DA">console.</span><span style="color:#3A5A8C;--shiki-dark:#8FB0DD">log</span><span style="color:#1C1A16;--shiki-dark:#EBE6DA">(</span><span style="color:#4F7A4F;--shiki-dark:#9EC49E">\`answer: \${</span><span style="color:#4F7A4F;--shiki-dark:#9EC49E">answer</span><span style="color:#4F7A4F;--shiki-dark:#9EC49E">}\`</span><span style="color:#1C1A16;--shiki-dark:#EBE6DA">)</span></span></code></pre>
-<div class="directive directive-note" data-title="Aside"><p>Directives become classed divs.</p></div>
+<div class="directive directive-note" data-directive="note" data-title="Aside"><p>Directives become classed divs.</p></div>
 <blockquote>
 <p>A quotation.</p>
 </blockquote>

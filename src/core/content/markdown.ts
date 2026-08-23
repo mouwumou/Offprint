@@ -42,7 +42,12 @@ const sanitizeSchema: typeof defaultSchema = {
     // remark-math marks nodes with math-inline / math-display.
     code: [['className', /^language-./, 'math-inline', 'math-display']],
     // Directive containers (:::note / :::theorem …) become classed divs.
-    div: [...(defaultSchema.attributes?.['div'] ?? []), ['className', /^directive/], 'dataTitle'],
+    div: [
+      ...(defaultSchema.attributes?.['div'] ?? []),
+      ['className', /^directive/],
+      'dataTitle',
+      'dataDirective',
+    ],
     span: [...(defaultSchema.attributes?.['span'] ?? []), ['className', /^directive/]],
   },
 }
@@ -67,6 +72,7 @@ function directivesToHtml() {
         data.hName = node.type === 'textDirective' ? 'span' : 'div'
         data.hProperties = {
           className: ['directive', `directive-${directive.name}`],
+          dataDirective: directive.name,
           ...(directive.attributes?.['title'] ? { dataTitle: directive.attributes['title'] } : {}),
         }
       }

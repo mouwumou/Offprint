@@ -45,6 +45,18 @@ and the noise is small, information is high and the ribbon is thin. Where the
 curve flattens, the ribbon widens — and *curvature* is what couples these two
 regimes together.
 
+:::theorem{title="Claim (informal)"}
+For a smooth tuning map $\mathbf{f}$ with noise covariance $\Sigma(s)$, local
+posterior width is governed by the linear Fisher information, and curvature of
+the tuning manifold is the mechanism that redistributes it across the stimulus
+range.
+:::
+
+:::warning
+The simulation below uses Poisson-like noise; heavy-tailed noise changes the
+constants but not the shape of the argument.
+:::
+
 ## An afternoon experiment
 
 You do not need a two-photon microscope to get intuition for this. Here is a

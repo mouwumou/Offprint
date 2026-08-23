@@ -296,7 +296,8 @@
   color: var(--muted-foreground);
 }
 
-/* Directive containers (:::note / :::warning / :::theorem …); full styling in P3-3 */
+/* Directive containers (:::note / :::warning / :::theorem{title="…"} …), P3-3.
+   The mono label shows the directive name, overridden by a title attribute. */
 .prose .directive {
   border: 1px solid var(--border);
   border-left: 2px solid var(--primary);
@@ -304,8 +305,8 @@
   padding: 1rem 1.25rem;
   background-color: color-mix(in srgb, var(--muted) 40%, transparent);
 }
-.prose .directive[data-title]::before {
-  content: attr(data-title);
+.prose .directive::before {
+  content: attr(data-directive);
   display: block;
   font-family: var(--font-mono);
   font-size: 0.72rem;
@@ -313,6 +314,46 @@
   letter-spacing: 0.14em;
   color: var(--muted-foreground);
   margin-bottom: 0.5em;
+}
+.prose .directive[data-title]::before {
+  content: attr(data-title);
+}
+.prose .directive > * + * {
+  margin-top: 0.75em;
+}
+.prose .directive-warning {
+  border-left-color: var(--primary);
+  background-color: color-mix(in srgb, var(--primary) 7%, transparent);
+}
+.prose .directive-warning::before {
+  color: var(--primary);
+}
+.prose .directive-theorem,
+.prose .directive-lemma,
+.prose .directive-proposition,
+.prose .directive-corollary,
+.prose .directive-definition {
+  background-color: transparent;
+  border-left-color: var(--foreground);
+  font-style: italic;
+}
+.prose .directive-theorem::before,
+.prose .directive-lemma::before,
+.prose .directive-proposition::before,
+.prose .directive-corollary::before,
+.prose .directive-definition::before {
+  color: var(--foreground);
+  font-style: normal;
+}
+.prose .directive-proof {
+  background-color: transparent;
+  border-left-color: var(--border);
+}
+.prose .directive-proof::after {
+  content: '∎';
+  display: block;
+  text-align: right;
+  color: var(--muted-foreground);
 }
 
 /* Heading anchor links (rehype-autolink-headings) */
