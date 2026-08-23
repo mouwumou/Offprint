@@ -66,7 +66,7 @@
 - [x] P3-5 "Cite this post" + DOI 字段
 - [x] P3-6 CV PDF：print 路线完善；可选 Typst CI 产物（print 完善并实测出 PDF；Typst 为可选项未做）
 - [x] P3-7 i18n 进阶：按语言的搜索索引、OG 图文字、CV 双语 PDF（搜索已按语言：Pagefind 依 html lang 分索引、MiniSearch 带 lang 过滤；zh OG 经 Noto Sans SC 子集渲染；CV 页全双语、两种语言均可打印 PDF）
-- [ ] P3-8 giscus 评论开关
+- [x] P3-8 giscus 评论开关（comments 配置节默认关；开启需配全 giscus 参数并渲染到文章页；真实仓库接入待维护者配置）
 - [ ] P3-9 a11y 审计（axe）+ Lighthouse CI 阈值
 - [ ] P3-10 相关文章 / 系列导航 / 最近更新
 

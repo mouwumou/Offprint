@@ -87,3 +87,21 @@ describe('resolveLocalized', () => {
     expect(resolveLocalized(undefined, 'en')).toBeUndefined()
   })
 })
+
+describe('comments (P3-8)', () => {
+  it('defaults off and demands full giscus config when enabled', () => {
+    expect(defineConfig(minimal).comments.enabled).toBe(false)
+    expect(() => defineConfig({ ...minimal, comments: { enabled: true } })).toThrow(/requires/)
+    const config = defineConfig({
+      ...minimal,
+      comments: {
+        enabled: true,
+        repo: 'owner/repo',
+        repoId: 'R_x',
+        category: 'Comments',
+        categoryId: 'DIC_x',
+      },
+    })
+    expect(config.comments.repo).toBe('owner/repo')
+  })
+})

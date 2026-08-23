@@ -4,6 +4,7 @@ import siteConfig from '../../../core/config/current'
 import { langPrefix } from '../../../core/config/nav'
 import { bibliographyEntry, citationFormats, inlineCitation } from '../../../core/cite/formats'
 import CiteDialog from '../../../core/components/CiteDialog'
+import Comments from '../../../core/components/Comments.astro'
 import { getProvider } from '../../../core/content'
 import type { CitationRef } from '../../../core/content/citations'
 import { renderMarkdown } from '../../../core/content/markdown'
@@ -230,6 +231,8 @@ const jsonLd = blogPostingJsonLd(
         </p>
         <p class="mt-1.5 text-sm text-muted-foreground">{t('post.colophonText')}</p>
       </div>
+
+      <Comments lang={lang} />
     </article>
 
     {

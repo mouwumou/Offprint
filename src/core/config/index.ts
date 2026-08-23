@@ -1,5 +1,6 @@
 export { defineConfig } from './define-config'
 export {
+  commentsSchema,
   i18nSchema,
   modulesSchema,
   profileLinkSchema,

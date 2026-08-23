@@ -99,6 +99,32 @@ export const runtimeSchema = z.strictObject({
   store: z.enum(['fs', 'git', 's3']).default('fs'),
 })
 
+// ── comments (P3-8) ──────────────────────────────────────────────────────────
+
+export const commentsSchema = z
+  .strictObject({
+    /** giscus is the only provider for now. */
+    provider: z.literal('giscus').default('giscus'),
+    enabled: z.boolean().default(false),
+    /** owner/repo with the giscus app installed and discussions on. */
+    repo: z
+      .string()
+      .regex(/^[^/\s]+\/[^/\s]+$/, 'expected owner/repo')
+      .optional(),
+    repoId: z.string().optional(),
+    category: z.string().optional(),
+    categoryId: z.string().optional(),
+  })
+  .refine(
+    (value) =>
+      !value.enabled ||
+      (value.repo !== undefined &&
+        value.repoId !== undefined &&
+        value.category !== undefined &&
+        value.categoryId !== undefined),
+    { message: 'comments.enabled requires repo, repoId, category, and categoryId' },
+  )
+
 // ── site config ──────────────────────────────────────────────────────────────
 
 export const siteConfigSchema = z.strictObject({
@@ -107,6 +133,7 @@ export const siteConfigSchema = z.strictObject({
   theme: themeSchema.prefault({}),
   i18n: i18nSchema.prefault({}),
   runtime: runtimeSchema.prefault({}),
+  comments: commentsSchema.prefault({}),
 })
 
 export type SiteConfigInput = z.input<typeof siteConfigSchema>

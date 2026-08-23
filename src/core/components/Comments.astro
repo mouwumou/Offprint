@@ -1,0 +1,36 @@
+---
+import config from '../config/current'
+
+interface Props {
+  lang: string
+}
+
+const { lang } = Astro.props
+const comments = config.comments
+const giscusLang = lang === 'zh' ? 'zh-CN' : lang
+---
+
+{
+  comments.enabled && (
+    <section class="mx-auto mt-16 w-full max-w-3xl border-t border-border pt-10">
+      <script
+        is:inline
+        src="https://giscus.app/client.js"
+        data-repo={comments.repo}
+        data-repo-id={comments.repoId}
+        data-category={comments.category}
+        data-category-id={comments.categoryId}
+        data-mapping="pathname"
+        data-strict="1"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang={giscusLang}
+        data-loading="lazy"
+        crossorigin="anonymous"
+        async
+      />
+    </section>
+  )
+}
