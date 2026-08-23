@@ -23,10 +23,11 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - run: pnpm build:static
+      # --prebuilt uploads the .vercel/output that `vercel build` produces —
+      # it does NOT accept a bare Astro dist/, hence the pull/build/deploy
+      # trio (Vercel CLI docs, "Deploying from CLI").
+      - run: pnpm dlx vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+      - run: pnpm dlx vercel build --prod --token=${{ secrets.VERCEL_TOKEN }}
         env:
           SITE_URL: ${{ vars.SITE_URL }}
       - run: pnpm dlx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
-        # `vercel build`-less flow: upload dist/ as a prebuilt static output.
-        env:
-          VERCEL_OUTPUT_DIR: dist

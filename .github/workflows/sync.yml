@@ -1,6 +1,9 @@
 # P1-14: the GitHub-Action form of sync (DYNAMIC-PUBLISHING §0, serverless
-# path): schedule/dispatch → elog → normalize → commit content/ → the push
-# retriggers CI + deploy. Publishing latency = build time (1–3 min).
+# path): schedule/dispatch → elog → normalize → commit content/ → explicit
+# workflow_dispatch of the deploy workflows. The push alone cannot retrigger
+# them: events caused by GITHUB_TOKEN never start new workflow runs — the
+# documented exception is dispatching via the API, which is what we do below.
+# Publishing latency = build time (1–3 min).
 name: Sync from Notion
 
 on:
@@ -16,6 +19,7 @@ concurrency:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   sync:
@@ -34,13 +38,24 @@ jobs:
           NOTION_DB: ${{ secrets.NOTION_DB }}
           DEFAULT_LANG: en
       - name: Commit content changes
+        id: commit
         run: |
           git config user.name "offprint-sync[bot]"
           git config user.email "noreply@example.com"
           git add content/
           if git diff --cached --quiet; then
             echo "content unchanged"
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
           else
             git commit -m "chore(content): sync from Notion"
             git push
+            echo "pushed=true" >> "$GITHUB_OUTPUT"
           fi
+      - name: Trigger deploys
+        if: steps.commit.outputs.pushed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh workflow run deploy-pages.yml --ref "${GITHUB_REF_NAME}"
+          # Gated inside the workflow by the DEPLOY_VERCEL repository variable.
+          gh workflow run deploy-vercel.yml --ref "${GITHUB_REF_NAME}"
