@@ -166,14 +166,11 @@ export interface RenderOptions {
   citations?: Map<string, CitationRef>
   /** Heading of the appended references section. */
   citationsLabel?: string
-  /** Cache token for the citation-bearing processor (content version). */
-  cacheKey?: string
 }
 
 let processor: Processor | undefined
-let citationProcessor: { key: string; processor: Processor } | undefined
 
-function buildProcessor(options?: RenderOptions): Processor {
+function buildProcessor(): Processor {
   return unified()
     .use(remarkParse)
     .use(remarkGfm)
@@ -190,11 +187,8 @@ function buildProcessor(options?: RenderOptions): Processor {
       properties: { className: ['heading-anchor'], ariaHidden: 'true', tabIndex: -1 },
       content: { type: 'text', value: '#' },
     })
-    .use(
-      options?.citations !== undefined
-        ? [[rehypeCitations, { refs: options.citations, label: options.citationsLabel ?? 'References' }]]
-        : [],
-    )
+    // Always mounted; a no-op unless vfile.data.citations is set per document.
+    .use(rehypeCitations)
     .use(rehypeKatex)
     .use(rehypeShiki, {
       themes: { light: offprintLight, dark: offprintDark },
@@ -203,14 +197,7 @@ function buildProcessor(options?: RenderOptions): Processor {
     .use(rehypeStringify) as unknown as Processor
 }
 
-function getProcessor(options?: RenderOptions): Processor {
-  if (options?.citations !== undefined) {
-    const key = `${options.cacheKey ?? ''}:${options.citationsLabel ?? ''}`
-    if (citationProcessor?.key !== key) {
-      citationProcessor = { key, processor: buildProcessor(options) }
-    }
-    return citationProcessor.processor
-  }
+function getProcessor(): Processor {
   processor ??= buildProcessor()
   return processor
 }
@@ -220,7 +207,19 @@ export async function renderMarkdown(
   markdown: string,
   options?: RenderOptions,
 ): Promise<RenderedMarkdown> {
-  const file = await getProcessor(options).process(markdown)
+  const file = await getProcessor().process(
+    options?.citations !== undefined
+      ? {
+          value: markdown,
+          data: {
+            citations: {
+              refs: options.citations,
+              label: options.citationsLabel ?? 'References',
+            },
+          },
+        }
+      : markdown,
+  )
   const stats = file.data['stats'] as Stats
   return {
     html: String(file),

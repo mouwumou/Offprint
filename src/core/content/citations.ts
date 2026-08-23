@@ -15,14 +15,23 @@ function span(children: (Element | Text)[]): Element {
   return { type: 'element', tagName: 'span', properties: { className: ['citation'] }, children }
 }
 
+export interface CitationContext {
+  refs: Map<string, CitationRef>
+  label: string
+}
+
 /**
  * rehype plugin (P3-2): replace pandoc-style [@key] / [@a; @b] citations with
  * linked in-text labels and append a references section for the keys actually
  * used. All strings are precomputed server-side (citation-js), the plugin is
- * pure tree surgery.
+ * pure tree surgery. The refs arrive per document on vfile.data — baking
+ * them into the plugin (and thus the cached processor) leaked one post's
+ * private references into the next.
  */
-export function rehypeCitations(options: { refs: Map<string, CitationRef>; label: string }) {
-  return (tree: Root): void => {
+export function rehypeCitations() {
+  return (tree: Root, file: { data: Record<string, unknown> }): void => {
+    const options = file.data['citations'] as CitationContext | undefined
+    if (options === undefined) return
     const used: CitationRef[] = []
     const use = (key: string): CitationRef | undefined => {
       const ref = options.refs.get(key)

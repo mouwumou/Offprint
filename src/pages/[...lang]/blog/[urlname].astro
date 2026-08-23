@@ -72,13 +72,7 @@ const postHref = (entry: { urlname: string; lang: string }) =>
   `${langPrefix(siteConfig, entry.lang)}/blog/${entry.urlname}`
 
 const rendered = await renderMarkdown(post.body, {
-  ...(citations !== undefined
-    ? {
-        citations,
-        citationsLabel: t('post.references'),
-        cacheKey: `${lang}:${await getProvider().version()}`,
-      }
-    : {}),
+  ...(citations !== undefined ? { citations, citationsLabel: t('post.references') } : {}),
 })
 const showMath = rendered.hasMath || post.math === true
 const showUpdated = post.updated.getTime() !== post.date.getTime()

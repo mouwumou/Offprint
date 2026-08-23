@@ -118,7 +118,6 @@ describe('citations (P3-2)', () => {
     const result = await renderMarkdown('Cites [@b2024] then [@a2025; @b2024], not `[@a2025]`.', {
       citations: refs,
       citationsLabel: 'References',
-      cacheKey: 'test',
     })
     expect(result.html).toContain('<a href="#ref-b2024">(Bob, 2024)</a>')
     expect(result.html).toContain('(Ada, 2025)</a>; <a href="#ref-b2024">')
@@ -134,9 +133,35 @@ describe('citations (P3-2)', () => {
     const result = await renderMarkdown('An unknown [@nope] citation.', {
       citations: refs,
       citationsLabel: 'References',
-      cacheKey: 'test2',
     })
     expect(result.html).toContain('[@nope]')
     expect(result.html).not.toContain('id="references"')
+  })
+
+  it('never reuses one document\'s refs for the next (audit regression)', async () => {
+    // Same lang + content version → the old processor cache baked the first
+    // post's private references in and served them to the second.
+    const first = await renderMarkdown('See [@mine].', {
+      citations: new Map([
+        ['mine', { key: 'mine', inline: '(Mine, 2025)', entry: 'Mine (2025).' }],
+      ]),
+      citationsLabel: 'References',
+    })
+    expect(first.html).toContain('(Mine, 2025)')
+
+    const second = await renderMarkdown('See [@mine] and [@other].', {
+      citations: new Map([
+        ['other', { key: 'other', inline: '(Other, 2024)', entry: 'Other (2024).' }],
+      ]),
+      citationsLabel: 'References',
+    })
+    expect(second.html).toContain('(Other, 2024)')
+    expect(second.html).not.toContain('(Mine, 2025)')
+    expect(second.html).toContain('[@mine]')
+
+    // And a document without citations renders through the same processor.
+    const plain = await renderMarkdown('No citations at [@all] here.')
+    expect(plain.html).toContain('[@all]')
+    expect(plain.html).not.toContain('id="references"')
   })
 })
