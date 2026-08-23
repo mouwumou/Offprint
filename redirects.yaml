@@ -1,0 +1,7 @@
+# Old URL → new URL (P1-10; ADR-009 — the real list from the previous site
+# arrives before launch, P1-16). Values may be a path or {destination, status}.
+# Sample entries demonstrating the mechanism:
+/posts/example: /blog/publishing-from-notion
+/feed:
+  destination: /rss.xml
+  status: 301

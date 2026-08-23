@@ -32,7 +32,7 @@
 - [x] P1-7c pages 模块：Notion type=Page 的独立页面 + 导航注入
 - [x] P1-8 首页 Selected work 的 JSON-LD `ScholarlyArticle`（Highwire meta 随阶段 3 出版物页一起做）
 - [x] P1-9 模块开关生效（关掉的模块无路由/导航/打包）（实测全关配置：仅产出 2 个首页，无导航/feed/CTA/section；完整路由注入 integration 留阶段 4）
-- [ ] P1-10 `redirects.yaml` → 各平台重定向产物（GH Pages 用 meta refresh 页、Vercel/Netlify/CF 原生、node 中间件）
+- [x] P1-10 `redirects.yaml` → 各平台重定向产物（GH Pages 用 meta refresh 页、Vercel/Netlify/CF 原生、node 中间件）（经 Astro 内建 redirects 配置实现：静态出 meta-refresh 页，node adapter 出真 301，平台 adapter 接入时自动译为原生规则；真实清单待维护者 P1-16 前提供）
 - [ ] P1-11 CI：双模式构建 + 单测 + e2e + 内容校验
 - [ ] P1-12 GH Pages 与 Vercel 两条部署 workflow
 - [ ] P1-13 `src/sync` 基础：elog 配置生成、staging、逐篇校验、manifest、原子切换（DYNAMIC-PUBLISHING §4，不含 notify）
