@@ -12,6 +12,13 @@ export function useTranslations(lang: string): (key: MessageKey) => string {
   return (key) => dictionary[key] ?? en[key]
 }
 
+const selfLabels: Record<string, string> = { en: 'EN', zh: '中' }
+
+/** How a language names itself in the switcher (DESIGN-REFERENCE §4: EN / 中). */
+export function selfLabel(locale: string): string {
+  return selfLabels[locale] ?? locale.toUpperCase()
+}
+
 /** Localized long date, e.g. "June 14, 2025" / "2025年6月14日". */
 export function formatDate(date: Date, lang: string): string {
   try {

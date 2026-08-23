@@ -91,7 +91,7 @@ const prefix = langPrefix(config, lang)
       >
         {t('layout.skipToContent')}
       </a>
-      <Header lang={lang} />
+      <Header lang={lang} alternates={alternates ?? []} />
       <main id="main-content" tabindex="-1" class="flex-1 outline-none">
         <slot />
       </main>

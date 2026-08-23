@@ -50,6 +50,7 @@ export const en = {
   'nav.projects': 'Projects',
   'nav.cv': 'CV',
   'layout.skipToContent': 'Skip to content',
+  'layout.switchLanguage': 'Switch language',
   'layout.toggleTheme': 'Toggle color theme',
   'layout.colophon': 'Written in Notion · published with elog',
   'layout.rss': 'RSS',

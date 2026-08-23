@@ -1,15 +1,29 @@
 ---
 import config from '../config/current'
 import { buildNav, langPrefix, type NavItem } from '../config/nav'
-import { useTranslations } from '../i18n'
+import { selfLabel, useTranslations } from '../i18n'
 import { resolveLocalized } from '../schema'
+import type { Alternate } from '../seo/alternates'
 import ThemeToggle from './ThemeToggle'
 
 interface Props {
   lang: string
+  /** Current page's language alternates — the switcher targets these. */
+  alternates?: Alternate[]
 }
 
-const { lang } = Astro.props
+const { lang, alternates = [] } = Astro.props
+
+// Language switcher targets: the current page's translation when it exists,
+// otherwise that language's home (ADR-007 interlinking).
+const switcher = config.i18n.locales.map((locale) => ({
+  locale,
+  label: selfLabel(locale),
+  current: locale === lang,
+  href:
+    alternates.find((alternate) => alternate.lang === locale)?.path ??
+    (langPrefix(config, locale) || '/'),
+}))
 const t = useTranslations(lang)
 const prefix = langPrefix(config, lang)
 const nav = buildNav(config, lang)
@@ -50,6 +64,32 @@ const isActive = (item: NavItem): boolean =>
             {item.label}
           </a>
         ))
+      }
+      {
+        config.i18n.locales.length > 1 && (
+          <span
+            class="ml-1 flex items-center gap-1 font-mono text-xs sm:ml-2"
+            aria-label={t('layout.switchLanguage')}
+          >
+            {switcher.map((entry, index) => (
+              <>
+                {index > 0 && <span class="text-border">/</span>}
+                {entry.current ? (
+                  <span class="px-1 text-primary" aria-current="true">
+                    {entry.label}
+                  </span>
+                ) : (
+                  <a
+                    href={entry.href}
+                    class="px-1 text-muted-foreground transition-colors hover:text-foreground"
+                  >
+                    {entry.label}
+                  </a>
+                )}
+              </>
+            ))}
+          </span>
+        )
       }
       <div class="ml-1 sm:ml-2">
         <ThemeToggle client:load label={t('layout.toggleTheme')} />
