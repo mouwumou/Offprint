@@ -9,8 +9,13 @@ export interface SyncResult {
 }
 
 // One single-flight per server process; 60s merge window absorbs webhook
-// replays (DYNAMIC-PUBLISHING §6).
-export const syncFlight: SingleFlight<SyncResult> = createSingleFlight<SyncResult>(60_000)
+// replays (DYNAMIC-PUBLISHING §6). The child resolves {ok:false} on failure
+// rather than rejecting — the predicate keeps failed runs out of the merge
+// window and marks them failed on /api/health.
+export const syncFlight: SingleFlight<SyncResult> = createSingleFlight<SyncResult>(
+  60_000,
+  (result) => result.ok,
+)
 
 /**
  * Run the sync CLI as a child process (a process boundary, not an import —

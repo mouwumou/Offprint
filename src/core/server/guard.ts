@@ -63,8 +63,16 @@ export interface SingleFlight<T> {
  * Single-flight with a merge window: concurrent triggers join the running
  * task (202), and triggers arriving within `mergeMs` of a completed run are
  * absorbed instead of restarting elog (webhook replay protection, §6).
+ *
+ * `isOk` classifies a RESOLVED value as success or failure — tasks like the
+ * sync child process resolve `{ok: false}` instead of rejecting. Only
+ * successful runs open the merge window; a failure may be retried at once
+ * and is reported as failed by last() (surfaced on /api/health).
  */
-export function createSingleFlight<T>(mergeMs: number): SingleFlight<T> {
+export function createSingleFlight<T>(
+  mergeMs: number,
+  isOk: (value: T) => boolean = () => true,
+): SingleFlight<T> {
   let running = false
   let last: { at: number; ok: boolean; value?: T } | null = null
   return {
@@ -76,7 +84,7 @@ export function createSingleFlight<T>(mergeMs: number): SingleFlight<T> {
       running = true
       void task()
         .then((value) => {
-          last = { at: Date.now(), ok: true, value }
+          last = { at: Date.now(), ok: isOk(value), value }
         })
         .catch(() => {
           last = { at: Date.now(), ok: false }

@@ -54,6 +54,20 @@ describe('createSingleFlight', () => {
     expect(flight.run(task).status).toBe('started')
   })
 
+  it('classifies resolved values with isOk: failures never merge', async () => {
+    // The sync child resolves {ok:false} instead of rejecting — the audit
+    // found those recorded as successes and absorbed into the merge window.
+    const flight = createSingleFlight<{ ok: boolean }>(60_000, (result) => result.ok)
+    expect(flight.run(() => Promise.resolve({ ok: false })).status).toBe('started')
+    await vi.advanceTimersByTimeAsync(0)
+    expect(flight.last()).toMatchObject({ ok: false, value: { ok: false } })
+    // Retry allowed immediately, and a success then opens the window.
+    expect(flight.run(() => Promise.resolve({ ok: true })).status).toBe('started')
+    await vi.advanceTimersByTimeAsync(0)
+    expect(flight.last()?.ok).toBe(true)
+    expect(flight.run(() => Promise.resolve({ ok: true })).status).toBe('merged')
+  })
+
   it('does not merge after a failed run', async () => {
     const flight = createSingleFlight<string>(60_000)
     expect(flight.run(() => Promise.reject(new Error('boom'))).status).toBe('started')
