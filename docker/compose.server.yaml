@@ -9,12 +9,23 @@ services:
     build:
       context: ..
       dockerfile: docker/site.Dockerfile
+      args:
+        # Baked into the build (canonical/feeds/sitemap); runtime env alone
+        # cannot set it.
+        SITE_URL: ${SITE_URL:-https://example.com}
     environment:
       RUNTIME_MODE: server
       CONTENT_STORE: fs
       CONTENT_DIR: /content
       REVALIDATE_SECRET: ${REVALIDATE_SECRET:-}
       SITE_URL: ${SITE_URL:-https://example.com}
+      # /api/sync runs the sync CLI inside this container, so it needs the
+      # same Notion credentials as the sidecar.
+      NOTION_TOKEN: ${NOTION_TOKEN:-}
+      NOTION_DB: ${NOTION_DB:-}
+      DEFAULT_LANG: ${DEFAULT_LANG:-en}
+      SYNC_PAGES: ${SYNC_PAGES:-false}
+      NOTION_WEBHOOK_SECRET: ${NOTION_WEBHOOK_SECRET:-}
     volumes:
       # rw: /api/sync runs the sync CLI inside this container (P2-3 note).
       - content:/content
@@ -36,6 +47,7 @@ services:
       NOTION_TOKEN: ${NOTION_TOKEN:-}
       NOTION_DB: ${NOTION_DB:-}
       DEFAULT_LANG: ${DEFAULT_LANG:-en}
+      SYNC_PAGES: ${SYNC_PAGES:-false}
       CONTENT_DIR: /content
       SYNC_INTERVAL: ${SYNC_INTERVAL:-300}
       REVALIDATE_URL: http://site:4321/api/revalidate
