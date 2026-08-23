@@ -48,7 +48,8 @@ Directives become classed divs.
 `
 
 describe('renderMarkdown', () => {
-  it('renders the full fixture to stable HTML', async () => {
+  // First render pays Shiki's theme/grammar init (~2s idle, >5s under load).
+  it('renders the full fixture to stable HTML', { timeout: 20_000 }, async () => {
     const result = await renderMarkdown(fixture)
     expect(result.html).toMatchSnapshot()
   })

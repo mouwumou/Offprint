@@ -61,8 +61,6 @@ describe('resolveNav (ADR-015)', () => {
   })
 
   it('rejects a nav entry with an unknown shape', () => {
-    expect(() =>
-      defineConfig({ ...minimal, nav: [{ modul: 'blog' }] as never }),
-    ).toThrow()
+    expect(() => defineConfig({ ...minimal, nav: [{ modul: 'blog' }] as never })).toThrow()
   })
 })

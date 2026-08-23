@@ -144,9 +144,7 @@ describe('header/footer chrome (ADR-015)', () => {
     expect(config.header.subtitle).toEqual({ en: 'est. 2026' })
     expect(config.footer.colophon).toBe(false)
     expect(config.footer.rss).toBe(false)
-    expect(() =>
-      defineConfig({ ...minimal, header: { serch: true } as never }),
-    ).toThrow()
+    expect(() => defineConfig({ ...minimal, header: { serch: true } as never })).toThrow()
   })
 })
 
@@ -174,7 +172,11 @@ describe('home sections (ADR-015)', () => {
       },
     })
     expect(config.home.sections[1]).toEqual({ type: 'prose', page: 'about', title: false })
-    expect(config.home.sections[2]).toEqual({ type: 'recent-posts', count: 5, title: { en: 'Notes' } })
+    expect(config.home.sections[2]).toEqual({
+      type: 'recent-posts',
+      count: 5,
+      title: { en: 'Notes' },
+    })
   })
 
   it('rejects unknown section types and out-of-range counts', () => {

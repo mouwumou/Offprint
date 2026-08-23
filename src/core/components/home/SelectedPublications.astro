@@ -32,7 +32,10 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
             </span>
           </div>
           <h3 class="mt-1.5 font-serif text-xl leading-snug">
-            <a href={`${prefix}/publications/${pub.key}`} class="transition-colors hover:text-primary">
+            <a
+              href={`${prefix}/publications/${pub.key}`}
+              class="transition-colors hover:text-primary"
+            >
               {r(pub.title)}
             </a>
           </h3>

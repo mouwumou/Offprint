@@ -38,11 +38,7 @@ export function langPrefix(config: SiteConfig, lang: string): string {
  * the author's list is authoritative — entries pointing at a disabled module
  * or a missing page are skipped instead of breaking the build.
  */
-export function resolveNav(
-  config: SiteConfig,
-  lang: string,
-  pages: readonly NavPage[],
-): NavItem[] {
+export function resolveNav(config: SiteConfig, lang: string, pages: readonly NavPage[]): NavItem[] {
   const t = useTranslations(lang)
   const prefix = langPrefix(config, lang)
   const items: NavItem[] = []

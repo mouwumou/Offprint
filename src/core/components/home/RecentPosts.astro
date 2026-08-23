@@ -32,7 +32,10 @@ const postHref = (post: { urlname: string; lang: string }) =>
       posts.map((post) => (
         <a href={postHref(post)} class="group block py-5 first:pt-0">
           <div class="flex items-baseline gap-3">
-            <time datetime={post.date.toISOString()} class="font-mono text-xs text-muted-foreground">
+            <time
+              datetime={post.date.toISOString()}
+              class="font-mono text-xs text-muted-foreground"
+            >
               {formatDate(post.date, lang)}
             </time>
             {post.categories[0] && (
@@ -49,7 +52,9 @@ const postHref = (post: { urlname: string; lang: string }) =>
           <h3 class="mt-1.5 font-serif text-xl leading-snug transition-colors group-hover:text-primary">
             {post.title}
           </h3>
-          {post.description && <p class="mt-1 max-w-2xl text-muted-foreground">{post.description}</p>}
+          {post.description && (
+            <p class="mt-1 max-w-2xl text-muted-foreground">{post.description}</p>
+          )}
         </a>
       ))
     }

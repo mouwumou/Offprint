@@ -24,8 +24,7 @@ export function moduleCopy(
   const t = useTranslations(lang)
   const setting = config.modules[module]
   const defaults = themeDefaults[module]
-  const title =
-    resolveLocalized(setting.title, lang, config.i18n.default) ?? t(defaults.title)
+  const title = resolveLocalized(setting.title, lang, config.i18n.default) ?? t(defaults.title)
   const description =
     resolveLocalized(setting.description, lang, config.i18n.default) ??
     (defaults.description ? t(defaults.description) : undefined)

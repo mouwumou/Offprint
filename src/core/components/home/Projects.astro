@@ -36,15 +36,13 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
             <span class="shrink-0 font-mono text-xs text-muted-foreground">{project.year}</span>
           </div>
           <p class="mt-2 font-serif leading-snug">{r(project.blurb)}</p>
-          {
-            project.tags.length > 0 && (
-              <div class="mt-3 flex flex-wrap gap-x-3 gap-y-1">
-                {project.tags.map((tag) => (
-                  <span class="font-mono text-[11px] text-muted-foreground">{tag}</span>
-                ))}
-              </div>
-            )
-          }
+          {project.tags.length > 0 && (
+            <div class="mt-3 flex flex-wrap gap-x-3 gap-y-1">
+              {project.tags.map((tag) => (
+                <span class="font-mono text-[11px] text-muted-foreground">{tag}</span>
+              ))}
+            </div>
+          )}
         </article>
       ))
     }

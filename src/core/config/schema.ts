@@ -121,12 +121,14 @@ export type HomeSection = z.output<typeof homeSectionSchema>
 
 export const homeSchema = z.strictObject({
   /** The default sequence reproduces the built-in homepage. */
-  sections: z.array(homeSectionSchema).prefault([
-    { type: 'hero' },
-    { type: 'about' },
-    { type: 'selected-publications' },
-    { type: 'recent-posts' },
-  ]),
+  sections: z
+    .array(homeSectionSchema)
+    .prefault([
+      { type: 'hero' },
+      { type: 'about' },
+      { type: 'selected-publications' },
+      { type: 'recent-posts' },
+    ]),
 })
 
 // ── navigation (ADR-015: nav is data, not module wiring) ─────────────────────
