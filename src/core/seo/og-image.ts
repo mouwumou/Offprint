@@ -16,9 +16,17 @@ function font(pkgPath: string): Buffer {
   return readFileSync(require.resolve(pkgPath))
 }
 
-let fonts: { name: string; data: Buffer; weight: 400 | 600; style: 'normal' }[] | undefined
+interface OgFont {
+  name: string
+  data: Buffer
+  weight: 400 | 600
+  style: 'normal'
+}
 
-function getFonts() {
+let fonts: OgFont[] | undefined
+let cjkFonts: OgFont[] | undefined
+
+function getFonts(needsCjk: boolean): OgFont[] {
   fonts ??= [
     {
       name: 'Newsreader',
@@ -33,7 +41,26 @@ function getFonts() {
       style: 'normal',
     },
   ]
-  return fonts
+  if (!needsCjk) return fonts
+  // Loaded only for CJK text (P3-7). Satori only falls back across fonts
+  // with DIFFERENT family names — registering the CJK face under the latin
+  // families does nothing (measured), so it gets its own name.
+  cjkFonts ??= [
+    ...fonts,
+    {
+      name: 'Noto Sans SC',
+      data: font('@fontsource/noto-sans-sc/files/noto-sans-sc-chinese-simplified-600-normal.woff'),
+      weight: 600,
+      style: 'normal',
+    },
+    {
+      name: 'Noto Sans SC',
+      data: font('@fontsource/noto-sans-sc/files/noto-sans-sc-chinese-simplified-400-normal.woff'),
+      weight: 400,
+      style: 'normal',
+    },
+  ]
+  return cjkFonts
 }
 
 export interface OgCard {
@@ -137,10 +164,11 @@ export async function renderOgImage(card: OgCard): Promise<Buffer> {
     ],
   )
 
+  const needsCjk = /[぀-ヿ㐀-䶿一-鿿豈-﫿]/.test(`${card.title}${card.kicker ?? ''}${name}`)
   const svg = await satori(tree as never, {
     width: 1200,
     height: 630,
-    fonts: getFonts() as never,
+    fonts: getFonts(needsCjk) as never,
   })
   return Buffer.from(new Resvg(svg, { fitTo: { mode: 'width', value: 1200 } }).render().asPng())
 }

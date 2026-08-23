@@ -48,7 +48,9 @@ const isActive = (item: NavItem): boolean =>
   item.exact ? current === (prefix || '/') : current.startsWith(item.href)
 ---
 
-<header class="site-header sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md">
+<header
+  class="site-header sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md"
+>
   <div
     class="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-5 sm:px-8 lg:px-12"
   >
