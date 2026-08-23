@@ -14,15 +14,11 @@ const allow = createRateLimiter(6)
 export const POST: APIRoute = async ({ request }) => {
   const rawBody = await request.text()
 
-  const signature = await checkNotionSignature(request, rawBody)
-  if (signature === false) return json({ error: 'bad signature' }, 401)
-  if (signature === null) {
-    const denied = checkSecret(request)
-    if (denied) return denied
-  }
-
-  // Notion's one-time subscription handshake: surface the token in the logs
-  // for the maintainer to paste into the Notion UI.
+  // Notion's one-time subscription handshake comes BEFORE any secret exists
+  // (the verification_token IS the future signing secret), so it cannot be
+  // authenticated — surface the token in the logs for the maintainer to
+  // paste into the Notion UI and into NOTION_WEBHOOK_SECRET. Nothing else
+  // happens on this path.
   try {
     const body = JSON.parse(rawBody) as { verification_token?: string }
     if (body.verification_token) {
@@ -31,6 +27,13 @@ export const POST: APIRoute = async ({ request }) => {
     }
   } catch {
     /* not JSON — fine */
+  }
+
+  const signature = await checkNotionSignature(request, rawBody)
+  if (signature === false) return json({ error: 'bad signature' }, 401)
+  if (signature === null) {
+    const denied = checkSecret(request)
+    if (denied) return denied
   }
 
   if (!allow()) return json({ error: 'rate limited' }, 429)
