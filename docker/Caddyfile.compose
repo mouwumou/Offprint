@@ -1,0 +1,11 @@
+# Caddy config for compose.static.yaml: serves the current release symlink
+# that the sync container atomically flips.
+:80 {
+	root * /srv/current
+	encode zstd gzip
+
+	@immutable path /_astro/*
+	header @immutable Cache-Control "public, max-age=31536000, immutable"
+
+	file_server
+}

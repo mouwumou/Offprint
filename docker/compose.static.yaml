@@ -1,0 +1,33 @@
+# Self-hosted static deployment (DYNAMIC-PUBLISHING §0, P1-15):
+#   web  — Caddy serving the current release from the shared volume
+#   sync — elog → validate → build → atomic symlink switch, every SYNC_INTERVAL s
+# Publishing latency = build time (1–3 min). No always-on app process.
+#
+#   docker compose -f docker/compose.static.yaml up -d --build
+services:
+  web:
+    image: caddy:2-alpine
+    ports:
+      - '${WEB_PORT:-8080}:80'
+    volumes:
+      - site:/srv:ro
+      - ./Caddyfile.compose:/etc/caddy/Caddyfile:ro
+    restart: unless-stopped
+
+  sync:
+    build:
+      context: ..
+      dockerfile: docker/sync.Dockerfile
+    environment:
+      NOTION_TOKEN: ${NOTION_TOKEN:-}
+      NOTION_DB: ${NOTION_DB:-}
+      DEFAULT_LANG: ${DEFAULT_LANG:-en}
+      SITE_URL: ${SITE_URL:-https://example.com}
+      SYNC_INTERVAL: ${SYNC_INTERVAL:-300}
+      SITE_DIR: /srv
+    volumes:
+      - site:/srv
+    restart: unless-stopped
+
+volumes:
+  site:
