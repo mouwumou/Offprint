@@ -13,6 +13,7 @@ export interface NavItem {
 export interface NavPage {
   slug: string
   title: string
+  lang: string
   nav: boolean
 }
 
@@ -52,6 +53,11 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
     })
   }
 
+  // A page summary may be the other-language fallback (ADR-007 list rule);
+  // link it under ITS OWN language prefix — prefixing the requested language
+  // onto a page that has no translation there manufactures a dead URL.
+  const pageHref = (page: NavPage): string => `${langPrefix(config, page.lang)}/${page.slug}`
+
   if (config.nav === undefined) {
     pushModule('home')
     for (const name of ['blog', 'publications', 'projects', 'cv'] as const) {
@@ -59,7 +65,7 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
     }
     if (config.modules.pages.enabled) {
       for (const page of pages.filter((page) => page.nav)) {
-        items.push({ href: `${prefix}/${page.slug}`, label: page.title })
+        items.push({ href: pageHref(page), label: page.title })
       }
     }
     return items
@@ -74,7 +80,7 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
       if (!config.modules.pages.enabled) continue
       const page = pages.find((candidate) => candidate.slug === entry.page)
       if (page === undefined) continue
-      items.push({ href: `${prefix}/${page.slug}`, label: label ?? page.title })
+      items.push({ href: pageHref(page), label: label ?? page.title })
     } else {
       const isExternal = /^[a-z][a-z0-9+.-]*:|^\/\//i.test(entry.href)
       items.push({

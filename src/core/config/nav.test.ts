@@ -5,8 +5,8 @@ import { resolveNav, type NavPage } from './nav'
 const minimal = { profile: { name: 'Ada Lovelace' } }
 
 const pages: NavPage[] = [
-  { slug: 'about', title: 'About', nav: true },
-  { slug: 'teaching', title: 'Teaching', nav: false },
+  { slug: 'about', title: 'About', lang: 'en', nav: true },
+  { slug: 'teaching', title: 'Teaching', lang: 'en', nav: false },
 ]
 
 describe('resolveNav (ADR-015)', () => {
@@ -41,10 +41,11 @@ describe('resolveNav (ADR-015)', () => {
         { href: 'https://example.org', label: { en: 'Lab' } },
       ],
     })
+    // `about` here is the en fallback summary — its link must stay at /about.
     const nav = resolveNav(config, 'zh', pages)
     expect(nav).toEqual([
       { href: '/zh', label: '起点', exact: true },
-      { href: '/zh/about', label: 'About' },
+      { href: '/about', label: 'About' },
       { href: '/zh/blog', label: '文章' },
       { href: '/zh/talks-archive', label: 'Talks' },
       { href: 'https://example.org', label: 'Lab' },
@@ -62,5 +63,21 @@ describe('resolveNav (ADR-015)', () => {
 
   it('rejects a nav entry with an unknown shape', () => {
     expect(() => defineConfig({ ...minimal, nav: [{ modul: 'blog' }] as never })).toThrow()
+  })
+})
+
+describe('resolveNav language fallback (ADR-007)', () => {
+  it('links a fallback-language page under its own prefix, not the requested one', () => {
+    // The /zh/now dead link: `now` exists only in en, so the zh nav must
+    // link /now — /zh/now is not a route.
+    const config = defineConfig(minimal)
+    const nav = resolveNav(config, 'zh', [
+      { slug: 'about', title: '关于', lang: 'zh', nav: true },
+      { slug: 'now', title: 'Now', lang: 'en', nav: true },
+    ])
+    expect(nav.slice(-2)).toEqual([
+      { href: '/zh/about', label: '关于' },
+      { href: '/now', label: 'Now' },
+    ])
   })
 })
