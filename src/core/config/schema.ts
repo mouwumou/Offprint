@@ -42,20 +42,44 @@ export const profileSchema = z.strictObject({
 
 /**
  * A disabled module generates no routes, no nav entry, and ships no code
- * (constraint 5). Per-module options can widen `boolean` to an object later
- * without breaking existing configs.
+ * (constraint 5). `true` enables with theme-default copy; an object enables
+ * AND overrides the module's landing copy (ADR-015: the i18n dictionary
+ * holds theme defaults, the author's voice lives here).
  */
+const moduleCopySchema = z.strictObject({
+  /** Landing-page heading override. */
+  title: localizedString.optional(),
+  /** Landing-page intro override. */
+  description: localizedString.optional(),
+  /** blog only: post colophon box override; false hides it. */
+  colophon: z.union([z.literal(false), localizedString]).optional(),
+})
+
+interface ModuleSettingShape {
+  enabled: boolean
+  title?: z.output<typeof localizedString> | undefined
+  description?: z.output<typeof localizedString> | undefined
+  colophon?: false | z.output<typeof localizedString> | undefined
+}
+
+const moduleToggle = z
+  .union([z.boolean(), moduleCopySchema])
+  .transform((value): ModuleSettingShape =>
+    typeof value === 'boolean' ? { enabled: value } : { enabled: true, ...value },
+  )
+
 export const modulesSchema = z.strictObject({
-  blog: z.boolean().default(true),
-  pages: z.boolean().default(true),
-  publications: z.boolean().default(true),
-  projects: z.boolean().default(true),
-  cv: z.boolean().default(true),
-  talks: z.boolean().default(false),
-  news: z.boolean().default(false),
+  blog: moduleToggle.prefault(true),
+  pages: moduleToggle.prefault(true),
+  publications: moduleToggle.prefault(true),
+  projects: moduleToggle.prefault(true),
+  cv: moduleToggle.prefault(true),
+  talks: moduleToggle.prefault(false),
+  news: moduleToggle.prefault(false),
 })
 
 export type ModuleName = keyof z.output<typeof modulesSchema>
+export type ModuleSetting = z.output<typeof moduleToggle>
 
 // ── theme (DESIGN-REFERENCE; tokens locked by ADR-011) ───────────────────────
 

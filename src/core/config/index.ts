@@ -1,3 +1,4 @@
+export { moduleCopy } from './copy'
 export { defineConfig } from './define-config'
 export {
   commentsSchema,

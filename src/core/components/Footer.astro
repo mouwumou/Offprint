@@ -43,7 +43,7 @@ const year = new Date().getFullYear()
           ))
         }
         {
-          config.modules.blog && (
+          config.modules.blog.enabled && (
             <a
               href={`${prefix}/rss.xml`}
               class="font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase transition-colors hover:text-primary"

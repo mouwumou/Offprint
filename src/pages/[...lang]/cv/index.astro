@@ -5,13 +5,14 @@ import CvTimeline, { type TimelineRow } from '../../../core/components/CvTimelin
 import PublicationLinks from '../../../core/components/PublicationLinks.astro'
 import SectionLabel from '../../../core/components/SectionLabel.astro'
 import { getProvider } from '../../../core/content'
+import { moduleCopy } from '../../../core/config/copy'
 import { useTranslations } from '../../../core/i18n'
 import { resolveLocalized, type LocalizedString } from '../../../core/schema'
 import { uniformAlternates } from '../../../core/seo/alternates'
 import BaseLayout from '../../../core/components/BaseLayout.astro'
 
 export function getStaticPaths() {
-  if (!siteConfig.modules.cv) return []
+  if (!siteConfig.modules.cv.enabled) return []
   return siteConfig.i18n.locales.map((locale) => ({
     params: { lang: locale === siteConfig.i18n.default ? undefined : locale },
   }))
@@ -20,7 +21,7 @@ export function getStaticPaths() {
 const { lang: langParam } = Astro.params
 const lang = langParam ?? siteConfig.i18n.default
 if (
-  !siteConfig.modules.cv ||
+  !siteConfig.modules.cv.enabled ||
   !siteConfig.i18n.locales.includes(lang) ||
   langParam === siteConfig.i18n.default
 ) {
@@ -28,6 +29,7 @@ if (
 }
 
 const t = useTranslations(lang)
+const copy = moduleCopy(siteConfig, 'cv', lang)
 const provider = getProvider()
 const cv = await provider.getCV()
 if (cv === null) {
@@ -80,25 +82,25 @@ const teaching: TimelineRow[] = cv.teaching.map((entry) => ({
 }))
 
 const publications =
-  cv.publicationsFromSite && siteConfig.modules.publications
+  cv.publicationsFromSite && siteConfig.modules.publications.enabled
     ? await provider.listPublications()
     : []
 
 const name = r(siteConfig.profile.name)
 const role = r(siteConfig.profile.role)
-const description = `${t('cv.title')} — ${name}`
+const description = `${copy.title} — ${name}`
 ---
 
 <BaseLayout
   lang={lang}
-  title={t('cv.title')}
+  title={copy.title}
   description={description}
   alternates={uniformAlternates(siteConfig, '/cv')}
 >
   <div class="mx-auto w-full max-w-4xl px-5 pt-16 sm:px-8 lg:pt-24">
     <header class="flex flex-col justify-between gap-6 pb-10 sm:flex-row sm:items-end">
       <div>
-        <h1 class="font-serif text-4xl tracking-tight sm:text-5xl">{t('cv.title')}</h1>
+        <h1 class="font-serif text-4xl tracking-tight sm:text-5xl">{copy.title}</h1>
         <p class="mt-3 font-serif text-lg text-muted-foreground">{name} · {role}</p>
       </div>
       <div class="flex flex-col gap-1 font-mono text-xs text-muted-foreground sm:items-end">

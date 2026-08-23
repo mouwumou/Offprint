@@ -6,6 +6,7 @@ import { filterSlug } from '../content/filter-slug'
 import { markdownStats } from '../content/markdown'
 import { postsForLanguage } from '../content/posts-view'
 import { recentlyUpdated } from '../content/related'
+import { moduleCopy } from '../config/copy'
 import { formatDate, useTranslations } from '../i18n'
 
 interface Props {
@@ -37,7 +38,8 @@ const rows = await Promise.all(
 const postHref = (post: { urlname: string; lang: string }) =>
   `${langPrefix(config, post.lang)}/blog/${post.urlname}`
 
-const intro = `${t('blog.description')} ${all.length} ${t('blog.postsCount')}`
+const copy = moduleCopy(config, 'blog', lang)
+const intro = `${copy.description ?? ''} ${all.length} ${t('blog.postsCount')}`
 const updatedPosts =
   activeTag === undefined && activeCategory === undefined
     ? recentlyUpdated(await provider.listPosts(), lang)
@@ -47,7 +49,7 @@ const updatedPosts =
 <div class="mx-auto w-full max-w-6xl px-5 pt-16 pb-6 sm:px-8 lg:px-12 lg:pt-24">
   <header class="max-w-2xl">
     <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">{t('blog.kicker')}</p>
-    <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{t('blog.title')}</h1>
+    <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{copy.title}</h1>
     <p class="mt-4 font-serif text-lg leading-relaxed text-muted-foreground">{intro}</p>
   </header>
 

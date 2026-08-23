@@ -16,7 +16,7 @@ export async function getStaticPaths() {
   for (const locale of siteConfig.i18n.locales) {
     if (locale !== siteConfig.i18n.default) paths.push({ params: { path: locale } })
   }
-  if (siteConfig.modules.pages) {
+  if (siteConfig.modules.pages.enabled) {
     for (const page of await getProvider().listPages()) {
       const prefix = page.lang === siteConfig.i18n.default ? '' : `${page.lang}/`
       paths.push({ params: { path: `${prefix}${page.slug}` } })
@@ -41,7 +41,7 @@ if (first !== undefined && siteConfig.i18n.locales.includes(first)) {
 
 const isHome = segments.length === 0
 const slug = segments.length === 1 ? segments[0] : undefined
-if (!isHome && (slug === undefined || !siteConfig.modules.pages)) {
+if (!isHome && (slug === undefined || !siteConfig.modules.pages.enabled)) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 

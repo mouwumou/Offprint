@@ -31,7 +31,7 @@ const prefix = langPrefix(config, lang)
 const nav = buildNav(config, lang)
 
 // P1-7c: standalone pages with nav:true join the navigation, ordered.
-if (config.modules.pages) {
+if (config.modules.pages.enabled) {
   const navPages = pagesForLanguage(await getProvider().listPages(), lang).filter(
     (page) => page.nav,
   )
@@ -80,7 +80,7 @@ const isActive = (item: NavItem): boolean =>
         ))
       }
       {
-        config.modules.blog && (
+        config.modules.blog.enabled && (
           <a
             href={`${prefix}/search`}
             aria-label={t('search.title')}

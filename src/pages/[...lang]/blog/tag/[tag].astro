@@ -3,12 +3,12 @@ import siteConfig from '../../../../core/config/current'
 import BlogIndex from '../../../../core/components/BlogIndex.astro'
 import { getProvider } from '../../../../core/content'
 import { filterSlug, fromFilterSlug } from '../../../../core/content/filter-slug'
-import { useTranslations } from '../../../../core/i18n'
+import { moduleCopy } from '../../../../core/config/copy'
 import { uniformAlternates } from '../../../../core/seo/alternates'
 import BaseLayout from '../../../../core/components/BaseLayout.astro'
 
 export async function getStaticPaths() {
-  if (!siteConfig.modules.blog) return []
+  if (!siteConfig.modules.blog.enabled) return []
   const tags = await getProvider().listTags()
   return siteConfig.i18n.locales.flatMap((locale) =>
     tags.map(({ tag }) => ({
@@ -23,7 +23,7 @@ export async function getStaticPaths() {
 const { lang: langParam, tag: tagParam = '' } = Astro.params
 const lang = langParam ?? siteConfig.i18n.default
 if (
-  !siteConfig.modules.blog ||
+  !siteConfig.modules.blog.enabled ||
   !siteConfig.i18n.locales.includes(lang) ||
   langParam === siteConfig.i18n.default
 ) {
@@ -35,12 +35,12 @@ const activeTag = fromFilterSlug(tags, tagParam)
 if (activeTag === undefined) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
-const t = useTranslations(lang)
+const copy = moduleCopy(siteConfig, 'blog', lang)
 ---
 
 <BaseLayout
   lang={lang}
-  title={`#${activeTag} · ${t('blog.title')}`}
+  title={`#${activeTag} · ${copy.title}`}
   alternates={uniformAlternates(siteConfig, `/blog/tag/${tagParam}`)}
 >
   <BlogIndex lang={lang} activeTag={activeTag} />

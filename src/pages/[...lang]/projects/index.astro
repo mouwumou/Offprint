@@ -1,6 +1,7 @@
 ---
 import siteConfig from '../../../core/config/current'
 import { getProvider } from '../../../core/content'
+import { moduleCopy } from '../../../core/config/copy'
 import { useTranslations, type MessageKey } from '../../../core/i18n'
 import { resolveLocalized } from '../../../core/schema'
 import type { ProjectStatus } from '../../../core/schema'
@@ -8,7 +9,7 @@ import { uniformAlternates } from '../../../core/seo/alternates'
 import BaseLayout from '../../../core/components/BaseLayout.astro'
 
 export function getStaticPaths() {
-  if (!siteConfig.modules.projects) return []
+  if (!siteConfig.modules.projects.enabled) return []
   return siteConfig.i18n.locales.map((locale) => ({
     params: { lang: locale === siteConfig.i18n.default ? undefined : locale },
   }))
@@ -17,7 +18,7 @@ export function getStaticPaths() {
 const { lang: langParam } = Astro.params
 const lang = langParam ?? siteConfig.i18n.default
 if (
-  !siteConfig.modules.projects ||
+  !siteConfig.modules.projects.enabled ||
   !siteConfig.i18n.locales.includes(lang) ||
   langParam === siteConfig.i18n.default
 ) {
@@ -25,6 +26,7 @@ if (
 }
 
 const t = useTranslations(lang)
+const copy = moduleCopy(siteConfig, 'projects', lang)
 const projects = await getProvider().listProjects()
 const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   resolveLocalized(value, lang, siteConfig.i18n.default)
@@ -43,8 +45,8 @@ const statusKey: Record<ProjectStatus, MessageKey> = {
 
 <BaseLayout
   lang={lang}
-  title={t('projects.title')}
-  description={t('projects.description')}
+  title={copy.title}
+  description={copy.description}
   alternates={uniformAlternates(siteConfig, '/projects')}
 >
   <div class="mx-auto w-full max-w-6xl px-5 pt-16 sm:px-8 lg:px-12 lg:pt-24">
@@ -52,9 +54,9 @@ const statusKey: Record<ProjectStatus, MessageKey> = {
       <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">
         {t('projects.kicker')}
       </p>
-      <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{t('projects.title')}</h1>
+      <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{copy.title}</h1>
       <p class="mt-4 font-serif text-lg leading-relaxed text-muted-foreground">
-        {t('projects.description')}
+        {copy.description}
       </p>
     </header>
 

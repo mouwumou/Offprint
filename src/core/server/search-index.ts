@@ -39,7 +39,7 @@ async function buildIndex(): Promise<MiniSearch<SearchDoc>> {
     storeFields: ['url', 'title', 'excerpt', 'lang'],
   })
 
-  if (siteConfig.modules.blog) {
+  if (siteConfig.modules.blog.enabled) {
     for (const summary of await provider.listPosts()) {
       const post = await provider.getPost(summary.urlname, summary.lang)
       if (!post) continue
@@ -54,7 +54,7 @@ async function buildIndex(): Promise<MiniSearch<SearchDoc>> {
       })
     }
   }
-  if (siteConfig.modules.pages) {
+  if (siteConfig.modules.pages.enabled) {
     for (const summary of await provider.listPages()) {
       const page = await provider.getPage(summary.slug, summary.lang)
       if (!page) continue

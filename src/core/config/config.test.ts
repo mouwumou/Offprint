@@ -8,13 +8,13 @@ describe('defineConfig', () => {
   it('accepts a minimal config and applies all defaults', () => {
     const config = defineConfig(minimal)
     expect(config.modules).toEqual({
-      blog: true,
-      pages: true,
-      publications: true,
-      projects: true,
-      cv: true,
-      talks: false,
-      news: false,
+      blog: { enabled: true },
+      pages: { enabled: true },
+      publications: { enabled: true },
+      projects: { enabled: true },
+      cv: { enabled: true },
+      talks: { enabled: false },
+      news: { enabled: false },
     })
     expect(config.theme.preset).toBe('paper')
     expect(config.theme.fonts).toEqual({
@@ -45,9 +45,9 @@ describe('defineConfig', () => {
       ...minimal,
       modules: { publications: false, talks: true },
     })
-    expect(config.modules.publications).toBe(false)
-    expect(config.modules.talks).toBe(true)
-    expect(config.modules.blog).toBe(true)
+    expect(config.modules.publications.enabled).toBe(false)
+    expect(config.modules.talks.enabled).toBe(true)
+    expect(config.modules.blog.enabled).toBe(true)
   })
 
   it('rejects an i18n default outside locales', () => {
@@ -103,5 +103,26 @@ describe('comments (P3-8)', () => {
       },
     })
     expect(config.comments.repo).toBe('owner/repo')
+  })
+})
+
+describe('module copy overrides (ADR-015)', () => {
+  it('widens booleans to settings and accepts copy objects', () => {
+    const config = defineConfig({
+      ...minimal,
+      modules: {
+        blog: { title: { en: 'Field notes', zh: '田野笔记' }, colophon: false },
+        talks: true,
+      },
+    })
+    expect(config.modules.blog).toEqual({
+      enabled: true,
+      title: { en: 'Field notes', zh: '田野笔记' },
+      colophon: false,
+    })
+    expect(config.modules.talks.enabled).toBe(true)
+    expect(() =>
+      defineConfig({ ...minimal, modules: { blog: { titel: 'typo' } } as never }),
+    ).toThrow()
   })
 })

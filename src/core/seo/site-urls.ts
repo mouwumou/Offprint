@@ -27,16 +27,16 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
   }
 
   uniform('/')
-  if (siteConfig.modules.projects) uniform('/projects')
-  if (siteConfig.modules.cv) uniform('/cv')
-  if (siteConfig.modules.publications) {
+  if (siteConfig.modules.projects.enabled) uniform('/projects')
+  if (siteConfig.modules.cv.enabled) uniform('/cv')
+  if (siteConfig.modules.publications.enabled) {
     uniform('/publications')
     for (const pub of await provider.listPublications()) {
       uniform(`/publications/${pub.key}`)
     }
   }
 
-  if (siteConfig.modules.blog) {
+  if (siteConfig.modules.blog.enabled) {
     uniform('/blog')
     const posts = await provider.listPosts()
     for (const { tag } of await provider.listTags()) {
@@ -60,7 +60,7 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
     }
   }
 
-  if (siteConfig.modules.pages) {
+  if (siteConfig.modules.pages.enabled) {
     const pages = await provider.listPages()
     const bySlug = new Map<string, { lang: string }[]>()
     for (const page of pages) {

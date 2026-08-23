@@ -14,7 +14,7 @@ import { highwireMeta } from '../../../core/seo/highwire'
 import { scholarlyArticlesJsonLd } from '../../../core/seo/jsonld'
 
 export async function getStaticPaths() {
-  if (!siteConfig.modules.publications) return []
+  if (!siteConfig.modules.publications.enabled) return []
   const publications = await getProvider().listPublications()
   return siteConfig.i18n.locales.flatMap((locale) =>
     publications.map((pub) => ({
@@ -29,7 +29,7 @@ export async function getStaticPaths() {
 const { lang: langParam, key = '' } = Astro.params
 const lang = langParam ?? siteConfig.i18n.default
 if (
-  !siteConfig.modules.publications ||
+  !siteConfig.modules.publications.enabled ||
   !siteConfig.i18n.locales.includes(lang) ||
   langParam === siteConfig.i18n.default
 ) {

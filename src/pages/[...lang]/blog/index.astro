@@ -1,12 +1,12 @@
 ---
 import siteConfig from '../../../core/config/current'
 import BlogIndex from '../../../core/components/BlogIndex.astro'
-import { useTranslations } from '../../../core/i18n'
+import { moduleCopy } from '../../../core/config/copy'
 import { uniformAlternates } from '../../../core/seo/alternates'
 import BaseLayout from '../../../core/components/BaseLayout.astro'
 
 export function getStaticPaths() {
-  if (!siteConfig.modules.blog) return []
+  if (!siteConfig.modules.blog.enabled) return []
   return siteConfig.i18n.locales.map((locale) => ({
     params: { lang: locale === siteConfig.i18n.default ? undefined : locale },
   }))
@@ -15,19 +15,19 @@ export function getStaticPaths() {
 const { lang: langParam } = Astro.params
 const lang = langParam ?? siteConfig.i18n.default
 if (
-  !siteConfig.modules.blog ||
+  !siteConfig.modules.blog.enabled ||
   !siteConfig.i18n.locales.includes(lang) ||
   langParam === siteConfig.i18n.default
 ) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
-const t = useTranslations(lang)
+const copy = moduleCopy(siteConfig, 'blog', lang)
 ---
 
 <BaseLayout
   lang={lang}
-  title={t('blog.title')}
-  description={t('blog.description')}
+  title={copy.title}
+  description={copy.description}
   alternates={uniformAlternates(siteConfig, '/blog')}
 >
   <BlogIndex lang={lang} />

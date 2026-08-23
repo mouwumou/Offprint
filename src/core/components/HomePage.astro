@@ -26,10 +26,10 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) => resolveLocalized(va
 
 const name = r(profile.name)
 const provider = getProvider()
-const publications = siteConfig.modules.publications ? await provider.listPublications() : []
+const publications = siteConfig.modules.publications.enabled ? await provider.listPublications() : []
 const selected = publications.filter((pub) => pub.selected)
 const rest = publications.filter((pub) => !pub.selected)
-const recent = siteConfig.modules.blog
+const recent = siteConfig.modules.blog.enabled
   ? postsForLanguage(await provider.listPosts(), lang).slice(0, 3)
   : []
 const bio = profile.bio.map((paragraph) => r(paragraph))
@@ -87,7 +87,7 @@ const postHref = (post: { urlname: string; lang: string }) =>
           }
           <div class="mt-7 flex flex-wrap gap-3">
             {
-              siteConfig.modules.blog && (
+              siteConfig.modules.blog.enabled && (
                 <a
                   href={`${prefix}/blog`}
                   class="rounded-md bg-primary px-4 py-2 font-mono text-xs tracking-[0.12em] text-primary-foreground uppercase transition-opacity hover:opacity-90"
@@ -97,7 +97,7 @@ const postHref = (post: { urlname: string; lang: string }) =>
               )
             }
             {
-              siteConfig.modules.cv && (
+              siteConfig.modules.cv.enabled && (
                 <a
                   href={`${prefix}/cv`}
                   class="rounded-md border border-border px-4 py-2 font-mono text-xs tracking-[0.12em] text-foreground uppercase transition-colors hover:bg-secondary"

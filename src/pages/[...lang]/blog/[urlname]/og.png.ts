@@ -5,7 +5,7 @@ import { formatDate } from '../../../../core/i18n'
 import { renderOgImage } from '../../../../core/seo/og-image'
 
 export async function getStaticPaths() {
-  if (!siteConfig.modules.blog) return []
+  if (!siteConfig.modules.blog.enabled) return []
   const posts = await getProvider().listPosts()
   return posts.map((post) => ({
     params: {
@@ -21,7 +21,7 @@ const cache = new Map<string, Buffer>()
 export const GET: APIRoute = async ({ params }) => {
   const lang = params['lang'] ?? siteConfig.i18n.default
   const urlname = params['urlname'] ?? ''
-  if (!siteConfig.modules.blog || !siteConfig.i18n.locales.includes(lang)) {
+  if (!siteConfig.modules.blog.enabled || !siteConfig.i18n.locales.includes(lang)) {
     return new Response(null, { status: 404 })
   }
   const post = await getProvider().getPost(urlname, lang)

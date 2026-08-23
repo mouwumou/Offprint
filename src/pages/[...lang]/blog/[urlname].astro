@@ -11,6 +11,7 @@ import type { CitationRef } from '../../../core/content/citations'
 import { renderMarkdown } from '../../../core/content/markdown'
 import { relatedPosts, seriesNav } from '../../../core/content/related'
 import { formatDate, useTranslations } from '../../../core/i18n'
+import { resolveLocalized as rl } from '../../../core/schema'
 import { blogPostingJsonLd } from '../../../core/seo/jsonld'
 import BaseLayout from '../../../core/components/BaseLayout.astro'
 
@@ -18,7 +19,7 @@ import BaseLayout from '../../../core/components/BaseLayout.astro'
 // lives at the root, others get a prefix (ADR-007). Server mode ignores this
 // and resolves from params per request — the body below serves both.
 export async function getStaticPaths() {
-  if (!siteConfig.modules.blog) return []
+  if (!siteConfig.modules.blog.enabled) return []
   const posts = await getProvider().listPosts()
   return posts.map((post) => ({
     params: {
@@ -32,7 +33,7 @@ const { lang: langParam, urlname = '' } = Astro.params
 const lang = langParam ?? siteConfig.i18n.default
 
 const validLang =
-  siteConfig.modules.blog &&
+  siteConfig.modules.blog.enabled &&
   siteConfig.i18n.locales.includes(lang) &&
   (langParam === undefined || langParam !== siteConfig.i18n.default)
 const post = validLang ? await getProvider().getPost(urlname, lang) : null
@@ -46,7 +47,7 @@ const t = useTranslations(lang)
 // [@key] citations resolve against publications.yaml plus any front-matter
 // `references` entries shaped like publications (P3-2).
 let citations: Map<string, CitationRef> | undefined
-if (siteConfig.modules.publications && post.cite !== false) {
+if (siteConfig.modules.publications.enabled && post.cite !== false) {
   const { publicationSchema } = await import('../../../core/schema')
   const extraRefs = Array.isArray(post.extra['references']) ? post.extra['references'] : []
   const pool = [
@@ -82,6 +83,11 @@ const rendered = await renderMarkdown(post.body, {
 const showMath = rendered.hasMath || post.math === true
 const showUpdated = post.updated.getTime() !== post.date.getTime()
 const kicker = post.categories[0]
+const colophonSetting = siteConfig.modules.blog.colophon
+const colophonText =
+  colophonSetting === false
+    ? null
+    : (rl(colophonSetting, lang, siteConfig.i18n.default) ?? t('post.colophonText'))
 const prefix = langPrefix(siteConfig, lang)
 
 const translations = await getProvider().getTranslations(urlname)
@@ -235,12 +241,16 @@ const jsonLd = blogPostingJsonLd(
         )
       }
 
-      <div class="mt-10 rounded-md border border-border bg-muted/40 px-5 py-4">
-        <p class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-          {t('post.colophon')}
-        </p>
-        <p class="mt-1.5 text-sm text-muted-foreground">{t('post.colophonText')}</p>
-      </div>
+      {
+        colophonText && (
+          <div class="mt-10 rounded-md border border-border bg-muted/40 px-5 py-4">
+            <p class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+              {t('post.colophon')}
+            </p>
+            <p class="mt-1.5 text-sm text-muted-foreground">{colophonText}</p>
+          </div>
+        )
+      }
 
       {
         series.length > 0 && (
