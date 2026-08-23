@@ -17,6 +17,9 @@ module.exports = {
         // gate (same page swings 1.4-3.1s FCP run to run); the metrics that
         // matter (TBT 0ms, CLS ~0, no blocking requests) hold on mobile too.
         preset: 'desktop',
+        // chrome-launcher on WSL otherwise creates a literal 'C:\Users\…'
+        // profile dir inside the repo — pin it to the system tmpdir.
+        chromeFlags: '--user-data-dir=/tmp/lhci-chrome-profile',
         onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
       },
     },
