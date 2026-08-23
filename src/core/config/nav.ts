@@ -10,8 +10,13 @@ export interface NavItem {
 
 // Static module → nav mapping until the full module registry lands (P1-9).
 // Pages with `nav: true` are injected on top of this in P1-7c.
-const moduleNav: { module: 'blog' | 'projects' | 'cv'; path: string; key: MessageKey }[] = [
+const moduleNav: {
+  module: 'blog' | 'publications' | 'projects' | 'cv'
+  path: string
+  key: MessageKey
+}[] = [
   { module: 'blog', path: '/blog', key: 'nav.writing' },
+  { module: 'publications', path: '/publications', key: 'nav.publications' },
   { module: 'projects', path: '/projects', key: 'nav.projects' },
   { module: 'cv', path: '/cv', key: 'nav.cv' },
 ]

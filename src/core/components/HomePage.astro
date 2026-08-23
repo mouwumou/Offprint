@@ -191,7 +191,14 @@ const postHref = (post: { urlname: string; lang: string }) =>
                     {pub.venue}
                   </span>
                 </div>
-                <h3 class="mt-1.5 font-serif text-xl leading-snug">{r(pub.title)}</h3>
+                <h3 class="mt-1.5 font-serif text-xl leading-snug">
+                  <a
+                    href={`${prefix}/publications/${pub.key}`}
+                    class="transition-colors hover:text-primary"
+                  >
+                    {r(pub.title)}
+                  </a>
+                </h3>
                 <Authors authors={pub.authors} />
                 <PublicationLinks publication={pub} lang={lang} />
               </article>

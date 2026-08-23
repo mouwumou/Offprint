@@ -1,0 +1,105 @@
+---
+import siteConfig from '../../../core/config/current'
+import Authors from '../../../core/components/Authors.astro'
+import BaseLayout from '../../../core/components/BaseLayout.astro'
+import PublicationLinks from '../../../core/components/PublicationLinks.astro'
+import { langPrefix } from '../../../core/config/nav'
+import { getProvider } from '../../../core/content'
+import { useTranslations } from '../../../core/i18n'
+import { resolveLocalized } from '../../../core/schema'
+import { uniformAlternates } from '../../../core/seo/alternates'
+import { highwireMeta } from '../../../core/seo/highwire'
+import { scholarlyArticlesJsonLd } from '../../../core/seo/jsonld'
+
+export async function getStaticPaths() {
+  if (!siteConfig.modules.publications) return []
+  const publications = await getProvider().listPublications()
+  return siteConfig.i18n.locales.flatMap((locale) =>
+    publications.map((pub) => ({
+      params: {
+        lang: locale === siteConfig.i18n.default ? undefined : locale,
+        key: pub.key,
+      },
+    })),
+  )
+}
+
+const { lang: langParam, key = '' } = Astro.params
+const lang = langParam ?? siteConfig.i18n.default
+if (
+  !siteConfig.modules.publications ||
+  !siteConfig.i18n.locales.includes(lang) ||
+  langParam === siteConfig.i18n.default
+) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const publication = (await getProvider().listPublications()).find((pub) => pub.key === key)
+if (publication === undefined) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const t = useTranslations(lang)
+const prefix = langPrefix(siteConfig, lang)
+const r = (value: Parameters<typeof resolveLocalized>[0]) =>
+  resolveLocalized(value, lang, siteConfig.i18n.default)
+const title = r(publication.title) ?? publication.key
+const abstract = r(publication.abstract)
+const meta = highwireMeta(siteConfig, publication, lang)
+---
+
+<BaseLayout
+  lang={lang}
+  title={title}
+  description={abstract}
+  alternates={uniformAlternates(siteConfig, `/publications/${publication.key}`)}
+  jsonLd={scholarlyArticlesJsonLd(siteConfig, [publication], lang)}
+>
+  <Fragment slot="head">
+    {meta.map((entry) => <meta name={entry.name} content={entry.content} />)}
+  </Fragment>
+
+  <article class="mx-auto w-full max-w-3xl px-5 pt-14 pb-20 sm:px-8 lg:pt-20">
+    <a
+      href={`${prefix}/publications`}
+      class="font-mono text-xs tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-primary"
+    >
+      {t('pub.backToList')}
+    </a>
+
+    <header class="mt-6 border-b border-border pb-8">
+      <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span class="font-mono text-xs text-primary">{publication.year}</span>
+        <span class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          {publication.venue}
+        </span>
+        <span class="font-mono text-[10px] tracking-[0.12em] text-muted-foreground/70 uppercase">
+          {publication.type}
+        </span>
+        {
+          publication.award && (
+            <span class="rounded-full border border-primary/40 px-2 py-0.5 font-mono text-[10px] tracking-[0.12em] text-primary uppercase">
+              {publication.award}
+            </span>
+          )
+        }
+      </div>
+      <h1 class="mt-3 font-serif text-4xl leading-[1.12] tracking-tight sm:text-[2.5rem]">
+        {title}
+      </h1>
+      <Authors authors={publication.authors} />
+      <PublicationLinks publication={publication} lang={lang} />
+    </header>
+
+    {
+      abstract && (
+        <section class="mt-10">
+          <h2 class="font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">
+            {t('pub.abstract')}
+          </h2>
+          <p class="mt-4 font-serif text-lg leading-relaxed">{abstract}</p>
+        </section>
+      )
+    }
+  </article>
+</BaseLayout>

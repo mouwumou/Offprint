@@ -58,7 +58,7 @@
 
 ## 阶段 3 — 学术打磨（2 周）
 
-- [ ] P3-0 出版物独立页 + Highwire Press `citation_*` meta
+- [x] P3-0 出版物独立页 + Highwire Press `citation_*` meta
 - [ ] P3-1 Cite 弹窗：由 YAML 生成 BibTeX / APA / MLA / Chicago（citation-js + CSL）
 - [ ] P3-2 文中引用 `[@key]`（key 对应 publications.yaml 或文内 references）+ 文末参考文献
 - [ ] P3-3 定理/备注指令块样式

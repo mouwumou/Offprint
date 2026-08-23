@@ -1,0 +1,93 @@
+---
+import siteConfig from '../../../core/config/current'
+import Authors from '../../../core/components/Authors.astro'
+import BaseLayout from '../../../core/components/BaseLayout.astro'
+import PublicationLinks from '../../../core/components/PublicationLinks.astro'
+import { langPrefix } from '../../../core/config/nav'
+import { getProvider } from '../../../core/content'
+import { useTranslations } from '../../../core/i18n'
+import { resolveLocalized } from '../../../core/schema'
+import { uniformAlternates } from '../../../core/seo/alternates'
+import { scholarlyArticlesJsonLd } from '../../../core/seo/jsonld'
+
+export function getStaticPaths() {
+  if (!siteConfig.modules.publications) return []
+  return siteConfig.i18n.locales.map((locale) => ({
+    params: { lang: locale === siteConfig.i18n.default ? undefined : locale },
+  }))
+}
+
+const { lang: langParam } = Astro.params
+const lang = langParam ?? siteConfig.i18n.default
+if (
+  !siteConfig.modules.publications ||
+  !siteConfig.i18n.locales.includes(lang) ||
+  langParam === siteConfig.i18n.default
+) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const t = useTranslations(lang)
+const prefix = langPrefix(siteConfig, lang)
+const publications = await getProvider().listPublications()
+const years = [...new Set(publications.map((pub) => pub.year))].sort((a, b) => b - a)
+const r = (value: Parameters<typeof resolveLocalized>[0]) =>
+  resolveLocalized(value, lang, siteConfig.i18n.default)
+---
+
+<BaseLayout
+  lang={lang}
+  title={t('pub.title')}
+  description={t('pub.description')}
+  alternates={uniformAlternates(siteConfig, '/publications')}
+  jsonLd={scholarlyArticlesJsonLd(siteConfig, publications, lang)}
+>
+  <div class="mx-auto w-full max-w-4xl px-5 pt-16 pb-6 sm:px-8 lg:pt-24">
+    <header class="max-w-2xl">
+      <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">{t('pub.kicker')}</p>
+      <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{t('pub.title')}</h1>
+      <p class="mt-4 font-serif text-lg leading-relaxed text-muted-foreground">
+        {t('pub.description')}
+      </p>
+    </header>
+
+    {
+      years.map((year) => (
+        <section class="mt-12 grid gap-4 border-t border-border pt-8 md:grid-cols-[120px_1fr] md:gap-10">
+          <h2 class="font-mono text-sm text-primary">{year}</h2>
+          <ol class="space-y-8">
+            {publications
+              .filter((pub) => pub.year === year)
+              .map((pub) => (
+                <li>
+                  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                    <span class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+                      {pub.venue}
+                    </span>
+                    <span class="font-mono text-[10px] tracking-[0.12em] text-muted-foreground/70 uppercase">
+                      {pub.type}
+                    </span>
+                    {pub.award && (
+                      <span class="rounded-full border border-primary/40 px-2 py-0.5 font-mono text-[10px] tracking-[0.12em] text-primary uppercase">
+                        {pub.award}
+                      </span>
+                    )}
+                  </div>
+                  <h3 class="mt-1.5 font-serif text-xl leading-snug">
+                    <a
+                      href={`${prefix}/publications/${pub.key}`}
+                      class="transition-colors hover:text-primary"
+                    >
+                      {r(pub.title)}
+                    </a>
+                  </h3>
+                  <Authors authors={pub.authors} />
+                  <PublicationLinks publication={pub} lang={lang} />
+                </li>
+              ))}
+          </ol>
+        </section>
+      ))
+    }
+  </div>
+</BaseLayout>

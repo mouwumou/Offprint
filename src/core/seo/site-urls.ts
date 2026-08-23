@@ -29,6 +29,12 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
   uniform('/')
   if (siteConfig.modules.projects) uniform('/projects')
   if (siteConfig.modules.cv) uniform('/cv')
+  if (siteConfig.modules.publications) {
+    uniform('/publications')
+    for (const pub of await provider.listPublications()) {
+      uniform(`/publications/${pub.key}`)
+    }
+  }
 
   if (siteConfig.modules.blog) {
     uniform('/blog')
