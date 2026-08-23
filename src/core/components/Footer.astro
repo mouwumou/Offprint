@@ -18,8 +18,14 @@ const links = config.profile.links.map((link) => ({
   label: resolveLocalized(link.label, lang, config.i18n.default),
 }))
 const year = new Date().getFullYear()
+const colophon =
+  config.footer.colophon === false
+    ? null
+    : (resolveLocalized(config.footer.colophon, lang, config.i18n.default) ??
+      t('layout.colophon'))
 ---
 
+{config.footer.enabled && (
 <footer class="site-footer mt-24 border-t border-border">
   <div
     class="mx-auto flex w-full max-w-6xl flex-col gap-6 px-5 py-10 sm:flex-row sm:items-end sm:justify-between sm:px-8 lg:px-12"
@@ -43,7 +49,7 @@ const year = new Date().getFullYear()
           ))
         }
         {
-          config.modules.blog.enabled && (
+          config.footer.rss && config.modules.blog.enabled && (
             <a
               href={`${prefix}/rss.xml`}
               class="font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase transition-colors hover:text-primary"
@@ -54,8 +60,9 @@ const year = new Date().getFullYear()
         }
       </div>
       <p class="font-mono text-[11px] text-muted-foreground">
-        {t('layout.colophon')} · © {year}
+        {colophon !== null && <>{colophon} · </>}© {year}
       </p>
     </div>
   </div>
 </footer>
+)}

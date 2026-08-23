@@ -126,3 +126,26 @@ describe('module copy overrides (ADR-015)', () => {
     ).toThrow()
   })
 })
+
+describe('header/footer chrome (ADR-015)', () => {
+  it('defaults keep every chrome element on', () => {
+    const config = defineConfig(minimal)
+    expect(config.header).toEqual({ search: true, themeToggle: true, languageSwitcher: true })
+    expect(config.footer).toEqual({ enabled: true, rss: true })
+  })
+
+  it('lets the brand title and colophon be hidden or replaced', () => {
+    const config = defineConfig({
+      ...minimal,
+      header: { title: false, subtitle: { en: 'est. 2026' } },
+      footer: { colophon: false, rss: false },
+    })
+    expect(config.header.title).toBe(false)
+    expect(config.header.subtitle).toEqual({ en: 'est. 2026' })
+    expect(config.footer.colophon).toBe(false)
+    expect(config.footer.rss).toBe(false)
+    expect(() =>
+      defineConfig({ ...minimal, header: { serch: true } as never }),
+    ).toThrow()
+  })
+})

@@ -28,7 +28,10 @@ test.describe('dual-mode HTML parity', () => {
   test.describe.configure({ mode: 'serial' })
   test.setTimeout(240_000)
 
+  // Hooks do not inherit the describe-level setTimeout; without this the two
+  // builds below can trip Playwright's default 30s hook budget.
   test.beforeAll(async () => {
+    test.setTimeout(240_000)
     execSync('pnpm build:static', {
       env: { ...process.env, ASTRO_OUT_DIR: 'dist-static' },
       stdio: 'pipe',

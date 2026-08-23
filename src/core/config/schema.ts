@@ -81,6 +81,28 @@ export const modulesSchema = z.strictObject({
 export type ModuleName = keyof z.output<typeof modulesSchema>
 export type ModuleSetting = z.output<typeof moduleToggle>
 
+// ── chrome: header & footer (ADR-015) ────────────────────────────────────────
+
+/** `false` hides the element; a localized string replaces the theme default. */
+const hideable = z.union([z.literal(false), localizedString])
+
+export const headerSchema = z.strictObject({
+  /** Brand title; defaults to profile.name. false removes the brand link. */
+  title: hideable.optional(),
+  /** Small caption next to the title; defaults to the first segment of profile.field. */
+  subtitle: hideable.optional(),
+  search: z.boolean().default(true),
+  themeToggle: z.boolean().default(true),
+  languageSwitcher: z.boolean().default(true),
+})
+
+export const footerSchema = z.strictObject({
+  enabled: z.boolean().default(true),
+  /** Credit line before © year; false leaves only the © year. */
+  colophon: hideable.optional(),
+  rss: z.boolean().default(true),
+})
+
 // ── theme (DESIGN-REFERENCE; tokens locked by ADR-011) ───────────────────────
 
 export const themeSchema = z.strictObject({
@@ -154,6 +176,8 @@ export const commentsSchema = z
 export const siteConfigSchema = z.strictObject({
   profile: profileSchema,
   modules: modulesSchema.prefault({}),
+  header: headerSchema.prefault({}),
+  footer: footerSchema.prefault({}),
   theme: themeSchema.prefault({}),
   i18n: i18nSchema.prefault({}),
   runtime: runtimeSchema.prefault({}),

@@ -39,9 +39,18 @@ if (config.modules.pages.enabled) {
     nav.push({ href: `${langPrefix(config, page.lang)}/${page.slug}`, label: page.title })
   }
 }
+// Brand block (ADR-015): configurable, defaulting to the profile.
 const name = resolveLocalized(config.profile.name, lang, config.i18n.default)
 const field = resolveLocalized(config.profile.field, lang, config.i18n.default)
 const fieldShort = field?.split(/\s*[&＆]\s*/)[0]
+const brandTitle =
+  config.header.title === false
+    ? null
+    : (resolveLocalized(config.header.title, lang, config.i18n.default) ?? name)
+const brandSubtitle =
+  config.header.subtitle === false
+    ? null
+    : (resolveLocalized(config.header.subtitle, lang, config.i18n.default) ?? fieldShort)
 
 const current = Astro.url.pathname.replace(/\/+$/, '') || '/'
 const isActive = (item: NavItem): boolean =>
@@ -54,16 +63,20 @@ const isActive = (item: NavItem): boolean =>
   <div
     class="mx-auto flex h-16 w-full max-w-6xl items-center justify-between gap-4 px-5 sm:px-8 lg:px-12"
   >
-    <a href={prefix || '/'} class="group flex items-baseline gap-2.5">
-      <span class="font-serif text-lg font-semibold tracking-tight">{name}</span>
-      {
-        fieldShort && (
-          <span class="hidden font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase sm:inline">
-            {fieldShort}
-          </span>
-        )
-      }
-    </a>
+    {
+      brandTitle !== null ? (
+        <a href={prefix || '/'} class="group flex items-baseline gap-2.5">
+          <span class="font-serif text-lg font-semibold tracking-tight">{brandTitle}</span>
+          {brandSubtitle && (
+            <span class="hidden font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase sm:inline">
+              {brandSubtitle}
+            </span>
+          )}
+        </a>
+      ) : (
+        <span />
+      )
+    }
     <nav class="flex items-center gap-1 sm:gap-2">
       {
         nav.map((item) => (
@@ -80,7 +93,7 @@ const isActive = (item: NavItem): boolean =>
         ))
       }
       {
-        config.modules.blog.enabled && (
+        config.header.search && config.modules.blog.enabled && (
           <a
             href={`${prefix}/search`}
             aria-label={t('search.title')}
@@ -91,7 +104,7 @@ const isActive = (item: NavItem): boolean =>
         )
       }
       {
-        config.i18n.locales.length > 1 && (
+        config.header.languageSwitcher && config.i18n.locales.length > 1 && (
           <span
             class="ml-1 flex items-center gap-1 font-mono text-xs sm:ml-2"
             aria-label={t('layout.switchLanguage')}
@@ -116,9 +129,13 @@ const isActive = (item: NavItem): boolean =>
           </span>
         )
       }
-      <div class="ml-1 sm:ml-2">
-        <ThemeToggle client:load label={t('layout.toggleTheme')} />
-      </div>
+      {
+        config.header.themeToggle && (
+          <div class="ml-1 sm:ml-2">
+            <ThemeToggle client:load label={t('layout.toggleTheme')} />
+          </div>
+        )
+      }
     </nav>
   </div>
 </header>
