@@ -1,7 +1,20 @@
-import { FsStore } from '../store'
+import { FsStore, type ContentStore } from '../store'
 import { createProvider, type ContentProvider } from './provider'
 
+let store: ContentStore | undefined
 let provider: ContentProvider | undefined
+
+/** The byte-level store behind the provider (health endpoint, watch wiring). */
+export function getStore(): ContentStore {
+  if (store === undefined) {
+    const storeKind = process.env.CONTENT_STORE ?? 'fs'
+    if (storeKind !== 'fs') {
+      throw new Error(`CONTENT_STORE=${storeKind} is not implemented yet; use fs`)
+    }
+    store = new FsStore(process.env.CONTENT_DIR ?? 'content')
+  }
+  return store
+}
 
 /**
  * The provider instance pages use (constraint 1). Static mode calls it during
@@ -9,13 +22,7 @@ let provider: ContentProvider | undefined
  * git / s3 stores land in phase 2 (ADR-004).
  */
 export function getProvider(): ContentProvider {
-  if (provider === undefined) {
-    const storeKind = process.env.CONTENT_STORE ?? 'fs'
-    if (storeKind !== 'fs') {
-      throw new Error(`CONTENT_STORE=${storeKind} is not implemented until phase 2; use fs`)
-    }
-    provider = createProvider(new FsStore(process.env.CONTENT_DIR ?? 'content'))
-  }
+  provider ??= createProvider(getStore())
   return provider
 }
 

@@ -144,6 +144,8 @@ export interface ContentProvider {
 
 两个写端点都要幂等、限流（同一分钟内合并请求），并在 sync 进行中时返回 202 而非重复启动。
 
+> 2026-08-23 实现注记（P2-3）：`/api/sync` 由 site 进程直接以子进程运行 sync CLI（进程边界，不违反 ADR-006 的 import 规则），共享 content volume 时无需跨容器信令；compose 中的 sync 容器仍可作为 cron 兜底并存。写端点鉴权用 `x-revalidate-secret`，Astro 的 Origin CSRF 检查已关闭（无 cookie 会话，webhook/CLI 调用方不带 Origin）。
+
 ---
 
 ## 4. sync 容器（`src/sync`）

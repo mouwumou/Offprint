@@ -5,6 +5,7 @@ import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
 import { defineConfig } from 'astro/config'
 import YAML from 'yaml'
+import { offprint } from './src/core/integration'
 import { redirectsSchema } from './src/core/schema/redirects'
 
 // static is the default and baseline; server is an optional runtime (ADR-003).
@@ -23,9 +24,16 @@ export default defineConfig({
   // Overridable so the dual-mode e2e comparison can build both modes side by side.
   outDir: process.env.ASTRO_OUT_DIR ?? 'dist',
   adapter: runtimeMode === 'server' ? node({ mode: 'standalone' }) : undefined,
+  // The write endpoints authenticate via a shared-secret header and no
+  // cookie sessions exist, so origin-based CSRF checks only break webhook
+  // and CLI callers (they send no Origin header).
+  security: { checkOrigin: false },
   redirects,
   integrations: [
     react(),
+    // Injects the server-only /api routes when RUNTIME_MODE=server (P2-3);
+    // a static build never bundles them (constraint 2).
+    offprint(),
     // Build-time sitemap for the static baseline; server mode gets a
     // per-request endpoint in P2-8.
     sitemap({
