@@ -304,7 +304,21 @@
   opacity: 1;
 }
 
-/* KaTeX display blocks scroll instead of overflowing */
+/* KaTeX: tame the default 1.21em scale, which assumes an ordinary text face —
+   against Newsreader's small optical size it renders oversized, inflates the
+   line boxes, and makes leading uneven. */
+.prose .katex {
+  font-size: 1.05em;
+}
+/* Inline formulas must not break internally (KaTeX only sets nowrap on
+   display math; inline spans are freely wrappable by default). */
+.prose :not(.katex-display) > .katex {
+  white-space: nowrap;
+}
+/* Display math keeps a slightly larger size and scrolls instead of overflowing. */
+.prose .katex-display .katex {
+  font-size: 1.15em;
+}
 .katex-display {
   overflow-x: auto;
   overflow-y: hidden;

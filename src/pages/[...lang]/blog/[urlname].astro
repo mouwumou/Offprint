@@ -42,10 +42,13 @@ const langPrefix = langParam === undefined ? '' : `/${langParam}`
 <BaseLayout lang={lang} title={post.title} description={post.description}>
   <Fragment slot="head">{showMath && <link rel="stylesheet" href={katexCss} />}</Fragment>
 
+  <!-- Symmetric rails keep the article dead-center in the page whether or not
+       a TOC exists; the TOC lives in the right rail and sticks on scroll. -->
   <div
-    class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12 xl:grid xl:grid-cols-[1fr_15rem] xl:gap-12"
+    class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12 xl:grid xl:max-w-7xl xl:grid-cols-[1fr_minmax(0,48rem)_1fr] xl:gap-8"
   >
-    <article class="mx-auto w-full max-w-3xl pt-14 pb-20 lg:pt-20 xl:mx-0 xl:justify-self-end">
+    <div class="hidden xl:block" aria-hidden="true"></div>
+    <article class="mx-auto w-full max-w-3xl pt-14 pb-20 lg:pt-20">
       <a
         href={`${langPrefix}/blog`}
         class="font-mono text-xs tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-primary"
@@ -125,7 +128,7 @@ const langPrefix = langParam === undefined ? '' : `/${langParam}`
 
     {
       rendered.toc.length > 0 && (
-        <aside class="hidden pt-24 xl:block">
+        <aside class="hidden xl:sticky xl:top-20 xl:mt-24 xl:block xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto">
           <nav aria-label={t('post.onThisPage')}>
             <p class="font-mono text-[11px] tracking-[0.2em] text-muted-foreground uppercase">
               {t('post.onThisPage')}
