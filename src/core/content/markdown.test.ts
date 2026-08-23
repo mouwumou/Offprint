@@ -102,6 +102,14 @@ describe('renderMarkdown', () => {
     expect(result.html).not.toContain('javascript:')
   })
 
+  it('absolutizes relative assets/ links so deep routes resolve them', async () => {
+    const result = await renderMarkdown('![cover](assets/foo.png) and [data](assets/data.pdf)')
+    expect(result.html).toContain('src="/assets/foo.png"')
+    expect(result.html).toContain('href="/assets/data.pdf"')
+    const absolute = await renderMarkdown('![x](https://example.com/assets/keep.png)')
+    expect(absolute.html).toContain('https://example.com/assets/keep.png')
+  })
+
   it('renders GFM tables, task lists, and footnotes', async () => {
     const result = await renderMarkdown(fixture)
     expect(result.html).toContain('<table>')

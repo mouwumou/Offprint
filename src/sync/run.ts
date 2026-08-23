@@ -5,6 +5,7 @@ import { join, resolve } from 'node:path'
 import { diffManifests, manifestSchema, type Manifest } from '../core/schema'
 import { atomicSwitch } from './atomic'
 import { elogConfigSource } from './elog-config'
+import { materializeImages } from './images'
 import { acquireSyncLock } from './lock'
 import { buildManifest } from './manifest'
 import { normalizeDoc } from './normalize'
@@ -105,6 +106,19 @@ async function syncPass(
     for (const warning of normalized.warnings) console.warn(`⚠ ${name}: ${warning}`)
     await writeFile(join(staging, normalized.filename), normalized.content)
     summary[normalized.kind === 'post' ? 'posts' : 'pages'] += 1
+  }
+
+  // Notion's signed image URLs expire — materialize them into content/assets
+  // and rewrite the staged markdown before the manifest hashes it.
+  const images = await materializeImages({
+    stagingDir: staging,
+    contentDir,
+    collections: includePages ? ['posts', 'pages'] : ['posts'],
+  })
+  if (images.downloaded + images.reused + images.failed > 0) {
+    console.log(
+      `images: ${images.downloaded} downloaded, ${images.reused} reused, ${images.failed} failed`,
+    )
   }
 
   const manifest = await buildManifest(

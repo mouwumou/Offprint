@@ -161,6 +161,24 @@ function collectToc() {
   }
 }
 
+/**
+ * Body links written in the contract's relative `assets/…` form resolve
+ * against the page URL — under /blog/x/ they 404. Serve them from the root
+ * like covers (assetUrl) already do.
+ */
+function absolutizeAssetPaths() {
+  return (tree: import('hast').Root): void => {
+    visit(tree, 'element', (node) => {
+      for (const key of ['src', 'href'] as const) {
+        const value = node.properties?.[key]
+        if (typeof value === 'string' && value.startsWith('assets/')) {
+          node.properties[key] = `/${value}`
+        }
+      }
+    })
+  }
+}
+
 export interface RenderOptions {
   /** Enable [@key] citations (P3-2); refs precomputed by the caller. */
   citations?: Map<string, CitationRef>
@@ -180,6 +198,7 @@ function buildProcessor(): Processor {
     .use(collectStats)
     .use(remarkRehype)
     .use(rehypeSanitize, sanitizeSchema)
+    .use(absolutizeAssetPaths)
     .use(rehypeSlug)
     .use(collectToc)
     .use(rehypeAutolinkHeadings, {
