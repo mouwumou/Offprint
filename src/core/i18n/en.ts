@@ -50,6 +50,9 @@ export const en = {
   'nav.projects': 'Projects',
   'nav.cv': 'CV',
   'layout.skipToContent': 'Skip to content',
+  'coldstart.title': 'Content is syncing',
+  'coldstart.body':
+    'First-time setup is fetching content from Notion. This page refreshes automatically.',
   'layout.switchLanguage': 'Switch language',
   'layout.toggleTheme': 'Toggle color theme',
   'layout.colophon': 'Written in Notion · published with elog',

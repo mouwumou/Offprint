@@ -1,0 +1,49 @@
+# Server-mode deployment (DYNAMIC-PUBLISHING §5, P2-5): SSR site + sync
+# sidecar sharing a content volume. Publishing latency: webhook seconds /
+# cron one interval. Until the first sync lands, the site serves the
+# cold-start "content is syncing" page.
+#
+#   docker compose -f docker/compose.server.yaml up -d --build
+services:
+  site:
+    build:
+      context: ..
+      dockerfile: docker/site.Dockerfile
+    environment:
+      RUNTIME_MODE: server
+      CONTENT_STORE: fs
+      CONTENT_DIR: /content
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:-}
+      SITE_URL: ${SITE_URL:-https://example.com}
+    volumes:
+      # rw: /api/sync runs the sync CLI inside this container (P2-3 note).
+      - content:/content
+    ports:
+      - '${SITE_PORT:-4321}:4321'
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:4321/api/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+    restart: unless-stopped
+
+  sync:
+    build:
+      context: ..
+      dockerfile: docker/sync.Dockerfile
+    command: ['sh', 'scripts/sync-server-loop.sh']
+    environment:
+      NOTION_TOKEN: ${NOTION_TOKEN:-}
+      NOTION_DB: ${NOTION_DB:-}
+      DEFAULT_LANG: ${DEFAULT_LANG:-en}
+      CONTENT_DIR: /content
+      SYNC_INTERVAL: ${SYNC_INTERVAL:-300}
+      REVALIDATE_URL: http://site:4321/api/revalidate
+      REVALIDATE_SECRET: ${REVALIDATE_SECRET:-}
+    volumes:
+      - content:/content
+    depends_on: [site]
+    restart: unless-stopped
+
+volumes:
+  content:

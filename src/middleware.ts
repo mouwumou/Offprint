@@ -1,10 +1,16 @@
 import { defineMiddleware } from 'astro:middleware'
+import { coldStartResponse } from './core/server/coldstart'
 import { ensureContentWatch } from './core/server/watch'
 
-// Server runtime bootstrap: the first request arms the manifest watch.
-// In static builds this middleware runs only during prerender, where
-// ensureContentWatch is a guarded no-op — nothing server-only reaches dist/.
-export const onRequest = defineMiddleware((_context, next) => {
-  ensureContentWatch()
+// Server runtime bootstrap: the first request arms the manifest watch, and
+// until the very first manifest exists HTML routes get the §5 cold-start
+// page. In static builds this middleware runs only during prerender, where
+// both branches are guarded no-ops — nothing server-only reaches dist/.
+export const onRequest = defineMiddleware(async (context, next) => {
+  if ((process.env['RUNTIME_MODE'] ?? 'static') === 'server') {
+    ensureContentWatch()
+    const syncing = await coldStartResponse(context.url.pathname)
+    if (syncing) return syncing
+  }
   return next()
 })

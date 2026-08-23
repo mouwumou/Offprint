@@ -50,6 +50,8 @@ export const zh: Record<MessageKey, string> = {
   'nav.projects': '项目',
   'nav.cv': '简历',
   'layout.skipToContent': '跳到正文',
+  'coldstart.title': '内容同步中',
+  'coldstart.body': '首次启动正在从 Notion 拉取内容，本页会自动刷新。',
   'layout.switchLanguage': '切换语言',
   'layout.toggleTheme': '切换配色',
   'layout.colophon': '在 Notion 写作 · 经 elog 发布',
