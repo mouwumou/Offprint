@@ -1,19 +1,29 @@
 ---
 import Footer from '../core/components/Footer.astro'
 import Header from '../core/components/Header.astro'
+import config from '../core/config/current'
+import { langPrefix } from '../core/config/nav'
 import { useTranslations } from '../core/i18n'
+import type { Alternate } from '../core/seo/alternates'
+import Head from '../core/seo/Head.astro'
 import '../core/theme/global.css'
 
 interface Props {
   lang: string
   title: string
   description?: string | undefined
+  type?: 'website' | 'article'
+  image?: string | undefined
+  publishedTime?: Date | undefined
+  modifiedTime?: Date | undefined
+  alternates?: Alternate[]
+  jsonLd?: object | object[]
 }
 
-const { lang, title, description } = Astro.props
+const { lang, title, description, type, image, publishedTime, modifiedTime, alternates, jsonLd } =
+  Astro.props
 const t = useTranslations(lang)
-
-// The SEO Head component (canonical/OG/JSON-LD/hreflang) lands in P1-7.
+const prefix = langPrefix(config, lang)
 ---
 
 <!doctype html>
@@ -22,8 +32,41 @@ const t = useTranslations(lang)
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
-    {description && <meta name="description" content={description} />}
+    <Head
+      lang={lang}
+      title={title}
+      description={description}
+      type={type}
+      image={image}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      alternates={alternates ?? []}
+      jsonLd={jsonLd}
+    />
+    {
+      config.modules.blog && (
+        <>
+          <link
+            rel="alternate"
+            type="application/rss+xml"
+            href={`${prefix}/rss.xml`}
+            title={`${t('nav.writing')} RSS`}
+          />
+          <link
+            rel="alternate"
+            type="application/atom+xml"
+            href={`${prefix}/atom.xml`}
+            title={`${t('nav.writing')} Atom`}
+          />
+          <link
+            rel="alternate"
+            type="application/feed+json"
+            href={`${prefix}/feed.json`}
+            title={`${t('nav.writing')} JSON Feed`}
+          />
+        </>
+      )
+    }
     <script is:inline>
       // Anti-flash: apply the stored/system theme before first paint.
       ;(() => {

@@ -8,6 +8,8 @@ import { getProvider } from '../../core/content'
 import { postsForLanguage } from '../../core/content/posts-view'
 import { formatDate, useTranslations } from '../../core/i18n'
 import { resolveLocalized } from '../../core/schema'
+import { uniformAlternates } from '../../core/seo/alternates'
+import { personJsonLd } from '../../core/seo/jsonld'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 
 export function getStaticPaths() {
@@ -44,7 +46,14 @@ const postHref = (post: { urlname: string; lang: string }) =>
   `${langPrefix(siteConfig, post.lang)}/blog/${post.urlname}`
 ---
 
-<BaseLayout lang={lang} title={name ?? 'Offprint'} description={r(profile.tagline)}>
+<BaseLayout
+  lang={lang}
+  title={name ?? 'Offprint'}
+  description={r(profile.tagline)}
+  image={profile.photo}
+  alternates={uniformAlternates(siteConfig, '/')}
+  jsonLd={personJsonLd(siteConfig, lang, (Astro.site ?? new URL('https://example.com')).toString())}
+>
   <div class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12">
     <!-- Hero -->
     <section class="pt-16 pb-12 lg:pt-24">

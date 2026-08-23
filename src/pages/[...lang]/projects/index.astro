@@ -4,6 +4,7 @@ import { getProvider } from '../../../core/content'
 import { useTranslations, type MessageKey } from '../../../core/i18n'
 import { resolveLocalized } from '../../../core/schema'
 import type { ProjectStatus } from '../../../core/schema'
+import { uniformAlternates } from '../../../core/seo/alternates'
 import BaseLayout from '../../../layouts/BaseLayout.astro'
 
 export function getStaticPaths() {
@@ -40,7 +41,12 @@ const statusKey: Record<ProjectStatus, MessageKey> = {
 }
 ---
 
-<BaseLayout lang={lang} title={t('projects.title')} description={t('projects.description')}>
+<BaseLayout
+  lang={lang}
+  title={t('projects.title')}
+  description={t('projects.description')}
+  alternates={uniformAlternates(siteConfig, '/projects')}
+>
   <div class="mx-auto w-full max-w-6xl px-5 pt-16 sm:px-8 lg:px-12 lg:pt-24">
     <header class="max-w-2xl">
       <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">

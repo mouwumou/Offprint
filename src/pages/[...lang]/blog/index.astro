@@ -2,6 +2,7 @@
 import siteConfig from '../../../core/config/current'
 import BlogIndex from '../../../core/components/BlogIndex.astro'
 import { useTranslations } from '../../../core/i18n'
+import { uniformAlternates } from '../../../core/seo/alternates'
 import BaseLayout from '../../../layouts/BaseLayout.astro'
 
 export function getStaticPaths() {
@@ -18,6 +19,11 @@ if (!siteConfig.i18n.locales.includes(lang) || langParam === siteConfig.i18n.def
 const t = useTranslations(lang)
 ---
 
-<BaseLayout lang={lang} title={t('blog.title')} description={t('blog.description')}>
+<BaseLayout
+  lang={lang}
+  title={t('blog.title')}
+  description={t('blog.description')}
+  alternates={uniformAlternates(siteConfig, '/blog')}
+>
   <BlogIndex lang={lang} />
 </BaseLayout>

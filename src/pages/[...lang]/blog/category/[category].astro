@@ -5,6 +5,7 @@ import { getProvider } from '../../../../core/content'
 import { filterSlug, fromFilterSlug } from '../../../../core/content/filter-slug'
 import { collectCategories } from '../../../../core/content/posts-view'
 import { useTranslations } from '../../../../core/i18n'
+import { uniformAlternates } from '../../../../core/seo/alternates'
 import BaseLayout from '../../../../layouts/BaseLayout.astro'
 
 export async function getStaticPaths() {
@@ -35,6 +36,10 @@ if (activeCategory === undefined) {
 const t = useTranslations(lang)
 ---
 
-<BaseLayout lang={lang} title={`${activeCategory} · ${t('blog.title')}`}>
+<BaseLayout
+  lang={lang}
+  title={`${activeCategory} · ${t('blog.title')}`}
+  alternates={uniformAlternates(siteConfig, `/blog/category/${categoryParam}`)}
+>
   <BlogIndex lang={lang} activeCategory={activeCategory} />
 </BaseLayout>

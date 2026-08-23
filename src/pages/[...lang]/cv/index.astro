@@ -7,6 +7,7 @@ import SectionLabel from '../../../core/components/SectionLabel.astro'
 import { getProvider } from '../../../core/content'
 import { useTranslations } from '../../../core/i18n'
 import { resolveLocalized, type LocalizedString } from '../../../core/schema'
+import { uniformAlternates } from '../../../core/seo/alternates'
 import BaseLayout from '../../../layouts/BaseLayout.astro'
 
 export function getStaticPaths() {
@@ -88,7 +89,12 @@ const role = r(siteConfig.profile.role)
 const description = `${t('cv.title')} — ${name}`
 ---
 
-<BaseLayout lang={lang} title={t('cv.title')} description={description}>
+<BaseLayout
+  lang={lang}
+  title={t('cv.title')}
+  description={description}
+  alternates={uniformAlternates(siteConfig, '/cv')}
+>
   <div class="mx-auto w-full max-w-4xl px-5 pt-16 sm:px-8 lg:pt-24">
     <header class="flex flex-col justify-between gap-6 pb-10 sm:flex-row sm:items-end">
       <div>

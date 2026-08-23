@@ -1,9 +1,11 @@
 ---
 import katexCss from 'katex/dist/katex.min.css?url'
-import siteConfig from '../../../../site.config'
+import siteConfig from '../../../core/config/current'
+import { langPrefix } from '../../../core/config/nav'
 import { getProvider } from '../../../core/content'
 import { renderMarkdown } from '../../../core/content/markdown'
 import { formatDate, useTranslations } from '../../../core/i18n'
+import { blogPostingJsonLd } from '../../../core/seo/jsonld'
 import BaseLayout from '../../../layouts/BaseLayout.astro'
 
 // Static mode: one path per published post × language; the default language
@@ -36,10 +38,34 @@ const rendered = await renderMarkdown(post.body)
 const showMath = rendered.hasMath || post.math === true
 const showUpdated = post.updated.getTime() !== post.date.getTime()
 const kicker = post.categories[0]
-const langPrefix = langParam === undefined ? '' : `/${langParam}`
+const prefix = langPrefix(siteConfig, lang)
+
+const translations = await getProvider().getTranslations(urlname)
+const alternates = translations.map((translation) => ({
+  lang: translation.lang,
+  path: `${langPrefix(siteConfig, translation.lang)}/blog/${urlname}/`,
+}))
+const site = Astro.site ?? new URL('https://example.com')
+const jsonLd = blogPostingJsonLd(
+  siteConfig,
+  post,
+  rendered,
+  new URL(Astro.url.pathname, site).toString(),
+  site.toString(),
+)
 ---
 
-<BaseLayout lang={lang} title={post.title} description={post.description}>
+<BaseLayout
+  lang={lang}
+  title={post.title}
+  description={post.description}
+  type="article"
+  image={post.cover}
+  publishedTime={post.date}
+  modifiedTime={post.updated}
+  alternates={alternates}
+  jsonLd={jsonLd}
+>
   <Fragment slot="head">{showMath && <link rel="stylesheet" href={katexCss} />}</Fragment>
 
   <!-- Symmetric rails keep the article dead-center in the page whether or not
@@ -50,7 +76,7 @@ const langPrefix = langParam === undefined ? '' : `/${langParam}`
     <div class="hidden xl:block" aria-hidden="true"></div>
     <article class="mx-auto w-full max-w-3xl pt-14 pb-20 lg:pt-20">
       <a
-        href={`${langPrefix}/blog`}
+        href={`${prefix}/blog`}
         class="font-mono text-xs tracking-[0.14em] text-muted-foreground uppercase transition-colors hover:text-primary"
       >
         {t('post.back')}

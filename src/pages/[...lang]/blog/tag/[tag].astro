@@ -4,6 +4,7 @@ import BlogIndex from '../../../../core/components/BlogIndex.astro'
 import { getProvider } from '../../../../core/content'
 import { filterSlug, fromFilterSlug } from '../../../../core/content/filter-slug'
 import { useTranslations } from '../../../../core/i18n'
+import { uniformAlternates } from '../../../../core/seo/alternates'
 import BaseLayout from '../../../../layouts/BaseLayout.astro'
 
 export async function getStaticPaths() {
@@ -32,6 +33,10 @@ if (activeTag === undefined) {
 const t = useTranslations(lang)
 ---
 
-<BaseLayout lang={lang} title={`#${activeTag} · ${t('blog.title')}`}>
+<BaseLayout
+  lang={lang}
+  title={`#${activeTag} · ${t('blog.title')}`}
+  alternates={uniformAlternates(siteConfig, `/blog/tag/${tagParam}`)}
+>
   <BlogIndex lang={lang} activeTag={activeTag} />
 </BaseLayout>
