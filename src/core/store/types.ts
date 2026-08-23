@@ -1,7 +1,7 @@
-import type { Manifest } from '../schema/manifest'
+import type { Manifest, ManifestDiff } from '../schema/manifest'
 
-export { manifestEntrySchema, manifestSchema } from '../schema/manifest'
-export type { Manifest, ManifestEntry } from '../schema/manifest'
+export { diffManifests, manifestEntrySchema, manifestSchema } from '../schema/manifest'
+export type { Manifest, ManifestDiff, ManifestEntry } from '../schema/manifest'
 
 /**
  * Byte-level content storage (DYNAMIC-PUBLISHING §3.1). Implementations:
@@ -17,10 +17,4 @@ export interface ContentStore {
   manifest(): Promise<Manifest | null>
   /** Subscribe to changes; stores without push support omit this (static mode uses none). */
   watch?(onChange: (changed: ManifestDiff) => void): () => void
-}
-
-export interface ManifestDiff {
-  added: string[]
-  changed: string[]
-  removed: string[]
 }

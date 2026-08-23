@@ -44,7 +44,7 @@
 
 ## 阶段 2 — server 模式（1–2 周，产品能力，ADR-003）
 
-- [ ] P2-1 sync 增加 notify（revalidate 调用）与 Docker cron 入口形态
+- [x] P2-1 sync 增加 notify（revalidate 调用）与 Docker cron 入口形态（实测 notify 200；server 版循环入口 scripts/sync-server-loop.sh）
 - [x] P2-2 server 模式 `astro.config` 分支 + node adapter + `docker/site.Dockerfile`（config 分支 P0-1 已有；镜像随 P2-5 compose 在 dockertest 验证）
 - [x] P2-3 server 模式端点：`/api/revalidate` `/api/sync` `/api/health`（鉴权、幂等、互斥、限流）（实测：401/429/202 started→running→200 merged、sync 后 version 变化；integration 注入，static 构建零 API 痕迹）
 - [x] P2-4 `FsStore.watch`（chokidar 监听 manifest）+ 增量失效（活体验证：改文件+manifest 后无重启即出新内容，日志 +0 ~1 -0）

@@ -2,10 +2,12 @@ import { spawnSync } from 'node:child_process'
 import { createRequire } from 'node:module'
 import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
+import { diffManifests, manifestSchema, type Manifest } from '../core/schema'
 import { atomicSwitch } from './atomic'
 import { elogConfigSource } from './elog-config'
 import { buildManifest } from './manifest'
 import { normalizeDoc } from './normalize'
+import { notifyRevalidate } from './notify'
 
 export interface SyncSummary {
   posts: number
@@ -95,7 +97,20 @@ export async function runSync(options: {
     if (!key.includes('/')) manifest.entries[key] = entry
   }
 
+  // Previous manifest → diff for targeted revalidation (P2-1 notify).
+  let previous: Manifest | null = null
+  try {
+    previous = manifestSchema.parse(
+      JSON.parse(await readFile(join(contentDir, 'manifest.json'), 'utf8')),
+    )
+  } catch {
+    /* first sync or hand-written content without a manifest */
+  }
+
   await atomicSwitch(contentDir, staging, ['posts', 'pages'], manifest)
   await rm(staging, { recursive: true, force: true })
+
+  const diff = diffManifests(previous, manifest)
+  await notifyRevalidate([...diff.added, ...diff.changed, ...diff.removed])
   return summary
 }
