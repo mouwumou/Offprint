@@ -8,6 +8,8 @@ import { expect, test } from '@playwright/test'
 
 const ROUTES = [
   '/',
+  '/zh/',
+  '/about/',
   '/blog/',
   '/blog/tag/geometry/',
   '/blog/geometry-of-uncertainty/',

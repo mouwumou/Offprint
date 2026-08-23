@@ -1,12 +1,12 @@
 ---
-import Footer from '../core/components/Footer.astro'
-import Header from '../core/components/Header.astro'
-import config from '../core/config/current'
-import { langPrefix } from '../core/config/nav'
-import { useTranslations } from '../core/i18n'
-import type { Alternate } from '../core/seo/alternates'
-import Head from '../core/seo/Head.astro'
-import '../core/theme/global.css'
+import Footer from './Footer.astro'
+import Header from './Header.astro'
+import config from '../config/current'
+import { langPrefix } from '../config/nav'
+import { useTranslations } from '../i18n'
+import type { Alternate } from '../seo/alternates'
+import Head from '../seo/Head.astro'
+import '../theme/global.css'
 
 interface Props {
   lang: string

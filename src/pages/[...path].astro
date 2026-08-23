@@ -1,0 +1,70 @@
+---
+import HomePage from '../core/components/HomePage.astro'
+import StandalonePage from '../core/components/StandalonePage.astro'
+import siteConfig from '../core/config/current'
+import { langPrefix } from '../core/config/nav'
+import { getProvider } from '../core/content'
+import { renderMarkdown } from '../core/content/markdown'
+import type { Alternate } from '../core/seo/alternates'
+
+// Catch-all for the language homes and standalone pages. One route resolves
+// bare locale paths (/zh) AND page slugs (/about, /zh/about) — two separate
+// dynamic routes were ambiguous in server mode ('/zh' matched
+// [...lang]/[slug] with an empty rest param first).
+export async function getStaticPaths() {
+  const paths: { params: { path: string | undefined } }[] = [{ params: { path: undefined } }]
+  for (const locale of siteConfig.i18n.locales) {
+    if (locale !== siteConfig.i18n.default) paths.push({ params: { path: locale } })
+  }
+  if (siteConfig.modules.pages) {
+    for (const page of await getProvider().listPages()) {
+      const prefix = page.lang === siteConfig.i18n.default ? '' : `${page.lang}/`
+      paths.push({ params: { path: `${prefix}${page.slug}` } })
+    }
+  }
+  return paths
+}
+
+const raw = Astro.params.path ?? ''
+const segments = raw === '' ? [] : raw.replace(/\/+$/, '').split('/')
+
+let lang = siteConfig.i18n.default
+const first = segments[0]
+if (first !== undefined && siteConfig.i18n.locales.includes(first)) {
+  if (first === siteConfig.i18n.default) {
+    // The default language lives at the root; /en/... does not exist.
+    return new Response(null, { status: 404, statusText: 'Not Found' })
+  }
+  lang = first
+  segments.shift()
+}
+
+const isHome = segments.length === 0
+const slug = segments.length === 1 ? segments[0] : undefined
+if (!isHome && (slug === undefined || !siteConfig.modules.pages)) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const page = isHome || slug === undefined ? null : await getProvider().getPage(slug, lang)
+if (!isHome && page === null) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const rendered = page === null ? null : await renderMarkdown(page.body)
+let alternates: Alternate[] = []
+if (page !== null) {
+  const translations = (await getProvider().listPages()).filter((entry) => entry.slug === page.slug)
+  alternates = translations.map((entry) => ({
+    lang: entry.lang,
+    path: `${langPrefix(siteConfig, entry.lang)}/${page.slug}`,
+  }))
+}
+---
+
+{
+  page !== null && rendered !== null ? (
+    <StandalonePage lang={lang} page={page} rendered={rendered} alternates={alternates} />
+  ) : (
+    <HomePage lang={lang} />
+  )
+}

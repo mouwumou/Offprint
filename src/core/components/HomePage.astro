@@ -1,28 +1,22 @@
 ---
-import siteConfig from '../../core/config/current'
-import { langPrefix } from '../../core/config/nav'
-import Authors from '../../core/components/Authors.astro'
-import PublicationLinks from '../../core/components/PublicationLinks.astro'
-import SectionLabel from '../../core/components/SectionLabel.astro'
-import { getProvider } from '../../core/content'
-import { postsForLanguage } from '../../core/content/posts-view'
-import { formatDate, useTranslations } from '../../core/i18n'
-import { resolveLocalized } from '../../core/schema'
-import { uniformAlternates } from '../../core/seo/alternates'
-import { personJsonLd, scholarlyArticlesJsonLd } from '../../core/seo/jsonld'
-import BaseLayout from '../../layouts/BaseLayout.astro'
+import siteConfig from '../config/current'
+import { langPrefix } from '../config/nav'
+import Authors from './Authors.astro'
+import PublicationLinks from './PublicationLinks.astro'
+import SectionLabel from './SectionLabel.astro'
+import { getProvider } from '../content'
+import { postsForLanguage } from '../content/posts-view'
+import { formatDate, useTranslations } from '../i18n'
+import { resolveLocalized } from '../schema'
+import { uniformAlternates } from '../seo/alternates'
+import { personJsonLd, scholarlyArticlesJsonLd } from '../seo/jsonld'
+import BaseLayout from './BaseLayout.astro'
 
-export function getStaticPaths() {
-  return siteConfig.i18n.locales.map((locale) => ({
-    params: { lang: locale === siteConfig.i18n.default ? undefined : locale },
-  }))
+interface Props {
+  lang: string
 }
 
-const { lang: langParam } = Astro.params
-const lang = langParam ?? siteConfig.i18n.default
-if (!siteConfig.i18n.locales.includes(lang) || langParam === siteConfig.i18n.default) {
-  return new Response(null, { status: 404, statusText: 'Not Found' })
-}
+const { lang } = Astro.props
 
 const t = useTranslations(lang)
 const prefix = langPrefix(siteConfig, lang)

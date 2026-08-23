@@ -10,10 +10,11 @@ let contentReady = false
  */
 export async function coldStartResponse(pathname: string): Promise<Response | null> {
   if (contentReady || pathname.startsWith('/api/')) return null
-  const manifest = await getStore()
-    .manifest()
-    .catch(() => null)
-  if (manifest !== null) {
+  const store = getStore()
+  const manifest = await store.manifest().catch(() => null)
+  // Hand-written content ships without a manifest (CONTENT-CONTRACT §1) —
+  // any posts on disk also count as ready.
+  if (manifest !== null || (await store.list('posts')).length > 0) {
     contentReady = true
     return null
   }

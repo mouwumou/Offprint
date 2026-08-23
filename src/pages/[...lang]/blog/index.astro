@@ -3,7 +3,7 @@ import siteConfig from '../../../core/config/current'
 import BlogIndex from '../../../core/components/BlogIndex.astro'
 import { useTranslations } from '../../../core/i18n'
 import { uniformAlternates } from '../../../core/seo/alternates'
-import BaseLayout from '../../../layouts/BaseLayout.astro'
+import BaseLayout from '../../../core/components/BaseLayout.astro'
 
 export function getStaticPaths() {
   if (!siteConfig.modules.blog) return []

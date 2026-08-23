@@ -1,0 +1,38 @@
+---
+import katexCss from 'katex/dist/katex.min.css?url'
+import type { Page } from '../content'
+import type { RenderedMarkdown } from '../content/markdown'
+import { formatDate, useTranslations } from '../i18n'
+import type { Alternate } from '../seo/alternates'
+import BaseLayout from './BaseLayout.astro'
+
+interface Props {
+  lang: string
+  page: Page
+  rendered: RenderedMarkdown
+  alternates: Alternate[]
+}
+
+const { lang, page, rendered, alternates } = Astro.props
+const t = useTranslations(lang)
+---
+
+<BaseLayout lang={lang} title={page.title} alternates={alternates}>
+  <Fragment slot="head">{rendered.hasMath && <link rel="stylesheet" href={katexCss} />}</Fragment>
+
+  <article class="mx-auto w-full max-w-3xl px-5 pt-14 pb-20 sm:px-8 lg:pt-20">
+    <header class="border-b border-border pb-8">
+      <h1 class="font-serif text-4xl leading-[1.12] tracking-tight sm:text-[2.75rem]">
+        {page.title}
+      </h1>
+      {
+        page.updated && (
+          <p class="mt-4 font-mono text-xs text-muted-foreground">
+            {t('post.updated')} {formatDate(page.updated, lang)}
+          </p>
+        )
+      }
+    </header>
+    <div class="prose mt-10" set:html={rendered.html} />
+  </article>
+</BaseLayout>
