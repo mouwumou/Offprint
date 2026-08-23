@@ -2,6 +2,7 @@ import MiniSearch from 'minisearch'
 import siteConfig from '../config/current'
 import { langPrefix } from '../config/nav'
 import { getProvider } from '../content'
+import { tokenizeCjk } from './tokenize'
 
 export interface SearchHit {
   url: string
@@ -37,6 +38,9 @@ async function buildIndex(): Promise<MiniSearch<SearchDoc>> {
   const index = new MiniSearch<SearchDoc>({
     fields: ['title', 'text'],
     storeFields: ['url', 'title', 'excerpt', 'lang'],
+    // Applied at index AND query time; without it Chinese text is one token
+    // per sentence and nothing mid-sentence ever matches.
+    tokenize: tokenizeCjk,
   })
 
   if (siteConfig.modules.blog.enabled) {
