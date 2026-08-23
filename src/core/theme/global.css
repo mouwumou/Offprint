@@ -393,8 +393,9 @@
    "Download PDF" (window.print → Save as PDF). Chrome is stripped away.
    --------------------------------------------------------------------------- */
 @media print {
-  header,
-  footer,
+  /* Only the site chrome — article/CV headers must print. */
+  .site-header,
+  .site-footer,
   .print-hide {
     display: none !important;
   }
