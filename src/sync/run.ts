@@ -5,6 +5,7 @@ import { join, resolve } from 'node:path'
 import { diffManifests, manifestSchema, type Manifest } from '../core/schema'
 import { atomicSwitch } from './atomic'
 import { elogConfigSource } from './elog-config'
+import { acquireSyncLock } from './lock'
 import { buildManifest } from './manifest'
 import { normalizeDoc } from './normalize'
 import { notifyRevalidate } from './notify'
@@ -39,7 +40,24 @@ export async function runSync(options: {
   }
 
   const contentDir = resolve(options.contentDir)
+  await mkdir(contentDir, { recursive: true })
+  // Webhook-triggered syncs (site container) and the sidecar loop share the
+  // content volume — serialize across processes, not just in-process.
+  const releaseLock = await acquireSyncLock(contentDir)
   const staging = join(contentDir, '.staging')
+  try {
+    return await syncPass(contentDir, staging, options.defaultLang)
+  } finally {
+    await rm(staging, { recursive: true, force: true })
+    await releaseLock()
+  }
+}
+
+async function syncPass(
+  contentDir: string,
+  staging: string,
+  defaultLang: string,
+): Promise<SyncSummary> {
   const rawDir = join(staging, 'raw')
   await rm(staging, { recursive: true, force: true })
   await mkdir(rawDir, { recursive: true })
@@ -74,7 +92,7 @@ export async function runSync(options: {
 
   for (const name of (await readdir(rawDir)).filter((file) => file.endsWith('.md')).sort()) {
     const raw = await readFile(join(rawDir, name), 'utf8')
-    const normalized = normalizeDoc(raw, name, options.defaultLang)
+    const normalized = normalizeDoc(raw, name, defaultLang)
     if (normalized.kind === 'skipped' || (normalized.kind === 'page' && !includePages)) {
       summary.skipped += 1
       continue
@@ -115,7 +133,6 @@ export async function runSync(options: {
   }
 
   await atomicSwitch(contentDir, staging, includePages ? ['posts', 'pages'] : ['posts'], manifest)
-  await rm(staging, { recursive: true, force: true })
 
   const diff = diffManifests(previous, manifest)
   await notifyRevalidate([...diff.added, ...diff.changed, ...diff.removed])

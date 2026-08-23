@@ -29,10 +29,17 @@ export async function atomicSwitch(
     const live = join(contentDir, collection)
     const old = join(contentDir, `${collection}.old`)
     await rm(old, { recursive: true, force: true })
-    if (await exists(live)) {
+    const hadLive = await exists(live)
+    if (hadLive) {
       await rename(live, old)
     }
-    await rename(fresh, live)
+    try {
+      await rename(fresh, live)
+    } catch (error) {
+      // Roll the previous version back rather than leaving no live dir.
+      if (hadLive) await rename(old, live).catch(() => {})
+      throw error
+    }
     await rm(old, { recursive: true, force: true })
   }
   await writeFile(join(contentDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)

@@ -151,3 +151,28 @@ describe('ADR-014: sync owns posts only', () => {
     expect(await readFile(join(content, 'posts', 'p.en.md'), 'utf8')).toBe('from sync')
   })
 })
+
+describe('acquireSyncLock (cross-process mutex)', () => {
+  it('serializes holders, rejects contenders, and steals stale locks', async () => {
+    const { acquireSyncLock } = await import('./lock')
+    const { utimes } = await import('node:fs/promises')
+    const root = await mkdtemp(join(tmpdir(), 'offprint-lock-'))
+    try {
+      const release = await acquireSyncLock(root)
+      await expect(acquireSyncLock(root)).rejects.toThrow(/another sync is running/)
+      await release()
+
+      const again = await acquireSyncLock(root)
+      await again()
+
+      // A crashed holder leaves the dir behind; an old mtime marks it stale.
+      await acquireSyncLock(root)
+      const old = new Date(Date.now() - 60 * 60_000)
+      await utimes(join(root, '.sync-lock'), old, old)
+      const stolen = await acquireSyncLock(root)
+      await stolen()
+    } finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+})
