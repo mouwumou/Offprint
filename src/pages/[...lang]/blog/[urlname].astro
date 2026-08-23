@@ -2,7 +2,8 @@
 import katexCss from 'katex/dist/katex.min.css?url'
 import siteConfig from '../../../core/config/current'
 import { langPrefix } from '../../../core/config/nav'
-import { bibliographyEntry, inlineCitation } from '../../../core/cite/formats'
+import { bibliographyEntry, citationFormats, inlineCitation } from '../../../core/cite/formats'
+import CiteDialog from '../../../core/components/CiteDialog'
 import { getProvider } from '../../../core/content'
 import type { CitationRef } from '../../../core/content/citations'
 import { renderMarkdown } from '../../../core/content/markdown'
@@ -79,7 +80,31 @@ const alternates = translations.map((translation) => ({
   lang: translation.lang,
   path: `${langPrefix(siteConfig, translation.lang)}/blog/${urlname}/`,
 }))
+// "Cite this post" (P3-5): a synthetic publication reuses the P3-1 formats.
+import { publicationSchema as pubSchema, resolveLocalized } from '../../../core/schema'
 const site = Astro.site ?? new URL('https://example.com')
+const postUrl = new URL(Astro.url.pathname, site).toString()
+const citePost = post.cite
+  ? citationFormats(
+      pubSchema.parse({
+        key: post.urlname,
+        title: post.title,
+        authors: [resolveLocalized(siteConfig.profile.name, lang, siteConfig.i18n.default) ?? ''],
+        year: post.date.getUTCFullYear(),
+        venue: resolveLocalized(siteConfig.profile.name, lang, siteConfig.i18n.default) ?? 'Blog',
+        type: 'preprint',
+        website: postUrl,
+        ...(post.doi ? { doi: post.doi } : {}),
+      }),
+      lang,
+    )
+  : null
+const citeLabels = {
+  cite: t('pub.cite'),
+  copy: t('cite.copy'),
+  copied: t('cite.copied'),
+  close: t('cite.close'),
+}
 const jsonLd = blogPostingJsonLd(
   siteConfig,
   post,
@@ -147,6 +172,27 @@ const jsonLd = blogPostingJsonLd(
                 <span>
                   {t('post.updated')} {formatDate(post.updated, lang)}
                 </span>
+              </>
+            )
+          }
+          {
+            post.doi && (
+              <>
+                <span aria-hidden="true">·</span>
+                <a
+                  href={`https://doi.org/${post.doi}`}
+                  class="text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
+                >
+                  DOI
+                </a>
+              </>
+            )
+          }
+          {
+            citePost && (
+              <>
+                <span aria-hidden="true">·</span>
+                <CiteDialog client:load formats={citePost} labels={citeLabels} />
               </>
             )
           }

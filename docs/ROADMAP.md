@@ -63,7 +63,7 @@
 - [x] P3-2 文中引用 `[@key]`（key 对应 publications.yaml 或文内 references）+ 文末参考文献
 - [x] P3-3 定理/备注指令块样式
 - [x] P3-4 OG 图生成（satori）（拉丁字形已完成；zh 标题的 CJK 字体在 P3-7 处理）
-- [ ] P3-5 "Cite this post" + DOI 字段
+- [x] P3-5 "Cite this post" + DOI 字段
 - [ ] P3-6 CV PDF：print 路线完善；可选 Typst CI 产物
 - [ ] P3-7 i18n 进阶：按语言的搜索索引、OG 图文字、CV 双语 PDF
 - [ ] P3-8 giscus 评论开关
