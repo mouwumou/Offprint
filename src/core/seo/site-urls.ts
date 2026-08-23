@@ -2,7 +2,7 @@ import siteConfig from '../config/current'
 import { langPrefix } from '../config/nav'
 import { getProvider } from '../content'
 import { filterSlug } from '../content/filter-slug'
-import { collectCategories } from '../content/posts-view'
+import { categoriesForLanguage, tagsForLanguage } from '../content/posts-view'
 import { uniformAlternates, type Alternate } from './alternates'
 
 export interface SiteUrl {
@@ -39,12 +39,31 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
   if (siteConfig.modules.blog.enabled) {
     uniform('/blog')
     const posts = await provider.listPosts()
-    for (const { tag } of await provider.listTags()) {
-      uniform(`/blog/tag/${filterSlug(tag)}`)
+    // Tags/categories exist per language (ADR-007 list rule); alternates
+    // interlink only the languages that actually carry the term.
+    const perLanguage = (kind: 'tag' | 'category'): void => {
+      const langsByTerm = new Map<string, string[]>()
+      for (const locale of siteConfig.i18n.locales) {
+        const terms =
+          kind === 'tag'
+            ? tagsForLanguage(posts, locale).map(({ tag }) => tag)
+            : categoriesForLanguage(posts, locale)
+        for (const term of terms) {
+          langsByTerm.set(term, [...(langsByTerm.get(term) ?? []), locale])
+        }
+      }
+      for (const [term, langs] of langsByTerm) {
+        const alternates = langs.map((locale) => ({
+          lang: locale,
+          path: `${langPrefix(siteConfig, locale)}/blog/${kind}/${filterSlug(term)}`,
+        }))
+        for (const alternate of alternates) {
+          urls.push({ path: alternate.path, alternates })
+        }
+      }
     }
-    for (const category of collectCategories(posts)) {
-      uniform(`/blog/category/${filterSlug(category)}`)
-    }
+    perLanguage('tag')
+    perLanguage('category')
     const byUrlname = new Map<string, { lang: string }[]>()
     for (const post of posts) {
       byUrlname.set(post.urlname, [...(byUrlname.get(post.urlname) ?? []), { lang: post.lang }])

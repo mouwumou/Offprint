@@ -23,6 +23,30 @@ export function collectCategories(posts: readonly PostSummary[]): string[] {
   return [...new Set(posts.flatMap((post) => post.categories))]
 }
 
+/**
+ * Tags visible in one language's display list, with counts (ADR-007). A tag
+ * carried only by a post's other-language translation does NOT belong here —
+ * deriving tags globally produced empty /blog/tag/* pages in the language
+ * whose translation lacks the tag, and double counts for shared tags.
+ */
+export function tagsForLanguage(
+  posts: readonly PostSummary[],
+  lang: string,
+): { tag: string; count: number }[] {
+  const counts = new Map<string, number>()
+  for (const post of postsForLanguage(posts, lang)) {
+    for (const tag of post.tags) counts.set(tag, (counts.get(tag) ?? 0) + 1)
+  }
+  return [...counts]
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count || a.tag.localeCompare(b.tag))
+}
+
+/** Categories visible in one language's display list, in first-seen order. */
+export function categoriesForLanguage(posts: readonly PostSummary[], lang: string): string[] {
+  return [...new Set(postsForLanguage(posts, lang).flatMap((post) => post.categories))]
+}
+
 export function postsForLanguage(posts: readonly PostSummary[], lang: string): PostSummary[] {
   const byUrlname = new Map<string, PostSummary>()
   for (const post of posts) {

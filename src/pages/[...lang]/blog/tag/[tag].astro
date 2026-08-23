@@ -3,15 +3,18 @@ import siteConfig from '../../../../core/config/current'
 import BlogIndex from '../../../../core/components/BlogIndex.astro'
 import { getProvider } from '../../../../core/content'
 import { filterSlug, fromFilterSlug } from '../../../../core/content/filter-slug'
+import { tagsForLanguage } from '../../../../core/content/posts-view'
 import { moduleCopy } from '../../../../core/config/copy'
 import { uniformAlternates } from '../../../../core/seo/alternates'
 import BaseLayout from '../../../../core/components/BaseLayout.astro'
 
 export async function getStaticPaths() {
   if (!siteConfig.modules.blog.enabled) return []
-  const tags = await getProvider().listTags()
+  // Each language routes only the tags its own display list carries — a
+  // globally derived set produced empty pages (ADR-007 list rule).
+  const posts = await getProvider().listPosts()
   return siteConfig.i18n.locales.flatMap((locale) =>
-    tags.map(({ tag }) => ({
+    tagsForLanguage(posts, locale).map(({ tag }) => ({
       params: {
         lang: locale === siteConfig.i18n.default ? undefined : locale,
         tag: filterSlug(tag),
@@ -30,7 +33,7 @@ if (
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 
-const tags = (await getProvider().listTags()).map(({ tag }) => tag)
+const tags = tagsForLanguage(await getProvider().listPosts(), lang).map(({ tag }) => tag)
 const activeTag = fromFilterSlug(tags, tagParam)
 if (activeTag === undefined) {
   return new Response(null, { status: 404, statusText: 'Not Found' })

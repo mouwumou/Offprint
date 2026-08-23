@@ -4,7 +4,7 @@ import { langPrefix } from '../config/nav'
 import { getProvider } from '../content'
 import { filterSlug } from '../content/filter-slug'
 import { markdownStats } from '../content/markdown'
-import { postsForLanguage } from '../content/posts-view'
+import { postsForLanguage, tagsForLanguage } from '../content/posts-view'
 import { recentlyUpdated } from '../content/related'
 import { moduleCopy } from '../config/copy'
 import { formatDate, useTranslations } from '../i18n'
@@ -26,7 +26,7 @@ const posts = all
   .filter((post) =>
     activeCategory === undefined ? true : post.categories.includes(activeCategory),
   )
-const tags = await provider.listTags()
+const tags = tagsForLanguage(await provider.listPosts(), lang)
 
 const rows = await Promise.all(
   posts.map(async (post) => {
