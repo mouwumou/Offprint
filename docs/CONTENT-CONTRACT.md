@@ -96,8 +96,8 @@ posts 数据库（借鉴 NotionNext 的 `type` 列思路，一个数据库同时
 | --- | --- | --- |
 | Title | `title` | |
 | type（select：Post / Page） | 决定写入 `posts/` 或 `pages/` | 缺省视为 Post |
-| lang（select：en / zh） | `lang` | 必填 |
-| urlname（text） | `urlname` | 缺省时 sync 由标题 slug 化并写回告警 |
+| lang（select：en / zh） | `lang` | 可选列；缺省由 sync 语言探测回填（ADR-013），物化产物中仍必填 |
+| urlname（text） | `urlname` | 可选列；有 `slug` 列则映射，缺省由标题 slug 化并告警（ADR-013） |
 | date | `date` | elog 默认写 |
 | updated | `updated` | elog 默认写 |
 | status（select = Published） | 过滤条件 | 不进 frontmatter |
@@ -124,7 +124,7 @@ elog 会自动补齐的字段（无需数据库列）：
 | 实测观察 | 契约期望 | sync 对策 |
 | --- | --- | --- |
 | `date`/`updated` 为 `'2021-11-05 08:00:00'`（空格分隔，非 ISO） | ISO date | 归一化为 `YYYY-MM-DD`；core schema 拒绝该格式，归一化必须发生在 sync 层 |
-| 无 `lang` 列 | `lang` 必填 | 回填默认语言并告警（ADR-007 预案）；长期应在 Notion 加 lang select 列 |
+| 无 `lang` 列 | `lang` 必填 | sync 做语言探测回填（ADR-013，维护者不在 Notion 加列；LLM 翻译管线另行设计） |
 | `slug` 列（NotionNext 命名） | `urlname` | 改名映射并覆盖 elog 的 UUID 值；缺 slug 的行按标题 slug 化并告警 |
 | `category` 单值 select | `categories` | 改名；单值归一化 schema 已兼容 |
 | `summary` 列 | `description` | 改名映射 |

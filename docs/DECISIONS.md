@@ -71,3 +71,9 @@
 ## ADR-012 参考项目 — 已定
 
 **决定**：以 NotionNext、al-folio、elog 为参照，借鉴与回避清单见 `REFERENCES.md`。特别地：**不直接在运行时读 Notion**（NotionNext 的做法依赖非官方 API 且把站点可用性绑在 Notion 上），内容始终经 sync 物化为文件；但借鉴其"Notion 数据库 `type` 列区分 Post / Page / Config"的思路，允许在 Notion 中维护独立页面（About、Now 等）。
+
+## ADR-013 lang / urlname 由 sync 派生，不在 Notion 加列 — 已定（方向），细节待敲定
+
+**背景**：P0-9 用维护者现有 NotionNext 库实测（2026-08-23），库中无 `lang` / `urlname` 列。维护者决定（2026-08-23）不在 Notion 维护这两列：主要用中文写作，计划后续接入 LLM API 做文档语言探测与翻译（暂不实现、暂不设计细节）。
+**决定**：**内容契约不变** —— 物化到 `content/` 的 markdown 中 `lang` 与 `urlname` 仍为必填（ADR-007、CONTENT-CONTRACT §2）；这两个字段改由 **sync 层派生**：`lang` 用语言探测回填（LLM 或轻量检测器，实现方式待定），`urlname` 沿用既定预案 —— 有 `slug` 列则映射，缺省由标题 slug 化生成并告警。跨语言译本生成（如中文原文 → 英文译本）作为 sync 的可选 LLM 增强步骤，模型选择、成本、缓存、幂等、是否写回 Notion 等细节留待专门设计，不阻塞阶段 1。
+**后果**：ADR-007 中「Notion 里 lang 列必填」的采集侧要求废止，改为「sync 保证物化产物含合法 lang」；ADR-007 的路由、urlname 互链、hreflang 设计不变。P1-13 的 sync 归一化清单增加 lang 探测回填；CONTENT-CONTRACT §7 映射表相应调整。站点代码（core / pages）完全不感知此决定 —— 这正是契约层存在的意义（ADR-002）。

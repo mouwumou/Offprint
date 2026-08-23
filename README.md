@@ -2,7 +2,14 @@
 
 > 抽印本 — 一个开源、可插拔、易部署的学术个人网站系统。
 
-**状态：规划阶段，尚无可运行代码。** 开发交接文档见 `CLAUDE.md` 与 `docs/`。
+**状态：阶段 0（技术验证）已完成** —— 双模式构建、内容契约 schema、markdown 管线（KaTeX/Shiki）、语言前缀路由的文章页、静态 Docker 镜像均已跑通，双模式 HTML 一致性有 e2e 保障。当前处于阶段 1（自用 MVP）。开发交接文档见 `CLAUDE.md` 与 `docs/`。
+
+```bash
+pnpm install
+pnpm dev            # 开发服务器（示例文章在 content/posts/）
+pnpm build:static   # 纯静态构建 → dist/
+pnpm test && pnpm e2e
+```
 
 Offprint 把学术首页、博客、项目与 CV 放进同一个站点，并做了两件大多数静态站生成器不做的事：
 

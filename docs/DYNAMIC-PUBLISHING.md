@@ -158,6 +158,8 @@ export interface ContentProvider {
 
 elog 配置由 sync 从环境变量生成（`NOTION_TOKEN`、`NOTION_DB`、`IMAGE_PLATFORM`…），不把含 token 的 `elog.config.js` 放进仓库。
 
+> 2026-08-23 实测更新：elog 已进入 **1.0 插件式工作流**（`@elog/cli` + `@elog/plugin-from-notion` + `@elog/plugin-to-local`，`elog sync -c <config> -e <env>`），0.x 的 write/deploy 配置不再兼容；P1-13 按 1.0 实现。字段差异与归一化清单见 `CONTENT-CONTRACT.md` §7.1；`lang`/`urlname` 由 sync 派生（ADR-013）。
+
 ---
 
 ## 5. Docker Compose 骨架

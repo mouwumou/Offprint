@@ -40,24 +40,29 @@ Offprint（抽印本）是一个开源、可插拔、易部署的学术个人网
 - 写 UI 时对照 `docs/DESIGN-REFERENCE.md` 的 token 与版式，不要引入第二套颜色/字体/圆角。
 - 依赖选择偏保守：少而稳、有类型、维护活跃；引入新依赖在 PR 描述里说明理由。
 
-## 常用命令（脚手架建好后补齐）
+## 常用命令
 
 ```
 pnpm install
 pnpm dev                 # Astro 开发服务器
 pnpm build:static        # RUNTIME_MODE=static（默认）
-pnpm build:server        # RUNTIME_MODE=server（node adapter，阶段 2）
-pnpm test                # vitest：schema / loader / provider 单测
-pnpm e2e                 # playwright：双模式快照 + 双语
-pnpm sync                # 本地跑一次 src/sync（需 .env）
-pnpm sync validate       # 只校验 content/
-pnpm lint && pnpm typecheck
+pnpm build:server        # RUNTIME_MODE=server（node adapter）
+pnpm preview             # 伺服 dist/（static 构建产物）
+pnpm test                # vitest：schema / store / provider / markdown 单测
+pnpm e2e                 # playwright：冒烟 + 双模式 HTML 一致性比对
+pnpm lint                # eslint（含 ADR-006 包边界规则）
+pnpm typecheck           # astro check
+pnpm format / format:check
+pnpm sync                # 未实现，P1-13（elog 1.0 插件式，见 DYNAMIC-PUBLISHING §4）
 ```
+
+注意：e2e 偶发 "webServer exited early" 多为孤儿 preview 进程占 4321 端口，`fuser -k 4321/tcp` 后隔 2 秒重跑。
 
 ## 当前状态
 
-所有 ADR 已定（2026-08-22）；`site.config.i18n.default = en`（2026-08-22 维护者确认）。
-进度以 `docs/ROADMAP.md` 勾选为准，当前在阶段 0。
+ADR-001–013 已定（ADR-013 为方向已定、细节待敲定：lang/urlname 由 sync 派生，Notion 不加列，LLM 翻译管线另行设计）；`site.config.i18n.default = en`。
+**阶段 0 已全部完成**（2026-08-23，P0-1–P0-10 勾选见 ROADMAP）；当前进入阶段 1，下一任务 P1-1。
+elog 实测为 1.0 插件式工作流，与契约的字段差异记录在 `CONTENT-CONTRACT.md` §7.1。
 
 ## 远程 Docker 测试环境
 
