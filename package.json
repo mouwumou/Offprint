@@ -40,7 +40,7 @@
     "astro": "^7.2.4",
     "gray-matter": "^4.0.3",
     "hast-util-to-string": "^3.0.1",
-    "katex": "^0.18.4",
+    "katex": "^0.16.47",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "rehype-autolink-headings": "^7.1.0",

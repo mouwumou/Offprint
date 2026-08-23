@@ -310,11 +310,6 @@
 .prose .katex {
   font-size: 1.05em;
 }
-/* Inline formulas must not break internally (KaTeX only sets nowrap on
-   display math; inline spans are freely wrappable by default). */
-.prose :not(.katex-display) > .katex {
-  white-space: nowrap;
-}
 /* Display math keeps a slightly larger size and scrolls instead of overflowing. */
 .prose .katex-display .katex {
   font-size: 1.15em;

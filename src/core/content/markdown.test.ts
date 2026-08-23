@@ -1,5 +1,20 @@
+import { createRequire } from 'node:module'
 import { describe, expect, it } from 'vitest'
 import { renderMarkdown } from './markdown'
+
+describe('katex version alignment', () => {
+  // The page links the CSS of our direct katex dependency, while rehype-katex
+  // emits HTML with its own katex. If the two resolve to different installs,
+  // class names drift apart (0.16 strut/base vs 0.18 katex-strut/katex-base)
+  // and formula layout collapses silently. Keep them deduped to one copy.
+  it('rehype-katex renders with the same katex install whose CSS we ship', () => {
+    const rootRequire = createRequire(import.meta.url)
+    const rehypeKatexRequire = createRequire(rootRequire.resolve('rehype-katex'))
+    expect(rehypeKatexRequire.resolve('katex/dist/katex.min.css')).toBe(
+      rootRequire.resolve('katex/dist/katex.min.css'),
+    )
+  })
+})
 
 const fixture = `## Setting the stage
 
