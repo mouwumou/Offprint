@@ -64,14 +64,18 @@ export async function runSync(options: {
     await rm(configPath, { force: true })
   }
 
+  // ADR-014: sync owns content/posts only. Notion type=Page routing is an
+  // explicit opt-in — by default those docs are skipped and locally edited
+  // pages/ are never touched.
+  const includePages = process.env['SYNC_PAGES'] === 'true'
   const summary: SyncSummary = { posts: 0, pages: 0, skipped: 0, errors: [] }
   await mkdir(join(staging, 'posts'), { recursive: true })
-  await mkdir(join(staging, 'pages'), { recursive: true })
+  if (includePages) await mkdir(join(staging, 'pages'), { recursive: true })
 
   for (const name of (await readdir(rawDir)).filter((file) => file.endsWith('.md')).sort()) {
     const raw = await readFile(join(rawDir, name), 'utf8')
     const normalized = normalizeDoc(raw, name, options.defaultLang)
-    if (normalized.kind === 'skipped') {
+    if (normalized.kind === 'skipped' || (normalized.kind === 'page' && !includePages)) {
       summary.skipped += 1
       continue
     }
@@ -90,11 +94,14 @@ export async function runSync(options: {
     { name: 'elog', version: elogVersion() },
     summary.errors,
   )
-  // YAML collections live in the content dir, not staging — merge their
-  // entries so the manifest stays complete.
-  const yamlManifest = await buildManifest(contentDir, manifest.tool)
-  for (const [key, entry] of Object.entries(yamlManifest.entries)) {
-    if (!key.includes('/')) manifest.entries[key] = entry
+  // Author-owned collections (pages/ unless opted in, plus every YAML) live
+  // in the content dir, not staging — merge their entries so the manifest
+  // describes the whole content state (ADR-014).
+  const liveManifest = await buildManifest(contentDir, manifest.tool)
+  for (const [key, entry] of Object.entries(liveManifest.entries)) {
+    if (key.startsWith('posts/')) continue
+    if (includePages && key.startsWith('pages/')) continue
+    manifest.entries[key] = entry
   }
 
   // Previous manifest → diff for targeted revalidation (P2-1 notify).
@@ -107,7 +114,7 @@ export async function runSync(options: {
     /* first sync or hand-written content without a manifest */
   }
 
-  await atomicSwitch(contentDir, staging, ['posts', 'pages'], manifest)
+  await atomicSwitch(contentDir, staging, includePages ? ['posts', 'pages'] : ['posts'], manifest)
   await rm(staging, { recursive: true, force: true })
 
   const diff = diffManifests(previous, manifest)

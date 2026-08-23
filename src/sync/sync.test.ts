@@ -133,3 +133,21 @@ describe('manifest + atomic switch', () => {
     expect(problems.map((p) => p.path).sort()).toEqual(['posts/bad.en.md', 'posts/misnamed.en.md'])
   })
 })
+
+describe('ADR-014: sync owns posts only', () => {
+  it('a posts-only switch leaves author-owned pages untouched', async () => {
+    const root = await mkdtemp(join(tmpdir(), 'offprint-adr14-'))
+    const content = join(root, 'content')
+    const staging = join(root, 'staging')
+    await mkdir(join(content, 'pages'), { recursive: true })
+    await writeFile(join(content, 'pages', 'about.en.md'), 'AUTHOR OWNED')
+    await mkdir(join(staging, 'posts'), { recursive: true })
+    await writeFile(join(staging, 'posts', 'p.en.md'), 'from sync')
+
+    const manifest = await buildManifest(staging, { name: 'elog', version: 't' })
+    await atomicSwitch(content, staging, ['posts'], manifest)
+
+    expect(await readFile(join(content, 'pages', 'about.en.md'), 'utf8')).toBe('AUTHOR OWNED')
+    expect(await readFile(join(content, 'posts', 'p.en.md'), 'utf8')).toBe('from sync')
+  })
+})
