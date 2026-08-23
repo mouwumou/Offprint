@@ -24,6 +24,7 @@ interface Props {
 let pagefindPromise: Promise<PagefindApi | null> | undefined
 
 function loadPagefind(): Promise<PagefindApi | null> {
+  // @ts-expect-error runtime-only asset: exists only in static deployments
   pagefindPromise ??= import(/* @vite-ignore */ '/pagefind/pagefind.js')
     .then((module: PagefindApi) => module)
     .catch(() => null)
