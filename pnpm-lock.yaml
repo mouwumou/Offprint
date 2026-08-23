@@ -35,6 +35,9 @@ importers:
       astro:
         specifier: ^7.2.4
         version: 7.2.4(@emnapi/core@1.11.1)(@emnapi/runtime@1.11.3)(@types/node@26.2.0)(jiti@2.7.0)(tsx@4.23.12)(yaml@2.9.0)
+      chokidar:
+        specifier: ^5.0.0
+        version: 5.0.0
       gray-matter:
         specifier: ^4.0.3
         version: 4.0.3
