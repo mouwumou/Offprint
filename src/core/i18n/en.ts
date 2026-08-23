@@ -15,6 +15,10 @@ export const en = {
   'pub.poster': 'Poster',
   'pub.video': 'Video',
   'pub.website': 'Website',
+  'search.title': 'Search',
+  'search.heading': 'Find a note',
+  'search.placeholder': 'Search posts and pages…',
+  'search.noResults': 'No results for “{q}”.',
   'blog.kicker': 'Writing',
   'blog.title': 'Notes, in public',
   'blog.description':

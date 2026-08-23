@@ -24,6 +24,10 @@ export function offprint(): AstroIntegration {
           pattern: '/api/sync',
           entrypoint: './src/core/server/routes/sync.ts',
         })
+        injectRoute({
+          pattern: '/api/search',
+          entrypoint: './src/core/server/routes/search.ts',
+        })
         // P2-8: request-time sitemap under the same URLs the static build emits.
         injectRoute({
           pattern: '/sitemap-index.xml',

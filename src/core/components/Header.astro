@@ -78,6 +78,17 @@ const isActive = (item: NavItem): boolean =>
         ))
       }
       {
+        config.modules.blog && (
+          <a
+            href={`${prefix}/search`}
+            aria-label={t('search.title')}
+            class="grid size-9 place-items-center rounded-md border border-border font-mono text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+          >
+            ⌕
+          </a>
+        )
+      }
+      {
         config.i18n.locales.length > 1 && (
           <span
             class="ml-1 flex items-center gap-1 font-mono text-xs sm:ml-2"
