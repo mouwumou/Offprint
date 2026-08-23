@@ -62,3 +62,38 @@ describe('createSingleFlight', () => {
     expect(flight.run(() => Promise.resolve('ok')).status).toBe('started')
   })
 })
+
+describe('checkNotionSignature (P2-7)', () => {
+  afterEach(() => {
+    delete process.env['NOTION_WEBHOOK_SECRET']
+  })
+
+  it('validates the HMAC and falls back to null without header/secret', async () => {
+    const { checkNotionSignature } = await import('./guard')
+    const { createHmac } = await import('node:crypto')
+    process.env['NOTION_WEBHOOK_SECRET'] = 'whsec'
+    const body = '{"event":"page.updated"}'
+    const good = `sha256=${createHmac('sha256', 'whsec').update(body).digest('hex')}`
+
+    expect(
+      await checkNotionSignature(
+        new Request('http://x', { headers: { 'x-notion-signature': good } }),
+        body,
+      ),
+    ).toBe(true)
+    expect(
+      await checkNotionSignature(
+        new Request('http://x', { headers: { 'x-notion-signature': 'sha256=beef' } }),
+        body,
+      ),
+    ).toBe(false)
+    expect(await checkNotionSignature(new Request('http://x'), body)).toBeNull()
+    delete process.env['NOTION_WEBHOOK_SECRET']
+    expect(
+      await checkNotionSignature(
+        new Request('http://x', { headers: { 'x-notion-signature': good } }),
+        body,
+      ),
+    ).toBeNull()
+  })
+})

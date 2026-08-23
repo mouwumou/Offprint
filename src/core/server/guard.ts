@@ -21,6 +21,26 @@ export function checkSecret(request: Request): Response | null {
   return null
 }
 
+/**
+ * Notion webhook signature check (P2-7, optional): HMAC-SHA256 of the raw
+ * body with NOTION_WEBHOOK_SECRET, sent as `X-Notion-Signature: sha256=<hex>`.
+ * Returns null when the header is absent or the secret unconfigured (caller
+ * falls back to the shared-secret path).
+ */
+export async function checkNotionSignature(
+  request: Request,
+  rawBody: string,
+): Promise<boolean | null> {
+  const secret = process.env['NOTION_WEBHOOK_SECRET']
+  const header = request.headers.get('x-notion-signature')
+  if (!secret || !header) return null
+  const { createHmac, timingSafeEqual } = await import('node:crypto')
+  const expected = `sha256=${createHmac('sha256', secret).update(rawBody).digest('hex')}`
+  const a = Buffer.from(header)
+  const b = Buffer.from(expected)
+  return a.length === b.length && timingSafeEqual(a, b)
+}
+
 /** Sliding-window rate limiter (per process, per endpoint). */
 export function createRateLimiter(maxPerMinute: number): () => boolean {
   const stamps: number[] = []

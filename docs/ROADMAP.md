@@ -50,7 +50,7 @@
 - [x] P2-4 `FsStore.watch`（chokidar 监听 manifest）+ 增量失效（活体验证：改文件+manifest 后无重启即出新内容，日志 +0 ~1 -0）
 - [x] P2-5 `docker/compose.server.yaml`（site + sync + volume）+ 首次冷启动"同步中"页（dockertest 实测：冷启动 503 双语页 → 内容落地后 /zh/ 200、health 报真实 version）
 - [x] P2-6 `GitStore`（GitHub Contents API）与 Vercel ISR revalidate 路径（GitStore + ETag 缓存 + mock 测试；Vercel 路径 = sync notify → /api/revalidate 清缓存后按请求重取，边缘 ISR 细节待选定 vercel adapter 时补）
-- [ ] P2-7 Notion webhook 触发（可选）
+- [x] P2-7 Notion webhook 触发（可选）（/api/sync 支持 X-Notion-Signature HMAC 校验与订阅握手 token 透出；真实 webhook 配置待维护者在 Notion 侧开启）
 - [x] P2-8 server 模式 feed/sitemap 按请求生成 + ETag（实测 If-None-Match→304；sitemap 端点与 static 同 URL，45 URL 含 hreflang）
 - [ ] P2-9 MiniSearch 内存索引（server）/ Pagefind（static）
 - [ ] P2-10 验收：DYNAMIC-PUBLISHING §7 全部通过
