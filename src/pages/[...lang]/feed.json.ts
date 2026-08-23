@@ -1,5 +1,6 @@
 import type { APIRoute } from 'astro'
 import siteConfig from '../../core/config/current'
+import { versionedResponse } from '../../core/seo/etag'
 import { feedData } from '../../core/seo/feed-data'
 import { buildJsonFeed } from '../../core/seo/feeds'
 
@@ -10,12 +11,9 @@ export function getStaticPaths() {
   }))
 }
 
-export const GET: APIRoute = async (context) => {
-  const data = await feedData(context, 'feed.json')
-  if (data === null || !siteConfig.modules.blog) {
-    return new Response(null, { status: 404 })
-  }
-  return new Response(buildJsonFeed(data.meta, data.items), {
-    headers: { 'Content-Type': 'application/feed+json; charset=utf-8' },
+export const GET: APIRoute = (context) =>
+  versionedResponse(context, 'application/feed+json; charset=utf-8', async () => {
+    const data = await feedData(context, 'feed.json')
+    if (data === null || !siteConfig.modules.blog) return null
+    return buildJsonFeed(data.meta, data.items)
   })
-}

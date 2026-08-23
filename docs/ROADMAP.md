@@ -51,7 +51,7 @@
 - [ ] P2-5 `docker/compose.server.yaml`（site + sync + volume）+ 首次冷启动"同步中"页
 - [ ] P2-6 `GitStore`（GitHub Contents API）与 Vercel ISR revalidate 路径
 - [ ] P2-7 Notion webhook 触发（可选）
-- [ ] P2-8 server 模式 feed/sitemap 按请求生成 + ETag
+- [x] P2-8 server 模式 feed/sitemap 按请求生成 + ETag（实测 If-None-Match→304；sitemap 端点与 static 同 URL，45 URL 含 hreflang）
 - [ ] P2-9 MiniSearch 内存索引（server）/ Pagefind（static）
 - [ ] P2-10 验收：DYNAMIC-PUBLISHING §7 全部通过
 - [ ] P2-11 验收：`RUNTIME_MODE` 切回 static 后，同一内容目录构建产物与 server 渲染 HTML 一致
