@@ -48,7 +48,7 @@
 - [x] P2-2 server 模式 `astro.config` 分支 + node adapter + `docker/site.Dockerfile`（config 分支 P0-1 已有；镜像随 P2-5 compose 在 dockertest 验证）
 - [x] P2-3 server 模式端点：`/api/revalidate` `/api/sync` `/api/health`（鉴权、幂等、互斥、限流）（实测：401/429/202 started→running→200 merged、sync 后 version 变化；integration 注入，static 构建零 API 痕迹）
 - [x] P2-4 `FsStore.watch`（chokidar 监听 manifest）+ 增量失效（活体验证：改文件+manifest 后无重启即出新内容，日志 +0 ~1 -0）
-- [ ] P2-5 `docker/compose.server.yaml`（site + sync + volume）+ 首次冷启动"同步中"页
+- [x] P2-5 `docker/compose.server.yaml`（site + sync + volume）+ 首次冷启动"同步中"页（dockertest 实测：冷启动 503 双语页 → 内容落地后 /zh/ 200、health 报真实 version）
 - [x] P2-6 `GitStore`（GitHub Contents API）与 Vercel ISR revalidate 路径（GitStore + ETag 缓存 + mock 测试；Vercel 路径 = sync notify → /api/revalidate 清缓存后按请求重取，边缘 ISR 细节待选定 vercel adapter 时补）
 - [ ] P2-7 Notion webhook 触发（可选）
 - [x] P2-8 server 模式 feed/sitemap 按请求生成 + ETag（实测 If-None-Match→304；sitemap 端点与 static 同 URL，45 URL 含 hreflang）
