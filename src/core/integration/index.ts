@@ -2,6 +2,7 @@ import { cp, stat } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { join, resolve } from 'node:path'
 import type { AstroIntegration } from 'astro'
+import { contentAssetResponse } from '../server/assets'
 
 /**
  * The Offprint Astro integration. Phase 2 scope: inject the server-only API
@@ -24,6 +25,20 @@ export function offprint(): AstroIntegration {
           return
         }
         await cp(source, join(fileURLToPath(dir), 'assets'), { recursive: true })
+      },
+      // Dev-only /assets serving: static builds copy content/assets in
+      // build:done and server mode streams them in middleware — neither path
+      // exists under `astro dev`, so cover images 404'd there. This hook
+      // never runs in a build, so nothing extra reaches either output.
+      'astro:server:setup': ({ server }) => {
+        server.middlewares.use('/assets', (req, res, next) => {
+          const path = (req.url ?? '/').split('?')[0] ?? '/'
+          void contentAssetResponse(`/assets${path}`).then(async (asset) => {
+            if (asset === null || asset.status !== 200) return next()
+            asset.headers.forEach((value, key) => res.setHeader(key, value))
+            res.end(Buffer.from(await asset.arrayBuffer()))
+          })
+        })
       },
       'astro:config:setup': ({ injectRoute }) => {
         if ((process.env.RUNTIME_MODE ?? 'static') !== 'server') return
