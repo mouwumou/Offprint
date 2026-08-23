@@ -20,7 +20,8 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "astro check"
+    "typecheck": "astro check",
+    "sync": "tsx src/sync/cli.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -63,6 +64,9 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@elog/cli": "1.0.0-beta.2",
+    "@elog/plugin-from-notion": "1.0.0-beta.2",
+    "@elog/plugin-to-local": "1.0.0-beta.2",
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.62.1",
     "@types/hast": "^3.0.5",
@@ -78,6 +82,7 @@
     "globals": "^17.11.0",
     "prettier": "^3.9.6",
     "prettier-plugin-astro": "^0.14.1",
+    "tsx": "^4.23.12",
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.11"

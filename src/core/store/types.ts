@@ -1,4 +1,7 @@
-import { z } from 'zod'
+import type { Manifest } from '../schema/manifest'
+
+export { manifestEntrySchema, manifestSchema } from '../schema/manifest'
+export type { Manifest, ManifestEntry } from '../schema/manifest'
 
 /**
  * Byte-level content storage (DYNAMIC-PUBLISHING §3.1). Implementations:
@@ -15,27 +18,6 @@ export interface ContentStore {
   /** Subscribe to changes; stores without push support omit this (static mode uses none). */
   watch?(onChange: (changed: ManifestDiff) => void): () => void
 }
-
-export const manifestEntrySchema = z.object({
-  /** e.g. posts/geometry-of-uncertainty.en.md */
-  path: z.string(),
-  /** sha256 of the file content; doubles as the ETag. */
-  hash: z.string(),
-  /** frontmatter.updated */
-  updated: z.string(),
-})
-
-export const manifestSchema = z.object({
-  generatedAt: z.iso.datetime(),
-  tool: z.object({ name: z.string(), version: z.string() }),
-  /** Keyed by `${collection}/${slug}`, e.g. posts/geometry-of-uncertainty.en */
-  entries: z.record(z.string(), manifestEntrySchema),
-  /** Per-file validation failures recorded by sync; they never block other files. */
-  errors: z.array(z.object({ path: z.string(), issues: z.array(z.string()) })).optional(),
-})
-
-export type Manifest = z.output<typeof manifestSchema>
-export type ManifestEntry = z.output<typeof manifestEntrySchema>
 
 export interface ManifestDiff {
   added: string[]

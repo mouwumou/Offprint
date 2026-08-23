@@ -14,7 +14,15 @@ export const redirectsSchema = z.record(
     pathString.or(z.url()),
     z.strictObject({
       destination: pathString.or(z.url()),
-      status: z.union([z.literal(300), z.literal(301), z.literal(302), z.literal(303), z.literal(304), z.literal(307), z.literal(308)]),
+      status: z.union([
+        z.literal(300),
+        z.literal(301),
+        z.literal(302),
+        z.literal(303),
+        z.literal(304),
+        z.literal(307),
+        z.literal(308),
+      ]),
     }),
   ]),
 )

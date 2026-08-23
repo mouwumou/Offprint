@@ -11,6 +11,7 @@ npm-debug.log*
 pnpm-debug.log*
 
 # environment variables
+.offprint-elog.config.ts
 .env
 .env.production
 

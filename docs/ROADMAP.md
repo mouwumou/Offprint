@@ -35,7 +35,7 @@
 - [x] P1-10 `redirects.yaml` → 各平台重定向产物（GH Pages 用 meta refresh 页、Vercel/Netlify/CF 原生、node 中间件）（经 Astro 内建 redirects 配置实现：静态出 meta-refresh 页，node adapter 出真 301，平台 adapter 接入时自动译为原生规则；真实清单待维护者 P1-16 前提供）
 - [ ] P1-11 CI：双模式构建 + 单测 + e2e + 内容校验
 - [ ] P1-12 GH Pages 与 Vercel 两条部署 workflow
-- [ ] P1-13 `src/sync` 基础：elog 配置生成、staging、逐篇校验、manifest、原子切换（DYNAMIC-PUBLISHING §4，不含 notify）
+- [x] P1-13 `src/sync` 基础：elog 配置生成、staging、逐篇校验、manifest、原子切换（DYNAMIC-PUBLISHING §4，不含 notify）
 - [ ] P1-14 sync 的 GitHub Action 形态：schedule/dispatch → elog → commit `content/` → 触发构建
 - [ ] P1-15 自托管静态：`docker/compose.static.yaml`（web 静态伺服 + sync 容器 elog→build→原子切换 dist/）
 - [ ] P1-16 迁移真实内容，以 static 模式上线替换旧站
