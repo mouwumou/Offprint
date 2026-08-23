@@ -53,16 +53,18 @@ pnpm e2e                 # playwright：冒烟 + 双模式 HTML 一致性比对
 pnpm lint                # eslint（含 ADR-006 包边界规则）
 pnpm typecheck           # astro check
 pnpm format / format:check
-pnpm sync                # 未实现，P1-13（elog 1.0 插件式，见 DYNAMIC-PUBLISHING §4）
+pnpm sync                # elog→归一化→manifest→原子切换（需 .env）
+pnpm sync validate       # 只校验 content/
+pnpm lhci                # Lighthouse CI（desktop preset，阈值 0.95）
 ```
 
-注意：e2e 偶发 "webServer exited early" 多为孤儿 preview 进程占 4321 端口，`fuser -k 4321/tcp` 后隔 2 秒重跑。
+注意：`astro preview` 是守护式进程（有实例在跑时新实例会秒退）；e2e 用自带的 scripts/serve-dist.mjs 前台伺服，端口 4331，互不干扰。手动验证 dist 也建议用 `node scripts/serve-dist.mjs dist <port>`。
 
 ## 当前状态
 
 ADR-001–013 已定（ADR-013 为方向已定、细节待敲定：lang/urlname 由 sync 派生，Notion 不加列，LLM 翻译管线另行设计）；`site.config.i18n.default = en`。
-**阶段 0 已全部完成**（2026-08-23，P0-1–P0-10 勾选见 ROADMAP）；当前进入阶段 1，下一任务 P1-1。
-elog 实测为 1.0 插件式工作流，与契约的字段差异记录在 `CONTENT-CONTRACT.md` §7.1。
+**阶段 0–3 已完成**（2026-08-23）：唯一未完项是 P1-16（迁移维护者真实内容上线，需维护者提供旧站清单与域名）。阶段 4（开源化）与阶段 5（插件 API）未开始。
+elog 实测为 1.0 插件式工作流，与契约的字段差异记录在 `CONTENT-CONTRACT.md` §7.1；部署 workflow（CI/Pages/Vercel/sync）已写好，待仓库推上 GitHub 后首跑验证。
 
 ## 远程 Docker 测试环境
 
