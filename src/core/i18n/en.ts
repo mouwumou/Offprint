@@ -37,6 +37,7 @@ export const en = {
   'blog.all': 'All',
   'blog.pinned': 'Pinned',
   'blog.min': 'min',
+  'blog.recentlyUpdated': 'Recently updated',
   'blog.noPostsTagged': 'No posts tagged “{tag}” yet.',
   'blog.category': 'Category',
   'projects.kicker': 'Projects',
@@ -77,6 +78,8 @@ export const en = {
   'post.updated': 'updated',
   'post.onThisPage': 'On this page',
   'post.references': 'References',
+  'post.related': 'Related posts',
+  'post.series': 'Series',
   'post.colophon': 'Colophon',
   'post.colophonText':
     'Drafted in Notion, exported to markdown with elog, rendered here with KaTeX and syntax highlighting. The source of this post is a plain .md file in the repository.',

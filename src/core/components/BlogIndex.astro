@@ -5,6 +5,7 @@ import { getProvider } from '../content'
 import { filterSlug } from '../content/filter-slug'
 import { markdownStats } from '../content/markdown'
 import { postsForLanguage } from '../content/posts-view'
+import { recentlyUpdated } from '../content/related'
 import { formatDate, useTranslations } from '../i18n'
 
 interface Props {
@@ -37,6 +38,10 @@ const postHref = (post: { urlname: string; lang: string }) =>
   `${langPrefix(config, post.lang)}/blog/${post.urlname}`
 
 const intro = `${t('blog.description')} ${all.length} ${t('blog.postsCount')}`
+const updatedPosts =
+  activeTag === undefined && activeCategory === undefined
+    ? recentlyUpdated(await provider.listPosts(), lang)
+    : []
 ---
 
 <div class="mx-auto w-full max-w-6xl px-5 pt-16 pb-6 sm:px-8 lg:px-12 lg:pt-24">
@@ -82,6 +87,24 @@ const intro = `${t('blog.description')} ${all.length} ${t('blog.postsCount')}`
       ))
     }
   </nav>
+
+  {
+    updatedPosts.length > 0 && (
+      <aside class="mt-6 flex flex-wrap items-baseline gap-x-4 gap-y-1">
+        <span class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          {t('blog.recentlyUpdated')}
+        </span>
+        {updatedPosts.map((entry) => (
+          <a
+            href={postHref(entry)}
+            class="font-serif text-sm text-muted-foreground underline decoration-border underline-offset-4 transition-colors hover:text-primary"
+          >
+            {entry.title}
+          </a>
+        ))}
+      </aside>
+    )
+  }
 
   <div class="mt-4 divide-y divide-border">
     {

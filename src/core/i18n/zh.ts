@@ -38,6 +38,7 @@ export const zh: Record<MessageKey, string> = {
   'blog.all': '全部',
   'blog.pinned': '置顶',
   'blog.min': '分钟',
+  'blog.recentlyUpdated': '最近更新',
   'blog.noPostsTagged': '暂时没有标签为「{tag}」的文章。',
   'blog.category': '分类',
   'projects.kicker': '项目',
@@ -76,6 +77,8 @@ export const zh: Record<MessageKey, string> = {
   'post.updated': '更新于',
   'post.onThisPage': '本页目录',
   'post.references': '参考文献',
+  'post.related': '相关文章',
+  'post.series': '系列',
   'post.colophon': '后记',
   'post.colophonText':
     '在 Notion 中写作，经 elog 导出为 markdown，由 KaTeX 与语法高亮渲染。本文的源文件是仓库中的一个纯 .md 文件。',

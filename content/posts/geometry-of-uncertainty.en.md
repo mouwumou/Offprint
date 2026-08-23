@@ -8,6 +8,7 @@ categories: Research notes
 tags:
   - neuroscience
   - geometry
+  - statistics
   - representation learning
 cover: assets/cover-geometry.png
 lang: en
