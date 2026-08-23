@@ -1,6 +1,6 @@
 ---
 import config from '../config/current'
-import { buildNav, langPrefix, type NavItem } from '../config/nav'
+import { langPrefix, resolveNav, type NavItem } from '../config/nav'
 import { getProvider } from '../content'
 import { pagesForLanguage } from '../content/posts-view'
 import { selfLabel, useTranslations } from '../i18n'
@@ -28,17 +28,12 @@ const switcher = config.i18n.locales.map((locale) => ({
 }))
 const t = useTranslations(lang)
 const prefix = langPrefix(config, lang)
-const nav = buildNav(config, lang)
-
-// P1-7c: standalone pages with nav:true join the navigation, ordered.
-if (config.modules.pages.enabled) {
-  const navPages = pagesForLanguage(await getProvider().listPages(), lang).filter(
-    (page) => page.nav,
-  )
-  for (const page of navPages) {
-    nav.push({ href: `${langPrefix(config, page.lang)}/${page.slug}`, label: page.title })
-  }
-}
+// P1-7c/ADR-015: standalone pages participate in nav resolution — as the
+// appended nav:true set by default, or as {page} slots in an explicit config.nav.
+const navPages = config.modules.pages.enabled
+  ? pagesForLanguage(await getProvider().listPages(), lang)
+  : []
+const nav = resolveNav(config, lang, navPages)
 // Brand block (ADR-015): configurable, defaulting to the profile.
 const name = resolveLocalized(config.profile.name, lang, config.i18n.default)
 const field = resolveLocalized(config.profile.field, lang, config.i18n.default)

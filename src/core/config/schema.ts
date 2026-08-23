@@ -81,6 +81,25 @@ export const modulesSchema = z.strictObject({
 export type ModuleName = keyof z.output<typeof modulesSchema>
 export type ModuleSetting = z.output<typeof moduleToggle>
 
+// ── navigation (ADR-015: nav is data, not module wiring) ─────────────────────
+
+/**
+ * One nav slot. `module` points at a module landing page (label defaults to
+ * the theme's i18n string), `page` at a standalone page by slug (label
+ * defaults to the page title), `href` is a free link (internal paths get the
+ * language prefix, absolute URLs pass through).
+ */
+export const navEntrySchema = z.union([
+  z.strictObject({
+    module: z.enum(['home', 'blog', 'publications', 'projects', 'cv']),
+    label: localizedString.optional(),
+  }),
+  z.strictObject({ page: z.string().min(1), label: localizedString.optional() }),
+  z.strictObject({ href: z.string().min(1), label: localizedString }),
+])
+
+export type NavEntry = z.output<typeof navEntrySchema>
+
 // ── chrome: header & footer (ADR-015) ────────────────────────────────────────
 
 /** `false` hides the element; a localized string replaces the theme default. */
@@ -176,6 +195,8 @@ export const commentsSchema = z
 export const siteConfigSchema = z.strictObject({
   profile: profileSchema,
   modules: modulesSchema.prefault({}),
+  /** Absent → theme default: home, enabled modules, then nav:true pages. */
+  nav: z.array(navEntrySchema).optional(),
   header: headerSchema.prefault({}),
   footer: footerSchema.prefault({}),
   theme: themeSchema.prefault({}),
