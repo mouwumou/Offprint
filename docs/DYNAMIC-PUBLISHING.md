@@ -152,6 +152,8 @@ export interface ContentProvider {
 
 一个很薄的 Node 镜像，三种形态共用同一段代码：CLI（`offprint-sync`）、Docker 入口（cron 模式）、GitHub Action（`.github/workflows/sync.yml` 调用 `pnpm sync`）。
 
+> 2026-08-23（ADR-014）：sync 的写权限只及 `content/posts/`；`pages/` 与各 YAML 属站点环、作者本地编辑。Notion type=Page 需 `SYNC_PAGES=true` 显式开启。
+
 职责顺序固定：
 
 1. 运行 elog，`outputDir` 指向 `.staging/`（`format: matter-markdown`，`filename: urlname`，图床开启）。

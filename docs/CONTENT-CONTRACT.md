@@ -3,7 +3,9 @@
 > 工具无关（ADR-002）。任何能产出下列格式的工具都是合法内容源；elog 是参考实现，其字段映射见 §7。
 > 所有 schema 在 `src/core/schema/` 用 zod 定义，本文与代码不一致时以代码为准并回来改本文。
 
-## 1. 目录约定（`content/`）
+## 1. 目录约定（`content/`）与归属（ADR-014）
+
+**博客环**（sync 独占写入）：`posts/`。**站点环**（作者仓库本地编辑，sync 永不触碰）：`pages/`、`publications.yaml`、`projects.yaml`、`cv.yaml`、`talks.yaml`、`news.yaml`、`assets/` 中的站点资源。Notion `type=Page` 仅在 `SYNC_PAGES=true` 时写入 `pages/`（默认关闭）。
 
 ```
 content/
@@ -105,7 +107,7 @@ posts 数据库（借鉴 NotionNext 的 `type` 列思路，一个数据库同时
 | cover | `cover` | elog 图床重写 |
 | series / top / draft | 同名 | 可选列 |
 
-publications 数据库：列名与 §3 字段同名；`authors` 为 multi-select 或逗号分隔文本；`selected` 为 checkbox。sync 用第二个 elog 配置（或直接用 Notion 官方 API）导出为 YAML。
+~~publications 数据库~~：已取消（ADR-014 修订 ADR-008）——出版物在仓库直接编辑 `publications.yaml`，不再经 Notion。
 
 sync 的归一化步骤：日期格式统一为 `YYYY-MM-DD`；`categories` 规范为数组；`urlname` 校验 slug；`lang` 缺省回填并告警；未知列进入 `extra`。
 

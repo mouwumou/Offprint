@@ -77,3 +77,15 @@
 **背景**：P0-9 用维护者现有 NotionNext 库实测（2026-08-23），库中无 `lang` / `urlname` 列。维护者决定（2026-08-23）不在 Notion 维护这两列：主要用中文写作，计划后续接入 LLM API 做文档语言探测与翻译（暂不实现、暂不设计细节）。
 **决定**：**内容契约不变** —— 物化到 `content/` 的 markdown 中 `lang` 与 `urlname` 仍为必填（ADR-007、CONTENT-CONTRACT §2）；这两个字段改由 **sync 层派生**：`lang` 用语言探测回填（LLM 或轻量检测器，实现方式待定），`urlname` 沿用既定预案 —— 有 `slug` 列则映射，缺省由标题 slug 化生成并告警。跨语言译本生成（如中文原文 → 英文译本）作为 sync 的可选 LLM 增强步骤，模型选择、成本、缓存、幂等、是否写回 Notion 等细节留待专门设计，不阻塞阶段 1。
 **后果**：ADR-007 中「Notion 里 lang 列必填」的采集侧要求废止，改为「sync 保证物化产物含合法 lang」；ADR-007 的路由、urlname 互链、hreflang 设计不变。P1-13 的 sync 归一化清单增加 lang 探测回填；CONTENT-CONTRACT §7 映射表相应调整。站点代码（core / pages）完全不感知此决定 —— 这正是契约层存在的意义（ADR-002）。
+
+## ADR-014 站点归站点，博客归博客 — 已定
+
+**背景**：维护者评审（2026-08-23）指出站点身份内容（About、出版物、CV、首页文本）不应走 Notion：低频、结构化、值得版本控制的内容应在仓库本地编辑；Notion 只服务高频流式写作。同时发现现行 sync 每次运行会整体替换 `content/pages/`，本地手写页面会被清空——缺失这条边界已造成真实缺陷。
+**决定**：内容按两条环划分归属。**博客环**：`content/posts/` 由 sync 独占写入（Notion → elog → 归一化 → 原子发布）。**站点环**：`content/pages/`、`publications.yaml`、`projects.yaml`、`cv.yaml` 及全部配置由作者在仓库本地编辑，sync 永远不写。ADR-008 相应修订：**Notion 出版物数据库路径取消**（从未实现第二条 elog 链，现实本就如此；出版物变更频率低，直接改仓库文件）。Notion `type=Page` 路由降级为可选旁路（`SYNC_PAGES=true` 显式开启，默认关闭）。
+**后果**：sync 的原子切换只覆盖 `posts/`；manifest 仍然覆盖全部集合（posts 来自 staging，其余来自 content 现状）。契约本身不变（ADR-002），变的只是"谁写哪个目录"。CONTENT-CONTRACT 增补各集合的归属说明。
+
+## ADR-015 编排层：数据 / 部件 / 编排 / 皮肤四层正交 — 已定
+
+**背景**：维护者评审指出首页布局、导航、头部标题被固化在主题代码里，作者无法塑形；参照 al-folio 的"一切编排皆数据"，但要规避其两个结构病：自由度靠散装配置换来、坏了不报错；用户改模板即失去升级路径。
+**决定**：系统压成四层——**数据**（collections，契约类型化）、**部件**（widgets，吃 provider 数据的展示单元）、**编排**（site.config 中的数组与开关：`home.sections`、`nav`、`header`/`footer`、模块文案覆盖）、**皮肤**（design tokens，ADR-011）。原则："**可塑但不可坏**"：每个自由度都有 zod 形状与缺省值，缺省完全复现既有设计；错误配置在构建期带路径报错。自定义走**三级逃生梯**：① 编排级（改 config）→ ② 部件级（`src/site/widgets/` 放同名组件覆盖实现，由 pages 层解析注入，依赖方向不违反 ADR-006）→ ③ 主题级（阶段 4 拆包后替换皮肤包）。明确不做：可视化搭建器、config 内模板语言、逐处 CSS 旋钮。
+**后果**：`modules.<name>` 从布尔扩宽为 `boolean | { title?, description?, … }`（文案覆盖，i18n 字典退为缺省值）；导航与模块解耦（`nav` 数组缺省时保持自动生成）；阶段 5 的插件 API 落点明确为"注册部件（+可选集合/路由）"。
