@@ -73,13 +73,16 @@ const isActive = (item: NavItem): boolean =>
       )
     }
     <nav class="flex items-center gap-1 sm:gap-2">
+      <!-- Inline links need ~700px with every module on, so they live behind
+           lg; below that the disclosure drawer at the end takes over (zero JS,
+           constraint 6 — details/summary, no island). -->
       {
         nav.map((item) => (
           <a
             href={item.href}
             aria-current={isActive(item) ? 'page' : undefined}
             class:list={[
-              'rounded-md px-2.5 py-1.5 font-mono text-xs tracking-[0.12em] uppercase transition-colors sm:px-3',
+              'hidden rounded-md px-2.5 py-1.5 font-mono text-xs tracking-[0.12em] uppercase transition-colors lg:inline-block lg:px-3',
               isActive(item) ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
             ]}
           >
@@ -101,7 +104,7 @@ const isActive = (item: NavItem): boolean =>
       {
         config.header.languageSwitcher && config.i18n.locales.length > 1 && (
           <span
-            class="ml-1 flex items-center gap-1 font-mono text-xs sm:ml-2"
+            class="ml-1 hidden items-center gap-1 font-mono text-xs sm:ml-2 lg:flex"
             aria-label={t('layout.switchLanguage')}
           >
             {switcher.map((entry, index) => (
@@ -131,6 +134,64 @@ const isActive = (item: NavItem): boolean =>
           </div>
         )
       }
+      <details class="relative ml-1 lg:hidden">
+        <summary
+          aria-label={t('layout.menu')}
+          class="grid size-9 cursor-pointer list-none place-items-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground [&::-webkit-details-marker]:hidden"
+        >
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path
+              d="M2 4h12M2 8h12M2 12h12"
+              stroke="currentColor"
+              stroke-width="1.5"
+              stroke-linecap="round"></path>
+          </svg>
+        </summary>
+        <div
+          class="absolute top-11 right-0 z-50 w-56 rounded-md border border-border bg-background p-2 shadow-lg"
+        >
+          {
+            nav.map((item) => (
+              <a
+                href={item.href}
+                aria-current={isActive(item) ? 'page' : undefined}
+                class:list={[
+                  'block rounded-md px-3 py-2 font-mono text-xs tracking-[0.12em] uppercase transition-colors',
+                  isActive(item) ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
+                ]}
+              >
+                {item.label}
+              </a>
+            ))
+          }
+          {
+            config.header.languageSwitcher && config.i18n.locales.length > 1 && (
+              <div
+                class="mt-1 flex items-center gap-1 border-t border-border px-3 pt-2 pb-1 font-mono text-xs"
+                aria-label={t('layout.switchLanguage')}
+              >
+                {switcher.map((entry, index) => (
+                  <>
+                    {index > 0 && <span class="text-border">/</span>}
+                    {entry.current ? (
+                      <span class="px-1 text-primary" aria-current="true">
+                        {entry.label}
+                      </span>
+                    ) : (
+                      <a
+                        href={entry.href}
+                        class="px-1 text-muted-foreground transition-colors hover:text-foreground"
+                      >
+                        {entry.label}
+                      </a>
+                    )}
+                  </>
+                ))}
+              </div>
+            )
+          }
+        </div>
+      </details>
     </nav>
   </div>
 </header>

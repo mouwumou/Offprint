@@ -71,6 +71,7 @@ export const en = {
   'coldstart.body':
     'First-time setup is fetching content from Notion. This page refreshes automatically.',
   'layout.switchLanguage': 'Switch language',
+  'layout.menu': 'Menu',
   'layout.toggleTheme': 'Toggle color theme',
   'layout.colophon': 'Written in Notion · published with elog',
   'layout.rss': 'RSS',

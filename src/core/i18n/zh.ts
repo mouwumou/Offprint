@@ -70,6 +70,7 @@ export const zh: Record<MessageKey, string> = {
   'coldstart.title': '内容同步中',
   'coldstart.body': '首次启动正在从 Notion 拉取内容，本页会自动刷新。',
   'layout.switchLanguage': '切换语言',
+  'layout.menu': '菜单',
   'layout.toggleTheme': '切换配色',
   'layout.colophon': '在 Notion 写作 · 经 elog 发布',
   'layout.rss': 'RSS',
