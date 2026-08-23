@@ -5,9 +5,11 @@ import { z } from 'zod'
 import {
   pageFrontmatterSchema,
   postFrontmatterSchema,
+  projectsFileSchema,
   publicationsFileSchema,
   type PageFrontmatter,
   type PostFrontmatter,
+  type Project,
   type Publication,
 } from '../schema'
 import type { ContentStore, Manifest } from '../store'
@@ -16,7 +18,7 @@ export type PostSummary = PostFrontmatter
 export type Post = PostFrontmatter & { body: string }
 export type PageSummary = PageFrontmatter
 export type Page = PageFrontmatter & { body: string }
-export type { Publication } from '../schema'
+export type { Project, Publication } from '../schema'
 /** Shaped in P1-6 (JSON Resume loader). */
 export type Resume = Record<string, unknown>
 
@@ -33,6 +35,7 @@ export interface ContentProvider {
   listTags(): Promise<{ tag: string; count: number }[]>
   listPages(lang?: string): Promise<PageSummary[]>
   listPublications(): Promise<Publication[]>
+  listProjects(): Promise<Project[]>
   getCV(): Promise<Resume>
   /** Drop cached entries (manifest keys); no argument drops everything. */
   revalidate(keys?: string[]): Promise<void>
@@ -121,6 +124,14 @@ export function createProvider(store: ContentStore): ContentProvider {
     return result.data
   }
 
+  function parseProjects(raw: string, path: string): Project[] {
+    const result = projectsFileSchema.safeParse(YAML.parse(raw))
+    if (!result.success) {
+      throw new Error(`Invalid ${path}:\n${z.prettifyError(result.error)}`)
+    }
+    return result.data
+  }
+
   async function loadAllPosts(): Promise<Post[]> {
     const paths = (await store.list('posts')).filter((path) => path.endsWith('.md'))
     const posts = await Promise.all(paths.map((path) => load(path, parsePost)))
@@ -178,6 +189,11 @@ export function createProvider(store: ContentStore): ContentProvider {
       return (publications ?? [])
         .slice()
         .sort((a, b) => b.year - a.year || a.key.localeCompare(b.key))
+    },
+
+    async listProjects() {
+      // Authored order is curated by the maintainer — no sorting.
+      return (await load('projects.yaml', parseProjects)) ?? []
     },
 
     async getCV() {

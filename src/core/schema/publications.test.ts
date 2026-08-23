@@ -53,3 +53,23 @@ describe('markAuthors', () => {
     expect(markAuthors(['Mara  E.  Voss'], ['Mara E. Voss'])[0]?.self).toBe(true)
   })
 })
+
+describe('projectSchema', async () => {
+  const { projectSchema } = await import('./projects')
+  const minimal = { name: 'manifold-lab', blurb: 'A toolkit.' }
+
+  it('accepts a minimal project with defaults', () => {
+    const project = projectSchema.parse(minimal)
+    expect(project.status).toBe('active')
+    expect(project.tags).toEqual([])
+  })
+
+  it('accepts localized blurbs and validates urls/status', () => {
+    expect(
+      projectSchema.parse({ ...minimal, blurb: { en: 'A toolkit.', zh: '工具包。' } }).blurb,
+    ).toEqual({ en: 'A toolkit.', zh: '工具包。' })
+    expect(() => projectSchema.parse({ ...minimal, repo: 'not a url' })).toThrow()
+    expect(() => projectSchema.parse({ ...minimal, status: 'dead' })).toThrow()
+    expect(() => projectSchema.parse({ blurb: 'x' })).toThrow()
+  })
+})

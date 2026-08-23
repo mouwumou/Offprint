@@ -25,7 +25,7 @@
 - [x] P1-2 Home 页
 - [x] P1-3 Blog 列表页（tag/category 过滤走 URL 参数、置顶、草稿隐藏）（过滤状态走 URL 路径 `/blog/tag/x` 而非 query：静态构建无法按 query 变化，query 过滤会破坏 ADR-003 双模式一致性）
 - [x] P1-4 publications：YAML loader（Notion 导出）+ 作者高亮 + 首页 Selected work（独立页与 Cite 留阶段 3）
-- [ ] P1-5 projects：YAML loader + 页面
+- [x] P1-5 projects：YAML loader + 页面
 - [ ] P1-6 CV：JSON Resume loader + 页面 + 打印样式
 - [ ] P1-7 SEO：Head 组件（canonical/OG/Twitter/JSON-LD Person & BlogPosting/hreflang）、sitemap、RSS/Atom/JSON feed（按语言）
 - [ ] P1-7b i18n：语言前缀路由、UI 字符串表、语言切换器、译本互链、`{en,zh}` 字段解析

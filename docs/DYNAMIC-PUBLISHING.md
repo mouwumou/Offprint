@@ -122,6 +122,7 @@ export interface ContentProvider {
   listTags(): Promise<{ tag: string; count: number }[]>
   listPages(lang?: string): Promise<PageSummary[]>
   listPublications(): Promise<Publication[]>
+  listProjects(): Promise<Project[]>          // 2026-08-23 补：projects 模块（P1-5）
   getCV(): Promise<Resume>
   /** 失效缓存；不传参数则全部失效 */
   revalidate(keys?: string[]): Promise<void>

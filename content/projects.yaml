@@ -1,0 +1,45 @@
+# Sample projects (template data, ADR-010).
+- name: manifold-lab
+  blurb:
+    en: A Python toolkit for measuring the geometry of neural population codes.
+    zh: 测量神经群体编码几何结构的 Python 工具包。
+  description:
+    en: Estimators for intrinsic dimensionality, curvature, and decoding capacity, with a numpy-first API and reproducible benchmarks against synthetic ground truth.
+    zh: 内在维数、曲率与解码容量的估计器，numpy 优先的 API，并附带针对合成基准的可复现评测。
+  tags: [Python, NumPy, JAX, Research tool]
+  year: 2023–now
+  status: active
+  repo: https://github.com/example/manifold-lab
+- name: elog-scholar
+  blurb:
+    en: The Notion → markdown pipeline that publishes this very blog.
+    zh: 发布这个博客本身的 Notion → markdown 链路。
+  description:
+    en: A thin configuration layer over elog that maps a Notion database to the front-matter contract this site expects, plus a GitHub Action that rebuilds on every Notion edit.
+    zh: 在 elog 之上的一层薄配置，把 Notion 数据库映射到本站期望的 front-matter 契约，并用 GitHub Action 在每次 Notion 编辑后重建。
+  tags: [elog, Notion, CI, TypeScript]
+  year: 2024–now
+  status: maintained
+  repo: https://github.com/example/elog-scholar
+- name: spike-sorter-viz
+  blurb:
+    en: Interactive WebGL visualization for large electrophysiology recordings.
+    zh: 大规模电生理记录的交互式 WebGL 可视化。
+  description:
+    en: Renders millions of spike waveforms at 60fps in the browser, with brushing, clustering overlays, and shareable views for collaborative curation.
+    zh: 在浏览器中以 60fps 渲染数百万条锋电位波形，支持刷选、聚类叠加与可分享视图，便于协作校对。
+  tags: [TypeScript, WebGL, Visualization]
+  year: '2022'
+  status: archived
+  repo: https://github.com/example/spike-sorter-viz
+- name: priorbox
+  blurb:
+    en: Composable structured priors for probabilistic models.
+    zh: 概率模型的可组合结构化先验。
+  description:
+    en: A small library of reusable prior distributions and reparameterizations for latent variable models, designed to drop into existing PyTorch and JAX pipelines.
+    zh: 一个小型库，提供可复用的先验分布与重参数化，可直接嵌入现有 PyTorch 与 JAX 流水线。
+  tags: [Python, PyTorch, Bayesian]
+  year: '2023'
+  status: maintained
+  repo: https://github.com/example/priorbox
