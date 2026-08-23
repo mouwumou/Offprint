@@ -33,10 +33,10 @@
 - [x] P1-8 首页 Selected work 的 JSON-LD `ScholarlyArticle`（Highwire meta 随阶段 3 出版物页一起做）
 - [x] P1-9 模块开关生效（关掉的模块无路由/导航/打包）（实测全关配置：仅产出 2 个首页，无导航/feed/CTA/section；完整路由注入 integration 留阶段 4）
 - [x] P1-10 `redirects.yaml` → 各平台重定向产物（GH Pages 用 meta refresh 页、Vercel/Netlify/CF 原生、node 中间件）（经 Astro 内建 redirects 配置实现：静态出 meta-refresh 页，node adapter 出真 301，平台 adapter 接入时自动译为原生规则；真实清单待维护者 P1-16 前提供）
-- [ ] P1-11 CI：双模式构建 + 单测 + e2e + 内容校验
-- [ ] P1-12 GH Pages 与 Vercel 两条部署 workflow
+- [x] P1-11 CI：双模式构建 + 单测 + e2e + 内容校验（ci.yml，Node 22/24 矩阵；实际运行待仓库推到 GitHub 后验证）
+- [x] P1-12 GH Pages 与 Vercel 两条部署 workflow（deploy-pages.yml / deploy-vercel.yml；需配置 SITE_URL 变量与 Vercel secrets，运行待推仓库后验证）
 - [x] P1-13 `src/sync` 基础：elog 配置生成、staging、逐篇校验、manifest、原子切换（DYNAMIC-PUBLISHING §4，不含 notify）
-- [ ] P1-14 sync 的 GitHub Action 形态：schedule/dispatch → elog → commit `content/` → 触发构建
+- [x] P1-14 sync 的 GitHub Action 形态：schedule/dispatch → elog → commit `content/` → 触发构建（sync.yml，30 分钟 cron + dispatch；需配置 NOTION_TOKEN/NOTION_DB secrets）
 - [ ] P1-15 自托管静态：`docker/compose.static.yaml`（web 静态伺服 + sync 容器 elog→build→原子切换 dist/）
 - [ ] P1-16 迁移真实内容，以 static 模式上线替换旧站
 

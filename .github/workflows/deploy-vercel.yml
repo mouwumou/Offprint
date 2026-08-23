@@ -1,0 +1,32 @@
+# P1-12: Vercel deployment (static output; server mode arrives with the
+# vercel adapter in phase 2). Requires secrets VERCEL_TOKEN, VERCEL_ORG_ID,
+# VERCEL_PROJECT_ID. Runs only when the token secret is configured.
+name: Deploy to Vercel
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ vars.DEPLOY_VERCEL == 'true' }}
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build:static
+        env:
+          SITE_URL: ${{ vars.SITE_URL }}
+      - run: pnpm dlx vercel deploy --prebuilt --prod --token=${{ secrets.VERCEL_TOKEN }}
+        # `vercel build`-less flow: upload dist/ as a prebuilt static output.
+        env:
+          VERCEL_OUTPUT_DIR: dist

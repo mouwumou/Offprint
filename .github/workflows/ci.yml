@@ -1,0 +1,34 @@
+# P1-11: dual-mode builds + unit tests + e2e (incl. dual-mode HTML parity)
+# + content validation, across Node LTS lines (ARCHITECTURE §6).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm typecheck
+      - run: pnpm test
+      # Content validation job (constraint 4): non-compliant content fails CI.
+      - run: pnpm sync validate
+      - run: pnpm build:static
+      - run: pnpm build:server
+      - run: pnpm exec playwright install --with-deps chromium
+      # Includes the dual-mode HTML parity suite (ADR-003).
+      - run: pnpm e2e
