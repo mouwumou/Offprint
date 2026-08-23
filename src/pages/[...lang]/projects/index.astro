@@ -32,7 +32,7 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
 const statusStyles: Record<ProjectStatus, string> = {
   active: 'text-primary border-primary/40',
   maintained: 'text-muted-foreground border-border',
-  archived: 'text-muted-foreground border-border opacity-70',
+  archived: 'text-muted-foreground border-border',
 }
 const statusKey: Record<ProjectStatus, MessageKey> = {
   active: 'projects.status.active',

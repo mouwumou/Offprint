@@ -9,7 +9,7 @@ tags:
   - neuroscience
   - geometry
   - representation learning
-cover: https://images.unsplash.com/photo-1635070041078-e363dbe005cb?w=1600&h=900&fit=crop&auto=format
+cover: assets/cover-geometry.png
 lang: en
 top: true
 ---

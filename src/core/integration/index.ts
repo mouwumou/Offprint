@@ -1,3 +1,6 @@
+import { cp, stat } from 'node:fs/promises'
+import { fileURLToPath } from 'node:url'
+import { join, resolve } from 'node:path'
 import type { AstroIntegration } from 'astro'
 
 /**
@@ -10,6 +13,18 @@ export function offprint(): AstroIntegration {
   return {
     name: 'offprint',
     hooks: {
+      // Static builds ship content/assets as /assets/* (server mode streams
+      // them from the content volume via middleware instead).
+      'astro:build:done': async ({ dir }) => {
+        if ((process.env.RUNTIME_MODE ?? 'static') === 'server') return
+        const source = resolve(process.env.CONTENT_DIR ?? 'content', 'assets')
+        try {
+          await stat(source)
+        } catch {
+          return
+        }
+        await cp(source, join(fileURLToPath(dir), 'assets'), { recursive: true })
+      },
       'astro:config:setup': ({ injectRoute }) => {
         if ((process.env.RUNTIME_MODE ?? 'static') !== 'server') return
         injectRoute({

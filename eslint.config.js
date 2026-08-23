@@ -31,8 +31,18 @@ export default defineConfig(
   },
   {
     // Node context: build/tool configs, e2e runner, sync CLI (runs in Node, not the browser).
-    files: ['*.config.{js,mjs,ts}', 'e2e/**/*.ts', 'scripts/**/*.{js,mjs,ts}', 'src/sync/**/*.ts'],
+    files: [
+      '*.config.{js,mjs,ts}',
+      '*.cjs',
+      'e2e/**/*.ts',
+      'scripts/**/*.{js,mjs,ts}',
+      'src/sync/**/*.ts',
+    ],
     languageOptions: { globals: { ...globals.node } },
+  },
+  {
+    files: ['*.cjs'],
+    languageOptions: { sourceType: 'commonjs', globals: { ...globals.node } },
   },
   {
     // Package boundaries (ADR-006), enforced on resolved file paths.

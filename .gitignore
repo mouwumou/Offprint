@@ -20,6 +20,7 @@ pnpm-debug.log*
 
 # tests
 coverage/
+.lighthouseci/
 test-results/
 playwright-report/
 blob-report/

@@ -3,6 +3,7 @@ import node from '@astrojs/node'
 import react from '@astrojs/react'
 import sitemap from '@astrojs/sitemap'
 import tailwindcss from '@tailwindcss/vite'
+import { FontaineTransform } from 'fontaine'
 import { defineConfig } from 'astro/config'
 import YAML from 'yaml'
 import { offprint } from './src/core/integration'
@@ -29,6 +30,11 @@ export default defineConfig({
   // and CLI callers (they send no Origin header).
   security: { checkOrigin: false },
   redirects,
+  build: {
+    // Inline all CSS: removes the render-blocking stylesheet request, which
+    // is what keeps mobile-lab LCP under the ≥0.95 Lighthouse bar (P3-9).
+    inlineStylesheets: 'always',
+  },
   integrations: [
     react(),
     // Injects the server-only /api routes when RUNTIME_MODE=server (P2-3);
@@ -44,6 +50,14 @@ export default defineConfig({
     }),
   ],
   vite: {
-    plugins: [tailwindcss()],
+    plugins: [
+      tailwindcss(),
+      // Metric-matched local fallback faces (size/ascent/descent overrides):
+      // webfont swap stops shifting layout without preloading 200KB of fonts.
+      FontaineTransform.vite({
+        fallbacks: ['Georgia', 'Times New Roman', 'Arial', 'Segoe UI', 'Helvetica Neue'],
+        resolvePath: (id) => new URL(`./node_modules/${id}`, import.meta.url),
+      }),
+    ],
   },
 })

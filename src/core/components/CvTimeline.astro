@@ -23,7 +23,7 @@ const { entries } = Astro.props
           <h3 class="font-serif text-lg leading-snug">{entry.title}</h3>
           <p class="text-muted-foreground">
             {entry.org}
-            {entry.location && <span class="text-muted-foreground/70"> · {entry.location}</span>}
+            {entry.location && <span class="text-muted-foreground"> · {entry.location}</span>}
           </p>
           {entry.detail && (
             <p class="mt-1 text-sm leading-relaxed text-muted-foreground">{entry.detail}</p>

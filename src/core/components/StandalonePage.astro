@@ -1,5 +1,5 @@
 ---
-import katexCss from 'katex/dist/katex.min.css?url'
+import { katexCss } from '../theme/katex'
 import type { Page } from '../content'
 import type { RenderedMarkdown } from '../content/markdown'
 import { formatDate, useTranslations } from '../i18n'
@@ -18,7 +18,7 @@ const t = useTranslations(lang)
 ---
 
 <BaseLayout lang={lang} title={page.title} alternates={alternates}>
-  <Fragment slot="head">{rendered.hasMath && <link rel="stylesheet" href={katexCss} />}</Fragment>
+  <Fragment slot="head">{rendered.hasMath && <style set:html={katexCss} />}</Fragment>
 
   <article class="mx-auto w-full max-w-3xl px-5 pt-14 pb-20 sm:px-8 lg:pt-20" data-pagefind-body>
     <header class="border-b border-border pb-8">

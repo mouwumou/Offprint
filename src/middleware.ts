@@ -1,4 +1,5 @@
 import { defineMiddleware } from 'astro:middleware'
+import { contentAssetResponse } from './core/server/assets'
 import { coldStartResponse } from './core/server/coldstart'
 import { ensureContentWatch } from './core/server/watch'
 
@@ -9,6 +10,8 @@ import { ensureContentWatch } from './core/server/watch'
 export const onRequest = defineMiddleware(async (context, next) => {
   if ((process.env['RUNTIME_MODE'] ?? 'static') === 'server') {
     ensureContentWatch()
+    const asset = await contentAssetResponse(context.url.pathname)
+    if (asset) return asset
     const syncing = await coldStartResponse(context.url.pathname)
     if (syncing) return syncing
   }

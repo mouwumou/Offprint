@@ -1,11 +1,12 @@
 ---
-import katexCss from 'katex/dist/katex.min.css?url'
+import { katexCss } from '../../../core/theme/katex'
 import siteConfig from '../../../core/config/current'
 import { langPrefix } from '../../../core/config/nav'
 import { bibliographyEntry, citationFormats, inlineCitation } from '../../../core/cite/formats'
 import CiteDialog from '../../../core/components/CiteDialog'
 import Comments from '../../../core/components/Comments.astro'
 import { getProvider } from '../../../core/content'
+import { assetUrl } from '../../../core/content/asset-url'
 import type { CitationRef } from '../../../core/content/citations'
 import { renderMarkdown } from '../../../core/content/markdown'
 import { formatDate, useTranslations } from '../../../core/i18n'
@@ -120,13 +121,13 @@ const jsonLd = blogPostingJsonLd(
   title={post.title}
   description={post.description}
   type="article"
-  image={post.cover ?? `${prefix}/blog/${post.urlname}/og.png`}
+  image={post.cover ? assetUrl(post.cover) : `${prefix}/blog/${post.urlname}/og.png`}
   publishedTime={post.date}
   modifiedTime={post.updated}
   alternates={alternates}
   jsonLd={jsonLd}
 >
-  <Fragment slot="head">{showMath && <link rel="stylesheet" href={katexCss} />}</Fragment>
+  <Fragment slot="head">{showMath && <style set:html={katexCss} />}</Fragment>
 
   <!-- Symmetric rails keep the article dead-center in the page whether or not
        a TOC exists; the TOC lives in the right rail and sticks on scroll. -->
@@ -203,9 +204,11 @@ const jsonLd = blogPostingJsonLd(
       {
         post.cover && (
           <img
-            src={post.cover}
+            src={assetUrl(post.cover)}
             alt=""
-            loading="lazy"
+            width="1600"
+            height="900"
+            fetchpriority="high"
             class="mt-8 aspect-[16/9] w-full rounded-md border border-border bg-muted object-cover"
           />
         )

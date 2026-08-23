@@ -10,7 +10,7 @@ tags:
   - notion
   - tooling
   - web
-cover: https://images.unsplash.com/photo-1517842645767-c639042777db?w=1600&h=900&fit=crop&auto=format
+cover: assets/cover-notion.png
 lang: en
 ---
 
