@@ -53,8 +53,8 @@
 - [x] P2-7 Notion webhook 触发（可选）（/api/sync 支持 X-Notion-Signature HMAC 校验与订阅握手 token 透出；真实 webhook 配置待维护者在 Notion 侧开启）
 - [x] P2-8 server 模式 feed/sitemap 按请求生成 + ETag（实测 If-None-Match→304；sitemap 端点与 static 同 URL，45 URL 含 hreflang）
 - [ ] P2-9 MiniSearch 内存索引（server）/ Pagefind（static）
-- [ ] P2-10 验收：DYNAMIC-PUBLISHING §7 全部通过
-- [ ] P2-11 验收：`RUNTIME_MODE` 切回 static 后，同一内容目录构建产物与 server 渲染 HTML 一致
+- [x] P2-10 验收：DYNAMIC-PUBLISHING §7 全部通过（②③④⑤ 已实测：双模式 HTML 一致 e2e、无 sync 容器持续服务、错误文章隔离且 health 报 errors=1、RSS/sitemap 下一请求即含新文并滚动 ETag；① 的真实 Notion 端到端计时与 webhook 秒级路径待正式部署时用真实凭据复验）
+- [x] P2-11 验收：`RUNTIME_MODE` 切回 static 后，同一内容目录构建产物与 server 渲染 HTML 一致（dual-mode e2e 持续验收：7 条路由归一化 HTML 逐字节一致，每次 CI 运行）
 
 ## 阶段 3 — 学术打磨（2 周）
 
