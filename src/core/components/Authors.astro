@@ -1,0 +1,26 @@
+---
+import config from '../config/current'
+import { markAuthors } from '../content/authors'
+
+interface Props {
+  authors: readonly string[]
+}
+
+const { authors } = Astro.props
+const marked = markAuthors(authors, config.profile.nameVariants)
+---
+
+<p class="mt-1 text-sm text-muted-foreground">
+  {
+    marked.map((author, index) => (
+      <>
+        {author.self ? (
+          <strong class="font-semibold text-foreground">{author.name}</strong>
+        ) : (
+          author.name
+        )}
+        {index < marked.length - 1 && ', '}
+      </>
+    ))
+  }
+</p>

@@ -1,6 +1,22 @@
 import type { MessageKey } from './en'
 
 export const zh: Record<MessageKey, string> = {
+  'home.about': '关于',
+  'home.selectedWork': '代表作',
+  'home.recentWriting': '近期文章',
+  'home.allPosts': '全部文章 →',
+  'home.readWriting': '阅读文章',
+  'home.viewCV': '查看简历',
+  'home.affiliation': '所属机构',
+  'home.contact': '联系',
+  'home.elsewhere': '足迹',
+  'pub.pdf': 'PDF',
+  'pub.code': '代码',
+  'pub.data': '数据',
+  'pub.slides': '幻灯片',
+  'pub.poster': '海报',
+  'pub.video': '视频',
+  'pub.website': '网站',
   'nav.home': '首页',
   'nav.writing': '文章',
   'nav.projects': '项目',

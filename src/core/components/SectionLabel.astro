@@ -1,0 +1,9 @@
+---
+interface Props {
+  text: string
+}
+
+const { text } = Astro.props
+---
+
+<h2 class="mb-6 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">{text}</h2>

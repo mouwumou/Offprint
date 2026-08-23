@@ -45,3 +45,11 @@ createServer((req, res) => {
 }).listen(port, () => {
   console.log(`serving ${root} on http://localhost:${port}`)
 })
+
+// Self-reap when the spawning process dies (Playwright's tree-kill does not
+// reliably reach grandchildren through pnpm's shell chain): once orphaned we
+// get re-parented and ppid changes.
+const parent = process.ppid
+setInterval(() => {
+  if (process.ppid !== parent) process.exit(0)
+}, 2000)

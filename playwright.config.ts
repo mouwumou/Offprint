@@ -18,8 +18,10 @@ export default defineConfig({
   ],
   webServer: {
     // Not `astro preview`: it daemonizes/short-circuits when any instance is
-    // already running, so Playwright never owns the process.
-    command: 'pnpm build:static && node scripts/serve-dist.mjs dist 4331',
+    // already running, so Playwright never owns the process. Dedicated outDir
+    // keeps e2e independent of whatever state dist/ is in.
+    command:
+      'cross-env ASTRO_OUT_DIR=dist-e2e pnpm build:static && node scripts/serve-dist.mjs dist-e2e 4331',
     port: 4331,
     reuseExistingServer: !process.env.CI,
   },

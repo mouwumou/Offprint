@@ -9,9 +9,7 @@ import tseslint from 'typescript-eslint'
 export default defineConfig(
   {
     ignores: [
-      'dist/',
-      'dist-static/',
-      'dist-server/',
+      'dist*/',
       '.astro/',
       'node_modules/',
       'coverage/',

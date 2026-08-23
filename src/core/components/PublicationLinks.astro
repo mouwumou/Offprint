@@ -1,0 +1,49 @@
+---
+import { useTranslations, type MessageKey } from '../i18n'
+import type { Publication } from '../schema'
+
+interface Props {
+  publication: Publication
+  lang: string
+}
+
+const { publication, lang } = Astro.props
+const t = useTranslations(lang)
+
+const fields: {
+  field: 'pdf' | 'code' | 'data' | 'slides' | 'poster' | 'video' | 'website'
+  key: MessageKey
+}[] = [
+  { field: 'pdf', key: 'pub.pdf' },
+  { field: 'code', key: 'pub.code' },
+  { field: 'data', key: 'pub.data' },
+  { field: 'slides', key: 'pub.slides' },
+  { field: 'poster', key: 'pub.poster' },
+  { field: 'video', key: 'pub.video' },
+  { field: 'website', key: 'pub.website' },
+]
+
+const links: { label: string; href: string }[] = []
+if (publication.doi) links.push({ label: 'DOI', href: `https://doi.org/${publication.doi}` })
+if (publication.arxiv)
+  links.push({ label: 'arXiv', href: `https://arxiv.org/abs/${publication.arxiv}` })
+for (const { field, key } of fields) {
+  const href = publication[field]
+  if (href) links.push({ label: t(key), href })
+}
+---
+
+{
+  links.length > 0 && (
+    <div class="mt-2 flex flex-wrap gap-3">
+      {links.map((link) => (
+        <a
+          href={link.href}
+          class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  )
+}
