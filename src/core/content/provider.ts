@@ -75,6 +75,32 @@ export function createProvider(store: ContentStore): ContentProvider {
   let manifestCache: Manifest | null | undefined
   let hashByPath: Map<string, string> | undefined
   const fileCache = new Map<string, CacheEntry>()
+  let fallbackVersion: { at: number; value: string } | null = null
+
+  /**
+   * Hand-written content ships without a manifest; a constant version there
+   * would freeze the server search index and feed ETags forever. Fingerprint
+   * the content bytes instead, memoized briefly — a personal site's content
+   * is a few dozen small files.
+   */
+  async function computeFallbackVersion(): Promise<string> {
+    if (fallbackVersion !== null && Date.now() - fallbackVersion.at < 2_000) {
+      return fallbackVersion.value
+    }
+    const hash = createHash('sha256')
+    for (const prefix of ['posts', 'pages']) {
+      for (const path of (await store.list(prefix)).sort()) {
+        hash.update(path)
+        hash.update((await store.read(path)) ?? '')
+      }
+    }
+    for (const file of ['publications.yaml', 'projects.yaml', 'cv.yaml']) {
+      hash.update(file)
+      hash.update((await store.read(file)) ?? '')
+    }
+    fallbackVersion = { at: Date.now(), value: `files-${hash.digest('hex').slice(0, 32)}` }
+    return fallbackVersion.value
+  }
 
   async function getManifest(): Promise<Manifest | null> {
     if (manifestCache === undefined) {
@@ -225,11 +251,12 @@ export function createProvider(store: ContentStore): ContentProvider {
       }
       manifestCache = undefined
       hashByPath = undefined
+      fallbackVersion = null
     },
 
     async version() {
       const manifest = await getManifest()
-      if (manifest === null) return 'no-manifest'
+      if (manifest === null) return computeFallbackVersion()
       return createHash('sha256').update(JSON.stringify(manifest)).digest('hex')
     },
   }

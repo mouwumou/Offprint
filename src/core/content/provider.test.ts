@@ -234,10 +234,20 @@ describe('createProvider · cache & revalidate', () => {
   })
 
   it('exposes a version derived from the manifest', async () => {
-    expect(await provider.version()).toBe('no-manifest')
     await writeManifest()
-    await provider.revalidate()
     const version = await provider.version()
     expect(version).toMatch(/^[0-9a-f]{64}$/)
+  })
+
+  it('fingerprints the content when there is no manifest', async () => {
+    // A constant version here froze the server search index and feed ETags.
+    const before = await provider.version()
+    expect(before).toMatch(/^files-[0-9a-f]{32}$/)
+
+    await writePost('alpha.en.md', { ...base, title: 'Alpha', urlname: 'alpha', lang: 'en' }, 'New.')
+    await provider.revalidate()
+    const after = await provider.version()
+    expect(after).toMatch(/^files-[0-9a-f]{32}$/)
+    expect(after).not.toBe(before)
   })
 })
