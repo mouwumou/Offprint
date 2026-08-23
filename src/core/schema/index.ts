@@ -1,4 +1,6 @@
 export { coverSource, isoDate, slugSchema, stringOrStringArray } from './common'
+export { resumeSchema } from './cv'
+export type { AwardEntry, EducationEntry, Resume, WorkEntry } from './cv'
 export { localizedString, resolveLocalized } from './localized'
 export type { LocalizedString } from './localized'
 export { pageFrontmatterSchema } from './pages'

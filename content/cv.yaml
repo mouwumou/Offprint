@@ -1,0 +1,97 @@
+# Sample CV (template data, ADR-010) — JSON Resume schema in YAML, with the
+# contract's extensions: localized {en,zh} text, teaching[], and
+# publicationsFromSite (renders content/publications.yaml).
+basics:
+  name: Mara Ellison Voss
+  label: { en: Postdoctoral Researcher, zh: 博士后研究员 }
+  email: m.voss@example.edu
+  location:
+    city: { en: Zürich, zh: 苏黎世 }
+    countryCode: CH
+
+publicationsFromSite: true
+
+work:
+  - name: { en: 'Institute for Theoretical Neuroscience, ETH Zürich', zh: 苏黎世联邦理工学院理论神经科学研究所 }
+    position: { en: Postdoctoral Researcher, zh: 博士后研究员 }
+    location: { en: 'Zürich, CH', zh: 瑞士苏黎世 }
+    startDate: '2022'
+    summary:
+      en: Modelling uncertainty representation in cortical circuits; mentoring two doctoral students.
+      zh: 研究皮层环路中不确定性表征的建模；指导两名博士生。
+  - name: DeepMind
+    position: { en: Research Intern, zh: 研究实习生 }
+    location: { en: 'London, UK', zh: 英国伦敦 }
+    startDate: '2020'
+    endDate: '2020'
+    summary:
+      en: Structured latent models for scientific time-series data.
+      zh: 科学时间序列数据的结构化隐变量模型。
+
+education:
+  - institution: { en: 'Gatsby Unit, University College London', zh: 伦敦大学学院 Gatsby 计算神经科学中心 }
+    area: { en: Computational Neuroscience, zh: 计算神经科学 }
+    studyType: PhD
+    location: { en: 'London, UK', zh: 英国伦敦 }
+    startDate: '2018'
+    endDate: '2022'
+    summary:
+      en: 'Thesis: Latent variable models for large-scale neural population activity. Advised by Prof. J. Hartwell.'
+      zh: 论文：大规模神经群体活动的隐变量模型。导师 J. Hartwell 教授。
+  - institution: { en: University of Edinburgh, zh: 爱丁堡大学 }
+    area: { en: Machine Learning, zh: 机器学习 }
+    studyType: MSc
+    location: { en: 'Edinburgh, UK', zh: 英国爱丁堡 }
+    startDate: '2016'
+    endDate: '2018'
+    summary:
+      en: Distinction. Dissertation on variational inference for time series.
+      zh: 优等毕业。学位论文研究时间序列的变分推断。
+  - institution: { en: University of Bristol, zh: 布里斯托大学 }
+    area: { en: Physics, zh: 物理学 }
+    studyType: BSc
+    location: { en: 'Bristol, UK', zh: 英国布里斯托 }
+    startDate: '2013'
+    endDate: '2016'
+    summary: { en: First-class honours., zh: 一等荣誉学位。 }
+
+awards:
+  - title: SNSF Postdoc.Mobility Fellowship
+    date: '2024'
+    awarder: Swiss National Science Foundation
+  - title: { en: Outstanding Thesis Award, zh: 优秀论文奖 }
+    date: '2022'
+    awarder: UCL Faculty of Life Sciences
+  - title: Cosyne Presenter Travel Award
+    date: '2019'
+    awarder: Computational and Systems Neuroscience
+
+teaching:
+  - name: ETH Zürich (MSc)
+    position: { en: Co-lecturer — Probabilistic Machine Learning, zh: 合授讲师 —— 概率机器学习 }
+    period: 2023, 2024
+  - name: UCL (MSc)
+    position: { en: Teaching Assistant — Statistical Inference, zh: 助教 —— 统计推断 }
+    startDate: '2019'
+    endDate: '2021'
+
+skills:
+  - name: { en: Languages, zh: 编程语言 }
+    keywords: [Python, TypeScript, Julia, C++, R, MATLAB]
+  - name: { en: Frameworks, zh: 框架 }
+    keywords: [JAX, PyTorch, NumPy / SciPy, React, scikit-learn]
+  - name: { en: Methods, zh: 方法 }
+    keywords:
+      - { en: Variational inference, zh: 变分推断 }
+      - { en: Dynamical systems, zh: 动力系统 }
+      - GLMs
+      - { en: Dimensionality reduction, zh: 降维 }
+      - { en: Bayesian modelling, zh: 贝叶斯建模 }
+
+languages:
+  - language: { en: English, zh: 英语 }
+    fluency: { en: native, zh: 母语 }
+  - language: { en: German, zh: 德语 }
+    fluency: B2
+  - language: { en: French, zh: 法语 }
+    fluency: B1

@@ -159,9 +159,36 @@ describe('createProvider · publications', () => {
   })
 })
 
-describe('createProvider · stubs', () => {
-  it('the CV loader announces its phase', async () => {
-    await expect(provider.getCV()).rejects.toThrow(/P1-6/)
+describe('createProvider · cv', () => {
+  it('returns null when cv.yaml is absent', async () => {
+    expect(await provider.getCV()).toBeNull()
+  })
+
+  it('parses a JSON-Resume-shaped cv.yaml with extensions', async () => {
+    await writeFile(
+      join(root, 'cv.yaml'),
+      [
+        'basics:',
+        '  name: Ada Lovelace',
+        'publicationsFromSite: true',
+        'work:',
+        '  - name: Analytical Engine Lab',
+        '    position: { en: Researcher, zh: 研究员 }',
+        '    startDate: "2022"',
+        'teaching:',
+        '  - name: University',
+        '    period: 2023, 2024',
+      ].join('\n'),
+    )
+    const cv = await provider.getCV()
+    expect(cv?.publicationsFromSite).toBe(true)
+    expect(cv?.work[0]?.position).toEqual({ en: 'Researcher', zh: '研究员' })
+    expect(cv?.teaching[0]?.period).toBe('2023, 2024')
+  })
+
+  it('rejects an invalid cv.yaml loudly', async () => {
+    await writeFile(join(root, 'cv.yaml'), 'basics: { email: not-an-email }')
+    await expect(provider.getCV()).rejects.toThrow(/cv\.yaml/)
   })
 })
 

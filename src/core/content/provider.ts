@@ -7,10 +7,12 @@ import {
   postFrontmatterSchema,
   projectsFileSchema,
   publicationsFileSchema,
+  resumeSchema,
   type PageFrontmatter,
   type PostFrontmatter,
   type Project,
   type Publication,
+  type Resume,
 } from '../schema'
 import type { ContentStore, Manifest } from '../store'
 
@@ -18,9 +20,7 @@ export type PostSummary = PostFrontmatter
 export type Post = PostFrontmatter & { body: string }
 export type PageSummary = PageFrontmatter
 export type Page = PageFrontmatter & { body: string }
-export type { Project, Publication } from '../schema'
-/** Shaped in P1-6 (JSON Resume loader). */
-export type Resume = Record<string, unknown>
+export type { Project, Publication, Resume } from '../schema'
 
 /**
  * The semantic content layer (DYNAMIC-PUBLISHING §3.2): parsed + validated +
@@ -36,7 +36,7 @@ export interface ContentProvider {
   listPages(lang?: string): Promise<PageSummary[]>
   listPublications(): Promise<Publication[]>
   listProjects(): Promise<Project[]>
-  getCV(): Promise<Resume>
+  getCV(): Promise<Resume | null>
   /** Drop cached entries (manifest keys); no argument drops everything. */
   revalidate(keys?: string[]): Promise<void>
   /** Current content version (manifest hash), used for ETag / 304. */
@@ -197,7 +197,13 @@ export function createProvider(store: ContentStore): ContentProvider {
     },
 
     async getCV() {
-      throw new Error('CV loader is not implemented yet (P1-6)')
+      return load('cv.yaml', (raw, path) => {
+        const result = resumeSchema.safeParse(YAML.parse(raw))
+        if (!result.success) {
+          throw new Error(`Invalid ${path}:\n${z.prettifyError(result.error)}`)
+        }
+        return result.data
+      })
     },
 
     async revalidate(keys) {
