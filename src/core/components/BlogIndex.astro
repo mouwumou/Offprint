@@ -1,0 +1,151 @@
+---
+import config from '../config/current'
+import { langPrefix } from '../config/nav'
+import { getProvider } from '../content'
+import { filterSlug } from '../content/filter-slug'
+import { markdownStats } from '../content/markdown'
+import { postsForLanguage } from '../content/posts-view'
+import { formatDate, useTranslations } from '../i18n'
+
+interface Props {
+  lang: string
+  activeTag?: string | undefined
+  activeCategory?: string | undefined
+}
+
+const { lang, activeTag, activeCategory } = Astro.props
+const t = useTranslations(lang)
+const prefix = langPrefix(config, lang)
+const provider = getProvider()
+
+const all = postsForLanguage(await provider.listPosts(), lang)
+const posts = all
+  .filter((post) => (activeTag === undefined ? true : post.tags.includes(activeTag)))
+  .filter((post) =>
+    activeCategory === undefined ? true : post.categories.includes(activeCategory),
+  )
+const tags = await provider.listTags()
+
+const rows = await Promise.all(
+  posts.map(async (post) => {
+    const full = await provider.getPost(post.urlname, post.lang)
+    return { post, minutes: full ? markdownStats(full.body).readingTimeMinutes : 1 }
+  }),
+)
+
+const postHref = (post: { urlname: string; lang: string }) =>
+  `${langPrefix(config, post.lang)}/blog/${post.urlname}`
+
+const intro = `${t('blog.description')} ${all.length} ${t('blog.postsCount')}`
+---
+
+<div class="mx-auto w-full max-w-6xl px-5 pt-16 pb-6 sm:px-8 lg:px-12 lg:pt-24">
+  <header class="max-w-2xl">
+    <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">{t('blog.kicker')}</p>
+    <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{t('blog.title')}</h1>
+    <p class="mt-4 font-serif text-lg leading-relaxed text-muted-foreground">{intro}</p>
+  </header>
+
+  <!-- Tag filter: state carried by the URL path, no client state (ADR-003) -->
+  <nav
+    aria-label={t('blog.filter')}
+    class="mt-10 flex flex-wrap items-center gap-2 border-y border-border py-4"
+  >
+    <span class="mr-1 font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+      {t('blog.filter')}
+    </span>
+    <a
+      href={`${prefix}/blog`}
+      class:list={[
+        'rounded-full px-3 py-1 font-mono text-xs tracking-wide transition-colors',
+        activeTag === undefined && activeCategory === undefined
+          ? 'bg-primary text-primary-foreground'
+          : 'border border-border text-muted-foreground hover:text-foreground',
+      ]}
+    >
+      {t('blog.all')}
+    </a>
+    {
+      tags.map(({ tag, count }) => (
+        <a
+          href={`${prefix}/blog/tag/${encodeURIComponent(filterSlug(tag))}`}
+          class:list={[
+            'rounded-full px-3 py-1 font-mono text-xs tracking-wide transition-colors',
+            activeTag === tag
+              ? 'bg-primary text-primary-foreground'
+              : 'border border-border text-muted-foreground hover:text-foreground',
+          ]}
+        >
+          {tag}
+          <span class="ml-1.5 opacity-60">{count}</span>
+        </a>
+      ))
+    }
+  </nav>
+
+  <div class="mt-4 divide-y divide-border">
+    {
+      rows.map(({ post, minutes }) => (
+        <article>
+          <a href={postHref(post)} class="group grid gap-4 py-8 sm:grid-cols-[130px_1fr]">
+            <div class="flex flex-row items-baseline gap-3 sm:flex-col sm:gap-1 sm:pt-1">
+              <time
+                datetime={post.date.toISOString()}
+                class="font-mono text-xs text-muted-foreground"
+              >
+                {formatDate(post.date, lang)}
+              </time>
+              <span class="font-mono text-[11px] text-muted-foreground">
+                {minutes} {t('blog.min')}
+              </span>
+            </div>
+            <div>
+              <span class="flex flex-wrap items-baseline gap-2">
+                {post.categories[0] && (
+                  <span class="font-mono text-[11px] tracking-[0.14em] text-primary uppercase">
+                    {post.categories[0]}
+                  </span>
+                )}
+                {post.lang !== lang && (
+                  <span class="rounded-sm border border-border px-1.5 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+                    {post.lang}
+                  </span>
+                )}
+              </span>
+              <h2 class="mt-1 font-serif text-2xl leading-snug transition-colors group-hover:text-primary">
+                {post.top && (
+                  <span
+                    class="mr-2 align-middle font-mono text-xs text-primary"
+                    title={t('blog.pinned')}
+                  >
+                    ★
+                  </span>
+                )}
+                {post.title}
+              </h2>
+              {post.description && (
+                <p class="mt-2 max-w-2xl leading-relaxed text-muted-foreground">
+                  {post.description}
+                </p>
+              )}
+              {post.tags.length > 0 && (
+                <div class="mt-3 flex flex-wrap gap-x-3 gap-y-1">
+                  {post.tags.map((tag) => (
+                    <span class="font-mono text-[11px] text-muted-foreground">#{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+          </a>
+        </article>
+      ))
+    }
+    {
+      rows.length === 0 && (
+        <p class="py-16 text-center font-serif text-muted-foreground">
+          {t('blog.noPostsTagged').replace('{tag}', activeTag ?? activeCategory ?? '')}
+        </p>
+      )
+    }
+  </div>
+</div>

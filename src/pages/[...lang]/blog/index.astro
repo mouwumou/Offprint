@@ -1,0 +1,23 @@
+---
+import siteConfig from '../../../core/config/current'
+import BlogIndex from '../../../core/components/BlogIndex.astro'
+import { useTranslations } from '../../../core/i18n'
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+
+export function getStaticPaths() {
+  return siteConfig.i18n.locales.map((locale) => ({
+    params: { lang: locale === siteConfig.i18n.default ? undefined : locale },
+  }))
+}
+
+const { lang: langParam } = Astro.params
+const lang = langParam ?? siteConfig.i18n.default
+if (!siteConfig.i18n.locales.includes(lang) || langParam === siteConfig.i18n.default) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+const t = useTranslations(lang)
+---
+
+<BaseLayout lang={lang} title={t('blog.title')} description={t('blog.description')}>
+  <BlogIndex lang={lang} />
+</BaseLayout>

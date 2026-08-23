@@ -1,0 +1,40 @@
+---
+import siteConfig from '../../../../core/config/current'
+import BlogIndex from '../../../../core/components/BlogIndex.astro'
+import { getProvider } from '../../../../core/content'
+import { filterSlug, fromFilterSlug } from '../../../../core/content/filter-slug'
+import { collectCategories } from '../../../../core/content/posts-view'
+import { useTranslations } from '../../../../core/i18n'
+import BaseLayout from '../../../../layouts/BaseLayout.astro'
+
+export async function getStaticPaths() {
+  const categories = collectCategories(await getProvider().listPosts())
+  return siteConfig.i18n.locales.flatMap((locale) =>
+    categories.map((category) => ({
+      params: {
+        lang: locale === siteConfig.i18n.default ? undefined : locale,
+        category: filterSlug(category),
+      },
+    })),
+  )
+}
+
+const { lang: langParam, category: categoryParam = '' } = Astro.params
+const lang = langParam ?? siteConfig.i18n.default
+if (!siteConfig.i18n.locales.includes(lang) || langParam === siteConfig.i18n.default) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const activeCategory = fromFilterSlug(
+  collectCategories(await getProvider().listPosts()),
+  categoryParam,
+)
+if (activeCategory === undefined) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+const t = useTranslations(lang)
+---
+
+<BaseLayout lang={lang} title={`${activeCategory} · ${t('blog.title')}`}>
+  <BlogIndex lang={lang} activeCategory={activeCategory} />
+</BaseLayout>

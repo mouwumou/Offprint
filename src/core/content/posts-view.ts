@@ -6,6 +6,11 @@ import type { PostSummary } from './provider'
  * caller renders a language badge when `post.lang` differs). Input order
  * (pinned-first, newest-first) is preserved by first occurrence.
  */
+/** Distinct categories across published posts, in first-seen order. */
+export function collectCategories(posts: readonly PostSummary[]): string[] {
+  return [...new Set(posts.flatMap((post) => post.categories))]
+}
+
 export function postsForLanguage(posts: readonly PostSummary[], lang: string): PostSummary[] {
   const byUrlname = new Map<string, PostSummary>()
   for (const post of posts) {

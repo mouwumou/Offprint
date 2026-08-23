@@ -6,7 +6,13 @@ import { expect, test } from '@playwright/test'
 // same content. Static pages come from the dist-static build output; server
 // pages from a running node-adapter process fed the same content directory.
 
-const ROUTES = ['/', '/blog/geometry-of-uncertainty/', '/zh/blog/publishing-from-notion/']
+const ROUTES = [
+  '/',
+  '/blog/',
+  '/blog/tag/geometry/',
+  '/blog/geometry-of-uncertainty/',
+  '/zh/blog/publishing-from-notion/',
+]
 const PORT = 4599
 const BASE = `http://127.0.0.1:${PORT}`
 

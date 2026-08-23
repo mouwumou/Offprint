@@ -23,7 +23,7 @@
 
 - [x] P1-1 Layout（Header/Footer/skip link/主题切换防闪烁）
 - [x] P1-2 Home 页
-- [ ] P1-3 Blog 列表页（tag/category 过滤走 URL 参数、置顶、草稿隐藏）
+- [x] P1-3 Blog 列表页（tag/category 过滤走 URL 参数、置顶、草稿隐藏）（过滤状态走 URL 路径 `/blog/tag/x` 而非 query：静态构建无法按 query 变化，query 过滤会破坏 ADR-003 双模式一致性）
 - [x] P1-4 publications：YAML loader（Notion 导出）+ 作者高亮 + 首页 Selected work（独立页与 Cite 留阶段 3）
 - [ ] P1-5 projects：YAML loader + 页面
 - [ ] P1-6 CV：JSON Resume loader + 页面 + 打印样式

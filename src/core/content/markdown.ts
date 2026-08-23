@@ -73,7 +73,7 @@ function directivesToHtml() {
   }
 }
 
-interface Stats {
+export interface Stats {
   wordCount: number
   readingTimeMinutes: number
   hasMath: boolean
@@ -82,36 +82,56 @@ interface Stats {
 const CJK = /[぀-ヿ㐀-䶿一-鿿豈-﫿]/g
 
 /**
- * remark plugin: word count (CJK chars count individually, latin by words),
- * reading time (200 wpm latin / 300 cpm CJK), math detection. Code blocks are
- * excluded from the prose statistics.
+ * Word count (CJK chars count individually, latin by words), reading time
+ * (200 wpm latin / 300 cpm CJK), math detection. Code blocks are excluded
+ * from the prose statistics.
  */
+function countProse(tree: import('mdast').Root): Stats {
+  let text = ''
+  let hasMath = false
+  visit(tree, (node) => {
+    if (node.type === 'code') return 'skip'
+    if (node.type === 'math' || node.type === 'inlineMath') {
+      hasMath = true
+      return 'skip'
+    }
+    if (node.type === 'text' || node.type === 'inlineCode') {
+      text += ` ${(node as { value: string }).value}`
+    }
+    return undefined
+  })
+  const cjkChars = (text.match(CJK) ?? []).length
+  const latinWords = text
+    .replace(CJK, ' ')
+    .split(/\s+/)
+    .filter((word) => /\w/.test(word)).length
+  return {
+    wordCount: latinWords + cjkChars,
+    readingTimeMinutes: Math.max(1, Math.round(latinWords / 200 + cjkChars / 300)),
+    hasMath,
+  }
+}
+
 function collectStats() {
   return (tree: import('mdast').Root, file: { data: Record<string, unknown> }): void => {
-    let text = ''
-    let hasMath = false
-    visit(tree, (node) => {
-      if (node.type === 'code') return 'skip'
-      if (node.type === 'math' || node.type === 'inlineMath') {
-        hasMath = true
-        return 'skip'
-      }
-      if (node.type === 'text' || node.type === 'inlineCode') {
-        text += ` ${(node as { value: string }).value}`
-      }
-      return undefined
-    })
-    const cjkChars = (text.match(CJK) ?? []).length
-    const latinWords = text
-      .replace(CJK, ' ')
-      .split(/\s+/)
-      .filter((word) => /\w/.test(word)).length
-    file.data['stats'] = {
-      wordCount: latinWords + cjkChars,
-      readingTimeMinutes: Math.max(1, Math.round(latinWords / 200 + cjkChars / 300)),
-      hasMath,
-    } satisfies Stats
+    file.data['stats'] = countProse(tree)
   }
+}
+
+function createStatsParser() {
+  return unified().use(remarkParse).use(remarkGfm).use(remarkMath)
+}
+
+let statsParser: ReturnType<typeof createStatsParser> | undefined
+
+/**
+ * Prose statistics without rendering — for list rows. Uses the same parser
+ * extensions and counting as the full pipeline, so numbers always match the
+ * post page.
+ */
+export function markdownStats(markdown: string): Stats {
+  const parser = (statsParser ??= createStatsParser())
+  return countProse(parser.parse(markdown))
 }
 
 /** rehype plugin: collect h2–h4 into file.data.toc (runs after rehype-slug). */

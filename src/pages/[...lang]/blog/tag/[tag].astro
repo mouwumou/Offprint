@@ -1,0 +1,37 @@
+---
+import siteConfig from '../../../../core/config/current'
+import BlogIndex from '../../../../core/components/BlogIndex.astro'
+import { getProvider } from '../../../../core/content'
+import { filterSlug, fromFilterSlug } from '../../../../core/content/filter-slug'
+import { useTranslations } from '../../../../core/i18n'
+import BaseLayout from '../../../../layouts/BaseLayout.astro'
+
+export async function getStaticPaths() {
+  const tags = await getProvider().listTags()
+  return siteConfig.i18n.locales.flatMap((locale) =>
+    tags.map(({ tag }) => ({
+      params: {
+        lang: locale === siteConfig.i18n.default ? undefined : locale,
+        tag: filterSlug(tag),
+      },
+    })),
+  )
+}
+
+const { lang: langParam, tag: tagParam = '' } = Astro.params
+const lang = langParam ?? siteConfig.i18n.default
+if (!siteConfig.i18n.locales.includes(lang) || langParam === siteConfig.i18n.default) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+
+const tags = (await getProvider().listTags()).map(({ tag }) => tag)
+const activeTag = fromFilterSlug(tags, tagParam)
+if (activeTag === undefined) {
+  return new Response(null, { status: 404, statusText: 'Not Found' })
+}
+const t = useTranslations(lang)
+---
+
+<BaseLayout lang={lang} title={`#${activeTag} · ${t('blog.title')}`}>
+  <BlogIndex lang={lang} activeTag={activeTag} />
+</BaseLayout>
