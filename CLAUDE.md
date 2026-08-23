@@ -58,3 +58,17 @@ pnpm lint && pnpm typecheck
 
 所有 ADR 已定（2026-08-22）；`site.config.i18n.default = en`（2026-08-22 维护者确认）。
 进度以 `docs/ROADMAP.md` 勾选为准，当前在阶段 0。
+
+## 远程 Docker 测试环境
+
+本项目所有 Docker 相关操作(构建镜像、启停容器、跑测试等)都在远程测试环境执行,本机没有 Docker,不要假设本机可以直接跑 docker 命令。
+
+- SSH 别名:`dockertest`(已配置免密登录,见 `~/.ssh/config`)
+- 所有 docker 命令都要加上 SSH 前缀,例如:
+  - `ssh dockertest "docker build -t myapp ."`
+  - `ssh dockertest "docker compose up -d"`
+  - `ssh dockertest "docker ps"`
+  - `ssh dockertest "docker logs <container>"`
+  - `ssh dockertest "docker exec -it <container> sh"`
+- 需要查看远程文件(如 Dockerfile、docker-compose.yml)时:
+  `ssh dockertest "cat /path/to/Dockerfile"`

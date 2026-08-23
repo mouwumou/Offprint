@@ -13,7 +13,7 @@
 - [x] P0-5 markdown 管线（remark/rehype + KaTeX 服务端 + Shiki 自定义主题）+ 快照测试
 - [x] P0-6 Post 页移植（DESIGN-REFERENCE），用原型三篇示例文章渲染；路由含语言前缀 `[...lang]/blog/[urlname]`（另加一篇 zh 译本验证前缀路由；Cite 弹窗与 TOC 高亮 island 留阶段 3）
 - [x] P0-7 `astro.config` 读 `RUNTIME_MODE`；`build:static` 与 `build:server`（node adapter）均通过（P0-1 实现，P0-6 带真实文章页复验）
-- [ ] P0-8 静态 Docker：`docker/web.Dockerfile`（Caddy 伺服 dist/）跑通（文件已建于 2026-08-22；开发环境无 Docker，`docker build` 验证待维护者机器）
+- [x] P0-8 静态 Docker：`docker/web.Dockerfile`（Caddy 伺服 dist/）跑通（2026-08-23 在远程 `dockertest` 主机验证：构建 91.9MB 镜像，首页/en/zh 文章页 200，`/_astro` 带 immutable 缓存头 + gzip）
 - [ ] P0-9 用真实 Notion 数据库跑一次 elog（含 type / lang 列），对照契约记录差异到 CONTENT-CONTRACT §7
 - [x] P0-10 Playwright 双模式 HTML 比对脚手架（哪怕只有一页）（覆盖首页 + en/zh 文章页三条路由，归一化后逐字节一致）
 
