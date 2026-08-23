@@ -107,3 +107,35 @@ describe('renderMarkdown', () => {
     expect(result.html).toContain('data-footnotes')
   })
 })
+
+describe('citations (P3-2)', () => {
+  it('links [@key] to the references section and appends entries in use order', async () => {
+    const refs = new Map([
+      ['a2025', { key: 'a2025', inline: '(Ada, 2025)', entry: 'Ada, A. (2025). Work.' }],
+      ['b2024', { key: 'b2024', inline: '(Bob, 2024)', entry: 'Bob, B. (2024). Other.' }],
+    ])
+    const result = await renderMarkdown('Cites [@b2024] then [@a2025; @b2024], not `[@a2025]`.', {
+      citations: refs,
+      citationsLabel: 'References',
+      cacheKey: 'test',
+    })
+    expect(result.html).toContain('<a href="#ref-b2024">(Bob, 2024)</a>')
+    expect(result.html).toContain('(Ada, 2025)</a>; <a href="#ref-b2024">')
+    expect(result.html).toContain('<h2 id="references">References</h2>')
+    // use order: b2024 first
+    expect(result.html.indexOf('id="ref-b2024"')).toBeLessThan(result.html.indexOf('id="ref-a2025"'))
+    // code spans untouched
+    expect(result.html).toContain('[@a2025]</code>')
+  })
+
+  it('leaves unknown keys literal and skips the section when nothing is cited', async () => {
+    const refs = new Map()
+    const result = await renderMarkdown('An unknown [@nope] citation.', {
+      citations: refs,
+      citationsLabel: 'References',
+      cacheKey: 'test2',
+    })
+    expect(result.html).toContain('[@nope]')
+    expect(result.html).not.toContain('id="references"')
+  })
+})

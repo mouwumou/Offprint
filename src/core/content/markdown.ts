@@ -12,6 +12,7 @@ import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified, type Processor } from 'unified'
 import { visit } from 'unist-util-visit'
+import { rehypeCitations, type CitationRef } from './citations'
 import { offprintDark, offprintLight } from './shiki-themes'
 
 export interface TocEntry {
@@ -154,10 +155,20 @@ function collectToc() {
   }
 }
 
-let processor: Processor | undefined
+export interface RenderOptions {
+  /** Enable [@key] citations (P3-2); refs precomputed by the caller. */
+  citations?: Map<string, CitationRef>
+  /** Heading of the appended references section. */
+  citationsLabel?: string
+  /** Cache token for the citation-bearing processor (content version). */
+  cacheKey?: string
+}
 
-function getProcessor(): Processor {
-  processor ??= unified()
+let processor: Processor | undefined
+let citationProcessor: { key: string; processor: Processor } | undefined
+
+function buildProcessor(options?: RenderOptions): Processor {
+  return unified()
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkMath)
@@ -173,18 +184,37 @@ function getProcessor(): Processor {
       properties: { className: ['heading-anchor'], ariaHidden: 'true', tabIndex: -1 },
       content: { type: 'text', value: '#' },
     })
+    .use(
+      options?.citations !== undefined
+        ? [[rehypeCitations, { refs: options.citations, label: options.citationsLabel ?? 'References' }]]
+        : [],
+    )
     .use(rehypeKatex)
     .use(rehypeShiki, {
       themes: { light: offprintLight, dark: offprintDark },
       defaultColor: 'light',
     })
     .use(rehypeStringify) as unknown as Processor
+}
+
+function getProcessor(options?: RenderOptions): Processor {
+  if (options?.citations !== undefined) {
+    const key = `${options.cacheKey ?? ''}:${options.citationsLabel ?? ''}`
+    if (citationProcessor?.key !== key) {
+      citationProcessor = { key, processor: buildProcessor(options) }
+    }
+    return citationProcessor.processor
+  }
+  processor ??= buildProcessor()
   return processor
 }
 
 /** Markdown → HTML + TOC + prose stats (ARCHITECTURE §5). Shared by both modes. */
-export async function renderMarkdown(markdown: string): Promise<RenderedMarkdown> {
-  const file = await getProcessor().process(markdown)
+export async function renderMarkdown(
+  markdown: string,
+  options?: RenderOptions,
+): Promise<RenderedMarkdown> {
+  const file = await getProcessor(options).process(markdown)
   const stats = file.data['stats'] as Stats
   return {
     html: String(file),

@@ -80,6 +80,9 @@ am less sure *here* than *there*." Curvature is the degree of freedom that lets
 a fixed number of neurons allocate certainty non-uniformly across the stimulus
 range.
 
+This framing is developed formally in [@voss2025geometry], with the
+decoding stress-test methodology of [@voss2024linear] as the diagnostic.
+
 This reframes a lot of old results. Adaptation, attention, and expectation all
 *reshape* tuning curves — and if the ribbon picture is right, reshaping tuning
 curves is the same operation as reallocating uncertainty.

@@ -76,6 +76,7 @@ export const en = {
   'post.words': 'words',
   'post.updated': 'updated',
   'post.onThisPage': 'On this page',
+  'post.references': 'References',
   'post.colophon': 'Colophon',
   'post.colophonText':
     'Drafted in Notion, exported to markdown with elog, rendered here with KaTeX and syntax highlighting. The source of this post is a plain .md file in the repository.',

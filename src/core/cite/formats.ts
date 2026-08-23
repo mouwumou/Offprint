@@ -51,6 +51,28 @@ function toCslJson(publication: Publication, lang: string): object {
   }
 }
 
+/** In-text citation label, APA-flavoured: (Voss & Nakamura, 2025) / (Voss et al., 2025). */
+export function inlineCitation(publication: Publication): string {
+  const family = (name: string): string => name.trim().split(/\s+/).pop() ?? name
+  const authors = publication.authors
+  const names =
+    authors.length === 1
+      ? family(authors[0] ?? '')
+      : authors.length === 2
+        ? `${family(authors[0] ?? '')} & ${family(authors[1] ?? '')}`
+        : `${family(authors[0] ?? '')} et al.`
+  return `(${names}, ${publication.year})`
+}
+
+/** One reference-list entry (APA text) for the in-post bibliography (P3-2). */
+export function bibliographyEntry(publication: Publication, lang: string): string {
+  registerTemplates()
+  const cite = new Cite(toCslJson(publication, lang))
+  return (
+    cite.format('bibliography', { format: 'text', template: 'apa', lang: 'en-US' }) as string
+  ).trim()
+}
+
 /**
  * Server-side citation rendering (P3-1): BibTeX from our own generator, the
  * prose styles via citation-js + CSL (APA bundled; MLA/Chicago vendored,

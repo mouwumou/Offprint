@@ -2,7 +2,9 @@
 import katexCss from 'katex/dist/katex.min.css?url'
 import siteConfig from '../../../core/config/current'
 import { langPrefix } from '../../../core/config/nav'
+import { bibliographyEntry, inlineCitation } from '../../../core/cite/formats'
 import { getProvider } from '../../../core/content'
+import type { CitationRef } from '../../../core/content/citations'
 import { renderMarkdown } from '../../../core/content/markdown'
 import { formatDate, useTranslations } from '../../../core/i18n'
 import { blogPostingJsonLd } from '../../../core/seo/jsonld'
@@ -36,7 +38,37 @@ if (!post || post.draft) {
 }
 
 const t = useTranslations(lang)
-const rendered = await renderMarkdown(post.body)
+
+// [@key] citations resolve against publications.yaml plus any front-matter
+// `references` entries shaped like publications (P3-2).
+let citations: Map<string, CitationRef> | undefined
+if (siteConfig.modules.publications && post.cite !== false) {
+  const { publicationSchema } = await import('../../../core/schema')
+  const extraRefs = Array.isArray(post.extra['references']) ? post.extra['references'] : []
+  const pool = [
+    ...(await getProvider().listPublications()),
+    ...extraRefs.flatMap((entry) => {
+      const parsed = publicationSchema.safeParse(entry)
+      return parsed.success ? [parsed.data] : []
+    }),
+  ]
+  citations = new Map(
+    pool.map((pub) => [
+      pub.key,
+      { key: pub.key, inline: inlineCitation(pub), entry: bibliographyEntry(pub, lang) },
+    ]),
+  )
+}
+
+const rendered = await renderMarkdown(post.body, {
+  ...(citations !== undefined
+    ? {
+        citations,
+        citationsLabel: t('post.references'),
+        cacheKey: `${lang}:${await getProvider().version()}`,
+      }
+    : {}),
+})
 const showMath = rendered.hasMath || post.math === true
 const showUpdated = post.updated.getTime() !== post.date.getTime()
 const kicker = post.categories[0]

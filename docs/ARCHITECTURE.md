@@ -94,7 +94,7 @@ static 是默认与基线，server 是可选运行时（ADR-003）。阶段 1 �
 ## 5. 渲染管线（markdown → HTML）
 
 remark：`remark-gfm`、`remark-math`、`remark-directive`（定理/备注环境）、`remark-cite`（`[@key]`）。
-rehype：`rehype-slug`、`rehype-autolink-headings`、`rehype-katex`（服务端）、`rehype-citation`（引用源为 publications.yaml 转出的 CSL-JSON）、Shiki（构建/请求期高亮，禁止客户端高亮库）。
+rehype：`rehype-slug`、`rehype-autolink-headings`、`rehype-katex`（服务端）、自建 citations 插件（2026-08-23 变更：`rehype-citation` 只接受文件路径/URL 书目源，与 provider 喂 CSL-JSON 的模型不合，改为基于已引入的 citation-js/CSL 在管线内自建 `[@key]` 处理与参考文献生成）、Shiki（构建/请求期高亮，禁止客户端高亮库）。
 输出同时产生：HTML、TOC、阅读时间、字数、是否含公式（决定是否注入 KaTeX CSS）。
 
 ## 6. 测试与 CI
