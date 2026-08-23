@@ -1,4 +1,4 @@
-import { FsStore, type ContentStore } from '../store'
+import { FsStore, GitStore, type ContentStore } from '../store'
 import { createProvider, type ContentProvider } from './provider'
 
 let store: ContentStore | undefined
@@ -8,10 +8,21 @@ let provider: ContentProvider | undefined
 export function getStore(): ContentStore {
   if (store === undefined) {
     const storeKind = process.env.CONTENT_STORE ?? 'fs'
-    if (storeKind !== 'fs') {
-      throw new Error(`CONTENT_STORE=${storeKind} is not implemented yet; use fs`)
+    if (storeKind === 'fs') {
+      store = new FsStore(process.env.CONTENT_DIR ?? 'content')
+    } else if (storeKind === 'git') {
+      const spec = process.env.CONTENT_GIT_REPO ?? ''
+      const [repo, branch] = spec.split('#')
+      if (!repo) throw new Error('CONTENT_STORE=git requires CONTENT_GIT_REPO=owner/repo[#branch]')
+      store = new GitStore({
+        repo,
+        branch,
+        dir: process.env.CONTENT_GIT_DIR ?? 'content',
+        token: process.env.GITHUB_TOKEN,
+      })
+    } else {
+      throw new Error(`CONTENT_STORE=${storeKind} is not implemented yet (s3 lands later)`)
     }
-    store = new FsStore(process.env.CONTENT_DIR ?? 'content')
   }
   return store
 }
