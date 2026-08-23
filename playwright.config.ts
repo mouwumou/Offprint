@@ -17,7 +17,9 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: 'pnpm build:static && pnpm preview --port 4331',
+    // Not `astro preview`: it daemonizes/short-circuits when any instance is
+    // already running, so Playwright never owns the process.
+    command: 'pnpm build:static && node scripts/serve-dist.mjs dist 4331',
     port: 4331,
     reuseExistingServer: !process.env.CI,
   },
