@@ -9,7 +9,7 @@ import { postsForLanguage } from '../../core/content/posts-view'
 import { formatDate, useTranslations } from '../../core/i18n'
 import { resolveLocalized } from '../../core/schema'
 import { uniformAlternates } from '../../core/seo/alternates'
-import { personJsonLd } from '../../core/seo/jsonld'
+import { personJsonLd, scholarlyArticlesJsonLd } from '../../core/seo/jsonld'
 import BaseLayout from '../../layouts/BaseLayout.astro'
 
 export function getStaticPaths() {
@@ -52,7 +52,10 @@ const postHref = (post: { urlname: string; lang: string }) =>
   description={r(profile.tagline)}
   image={profile.photo}
   alternates={uniformAlternates(siteConfig, '/')}
-  jsonLd={personJsonLd(siteConfig, lang, (Astro.site ?? new URL('https://example.com')).toString())}
+  jsonLd={[
+    personJsonLd(siteConfig, lang, (Astro.site ?? new URL('https://example.com')).toString()),
+    ...scholarlyArticlesJsonLd(siteConfig, selected, lang),
+  ]}
 >
   <div class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12">
     <!-- Hero -->

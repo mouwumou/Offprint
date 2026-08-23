@@ -1,7 +1,7 @@
 import type { SiteConfig } from '../config/schema'
 import type { Post } from '../content'
 import type { Stats } from '../content/markdown'
-import { resolveLocalized } from '../schema'
+import { resolveLocalized, type Publication } from '../schema'
 
 /** schema.org Person for the homepage (constraint 7). */
 export function personJsonLd(config: SiteConfig, lang: string, siteUrl: string): object {
@@ -27,6 +27,32 @@ export function personJsonLd(config: SiteConfig, lang: string, siteUrl: string):
     knowsAbout: profile.interests.map((interest) => r(interest)),
     sameAs,
   }
+}
+
+/**
+ * schema.org ScholarlyArticle entries for the homepage Selected work section
+ * (P1-8). Highwire Press citation_* meta belongs to the phase-3 publication
+ * pages.
+ */
+export function scholarlyArticlesJsonLd(
+  config: SiteConfig,
+  publications: readonly Publication[],
+  lang: string,
+): object[] {
+  return publications.map((pub) => ({
+    '@context': 'https://schema.org',
+    '@type': 'ScholarlyArticle',
+    headline: resolveLocalized(pub.title, lang, config.i18n.default),
+    author: pub.authors.map((name) => ({ '@type': 'Person', name })),
+    datePublished: String(pub.year),
+    isPartOf: { '@type': 'Periodical', name: pub.venue },
+    ...(pub.doi
+      ? { identifier: `doi:${pub.doi}`, sameAs: `https://doi.org/${pub.doi}` }
+      : pub.arxiv
+        ? { sameAs: `https://arxiv.org/abs/${pub.arxiv}` }
+        : {}),
+    ...(pub.pdf ? { url: pub.pdf } : {}),
+  }))
 }
 
 /** schema.org BlogPosting for post pages (constraint 7). */
