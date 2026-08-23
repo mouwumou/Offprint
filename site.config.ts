@@ -59,8 +59,6 @@ export default defineConfig({
     publications: true,
     projects: true,
     cv: true,
-    talks: false,
-    news: false,
   },
   i18n: {
     default: 'en',

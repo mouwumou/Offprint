@@ -74,8 +74,6 @@ export const modulesSchema = z.strictObject({
   publications: moduleToggle.prefault(true),
   projects: moduleToggle.prefault(true),
   cv: moduleToggle.prefault(true),
-  talks: moduleToggle.prefault(false),
-  news: moduleToggle.prefault(false),
 })
 
 export type ModuleName = keyof z.output<typeof modulesSchema>
@@ -174,22 +172,17 @@ export const footerSchema = z.strictObject({
 
 // ── theme (DESIGN-REFERENCE; tokens locked by ADR-011) ───────────────────────
 
+// ADR-016: only implemented freedoms live in the schema — accepted-but-inert
+// keys (fonts, darkMode, talks/news modules, the s3 store) are rejected until
+// their implementations land.
 export const themeSchema = z.strictObject({
   /** Visual preset; 'paper' is the only built-in until the theme-pack phase. */
   preset: z.literal('paper').default('paper'),
-  /** Overrides the claret accent from the locked token set. */
+  /** Overrides the claret accent (both color schemes get the same value). */
   accent: z
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/, 'expected a hex color like #6f2232')
     .optional(),
-  fonts: z
-    .strictObject({
-      serif: z.string().default('Newsreader'),
-      sans: z.string().default('Inter'),
-      mono: z.string().default('JetBrains Mono'),
-    })
-    .prefault({}),
-  darkMode: z.enum(['auto', 'light', 'dark']).default('auto'),
 })
 
 // ── i18n (ADR-007) ───────────────────────────────────────────────────────────
@@ -211,7 +204,7 @@ export const runtimeSchema = z.strictObject({
   /** static is the default and baseline; server is the optional runtime. */
   mode: z.enum(['static', 'server']).default('static'),
   /** Byte-level content store backing the ContentProvider. */
-  store: z.enum(['fs', 'git', 's3']).default('fs'),
+  store: z.enum(['fs', 'git']).default('fs'),
 })
 
 // ── comments (P3-8) ──────────────────────────────────────────────────────────

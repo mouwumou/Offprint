@@ -13,16 +13,8 @@ describe('defineConfig', () => {
       publications: { enabled: true },
       projects: { enabled: true },
       cv: { enabled: true },
-      talks: { enabled: false },
-      news: { enabled: false },
     })
     expect(config.theme.preset).toBe('paper')
-    expect(config.theme.fonts).toEqual({
-      serif: 'Newsreader',
-      sans: 'Inter',
-      mono: 'JetBrains Mono',
-    })
-    expect(config.theme.darkMode).toBe('auto')
     expect(config.i18n).toEqual({ default: 'en', locales: ['en', 'zh'] })
     expect(config.runtime).toEqual({ mode: 'static', store: 'fs' })
     expect(config.profile.nameVariants).toEqual([])
@@ -43,10 +35,10 @@ describe('defineConfig', () => {
   it('lets modules be switched off', () => {
     const config = defineConfig({
       ...minimal,
-      modules: { publications: false, talks: true },
+      modules: { publications: false, projects: true },
     })
     expect(config.modules.publications.enabled).toBe(false)
-    expect(config.modules.talks.enabled).toBe(true)
+    expect(config.modules.projects.enabled).toBe(true)
     expect(config.modules.blog.enabled).toBe(true)
   })
 
@@ -112,7 +104,7 @@ describe('module copy overrides (ADR-015)', () => {
       ...minimal,
       modules: {
         blog: { title: { en: 'Field notes', zh: '田野笔记' }, colophon: false },
-        talks: true,
+        pages: true,
       },
     })
     expect(config.modules.blog).toEqual({
@@ -120,9 +112,14 @@ describe('module copy overrides (ADR-015)', () => {
       title: { en: 'Field notes', zh: '田野笔记' },
       colophon: false,
     })
-    expect(config.modules.talks.enabled).toBe(true)
+    expect(config.modules.pages.enabled).toBe(true)
     expect(() =>
       defineConfig({ ...minimal, modules: { blog: { titel: 'typo' } } as never }),
+    ).toThrow()
+    // ADR-016: unimplemented freedoms are rejected, not silently accepted.
+    expect(() => defineConfig({ ...minimal, modules: { talks: true } as never })).toThrow()
+    expect(() =>
+      defineConfig({ ...minimal, theme: { fonts: { serif: 'Lora' } } as never }),
     ).toThrow()
   })
 })

@@ -81,6 +81,13 @@ const prefix = langPrefix(config, lang)
         }
       })()
     </script>
+    {
+      config.theme.accent && (
+        <style
+          set:html={`:root,.dark{--primary:${config.theme.accent};--accent:${config.theme.accent};--ring:${config.theme.accent};}`}
+        />
+      )
+    }
     <slot name="head" />
   </head>
   <body>

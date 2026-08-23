@@ -89,3 +89,9 @@
 **背景**：维护者评审指出首页布局、导航、头部标题被固化在主题代码里，作者无法塑形；参照 al-folio 的"一切编排皆数据"，但要规避其两个结构病：自由度靠散装配置换来、坏了不报错；用户改模板即失去升级路径。
 **决定**：系统压成四层——**数据**（collections，契约类型化）、**部件**（widgets，吃 provider 数据的展示单元）、**编排**（site.config 中的数组与开关：`home.sections`、`nav`、`header`/`footer`、模块文案覆盖）、**皮肤**（design tokens，ADR-011）。原则："**可塑但不可坏**"：每个自由度都有 zod 形状与缺省值，缺省完全复现既有设计；错误配置在构建期带路径报错。自定义走**三级逃生梯**：① 编排级（改 config）→ ② 部件级（`src/site/widgets/` 放同名组件覆盖实现，由 pages 层解析注入，依赖方向不违反 ADR-006）→ ③ 主题级（阶段 4 拆包后替换皮肤包）。明确不做：可视化搭建器、config 内模板语言、逐处 CSS 旋钮。
 **后果**：`modules.<name>` 从布尔扩宽为 `boolean | { title?, description?, … }`（文案覆盖，i18n 字典退为缺省值）；导航与模块解耦（`nav` 数组缺省时保持自动生成）；阶段 5 的插件 API 落点明确为"注册部件（+可选集合/路由）"。
+
+## ADR-016 配置契约只暴露已实现的自由度 — 已定
+
+**背景**：外部审计指出 schema 接受多个无实现的配置（`theme.fonts`、`theme.darkMode`、`modules.talks/news`、`runtime.store: 's3'`），形成"配置有效但行为不生效"的假 API，违背约束 4（schema 即校验）。
+**决定**：schema 只收留有实现支撑的键。未实现的自由度直接从 schema 移除（strictObject 使其在构建期报错），待对应实现落地（talks/news 模块=阶段 5，字体/暗色偏好=主题包，s3=ADR-004 阶段 2+）时再回到 schema。`theme.accent` 就地实现（BaseLayout 注入 `--primary/--accent/--ring` 覆盖，两种配色同值）。
+**后果**：配置文件里写了未实现的键会立刻失败而非静默无效；恢复这些键属于加法变更，不破坏既有配置。
