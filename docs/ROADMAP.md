@@ -14,7 +14,7 @@
 - [x] P0-6 Post 页移植（DESIGN-REFERENCE），用原型三篇示例文章渲染；路由含语言前缀 `[...lang]/blog/[urlname]`（另加一篇 zh 译本验证前缀路由；Cite 弹窗与 TOC 高亮 island 留阶段 3）
 - [x] P0-7 `astro.config` 读 `RUNTIME_MODE`；`build:static` 与 `build:server`（node adapter）均通过（P0-1 实现，P0-6 带真实文章页复验）
 - [x] P0-8 静态 Docker：`docker/web.Dockerfile`（Caddy 伺服 dist/）跑通（2026-08-23 在远程 `dockertest` 主机验证：构建 91.9MB 镜像，首页/en/zh 文章页 200，`/_astro` 带 immutable 缓存头 + gzip）
-- [ ] P0-9 用真实 Notion 数据库跑一次 elog（含 type / lang 列），对照契约记录差异到 CONTENT-CONTRACT §7
+- [x] P0-9 用真实 Notion 数据库跑一次 elog（含 type / lang 列），对照契约记录差异到 CONTENT-CONTRACT §7（2026-08-23 用维护者 NotionNext 库实测 elog 1.0.0-beta.2，30 篇同步成功；差异与归一化清单见 §7.1，现库缺 lang/urlname 列）
 - [x] P0-10 Playwright 双模式 HTML 比对脚手架（哪怕只有一页）（覆盖首页 + en/zh 文章页三条路由，归一化后逐字节一致）
 
 退出标准：一篇 elog 产出的文章在两种模式下渲染一致，静态 Docker 可运行。

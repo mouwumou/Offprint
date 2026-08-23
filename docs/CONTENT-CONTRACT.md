@@ -109,6 +109,29 @@ publications 数据库：列名与 §3 字段同名；`authors` 为 multi-select
 
 sync 的归一化步骤：日期格式统一为 `YYYY-MM-DD`；`categories` 规范为数组；`urlname` 校验 slug；`lang` 缺省回填并告警；未知列进入 `extra`。
 
+### 7.1 实测差异记录（P0-9，2026-08-23）
+
+实测环境：elog **1.0.0-beta.2** —— 已改为插件式工作流（`@elog/cli` + `@elog/plugin-from-notion` + `@elog/plugin-to-local`，CLI 参数 `-c/-e`），**0.x 的 write/deploy 配置不再兼容**；`databaseId` 仍可用（内部换取第一个 data source id，对应 Notion 2025-09 的 data source API）。测试库为维护者现有 NotionNext 模板库（列：title / slug / date / type / category / tags / summary / status / password / icon，无 lang / urlname / updated / cover 列）。
+
+elog 会自动补齐的字段（无需数据库列）：
+
+- `updated`：取页面 last_edited_time；
+- `cover`：取 Notion 页面封面（数据库无 cover 列亦可）。真实上传的封面是 S3 签名 URL（约 1 小时过期），图床或 `local` 转存必须开启；
+- `urlname`：elog 写入的是 **Notion 页面 UUID**，不是人类可读 slug —— 契约的 `urlname` 须由 sync 从 `slug` 列映射覆盖。
+
+与契约的差异及 P1-13 sync 归一化清单：
+
+| 实测观察 | 契约期望 | sync 对策 |
+| --- | --- | --- |
+| `date`/`updated` 为 `'2021-11-05 08:00:00'`（空格分隔，非 ISO） | ISO date | 归一化为 `YYYY-MM-DD`；core schema 拒绝该格式，归一化必须发生在 sync 层 |
+| 无 `lang` 列 | `lang` 必填 | 回填默认语言并告警（ADR-007 预案）；长期应在 Notion 加 lang select 列 |
+| `slug` 列（NotionNext 命名） | `urlname` | 改名映射并覆盖 elog 的 UUID 值；缺 slug 的行按标题 slug 化并告警 |
+| `category` 单值 select | `categories` | 改名；单值归一化 schema 已兼容 |
+| `summary` 列 | `description` | 改名映射 |
+| `status=Published` 过滤后仍混入 `type=Menu/SubMenu/Config/Notice` 行（slug 为 `#`、`-archive`、外链 URL 等，缺 slug 的产出 `未命名文档_<uuid>.md`） | 仅 Post / Page | Notion filter 加 type 复合条件，或 sync 按 type 分流丢弃非 Post/Page 行 |
+| `password: ''`、`icon: ''` 空字符串 | 未定义字段透传 `extra` | 空串视为缺省剔除；非空则进 `extra` |
+| `type`/`status` 出现在 front-matter | 不进 front-matter | 分流/过滤后剔除（`@elog/plugin-to-local` 的 `frontMatter.exclude` 可在导出期完成） |
+
 ## 8. manifest.json
 
 ```json
