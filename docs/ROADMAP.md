@@ -38,7 +38,7 @@
 - [x] P1-13 `src/sync` 基础：elog 配置生成、staging、逐篇校验、manifest、原子切换（DYNAMIC-PUBLISHING §4，不含 notify）
 - [x] P1-14 sync 的 GitHub Action 形态：schedule/dispatch → elog → commit `content/` → 触发构建（sync.yml，30 分钟 cron + dispatch；需配置 NOTION_TOKEN/NOTION_DB secrets）
 - [x] P1-15 自托管静态：`docker/compose.static.yaml`（web 静态伺服 + sync 容器 elog→build→原子切换 dist/）（2026-08-23 dockertest 实测：首次发布原子切换成功、Caddy 200；无凭据时退化为仅构建已提交内容）
-- [ ] P1-16 迁移真实内容，以 static 模式上线替换旧站
+- [ ] P1-16 迁移真实内容，以 static 模式上线替换旧站（在维护者的**实例仓库**进行，不在本模板内 — ADR-017）
 
 退出标准：在 Notion 点 Published，无需碰仓库，1–3 分钟后新文章在线上可见（自托管与 GH Pages 两条路径均验证）。
 

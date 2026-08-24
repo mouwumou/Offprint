@@ -2,7 +2,7 @@
 
 > 抽印本 — 一个开源、可插拔、易部署的学术个人网站系统。
 
-**状态：阶段 0（技术验证）已完成** —— 双模式构建、内容契约 schema、markdown 管线（KaTeX/Shiki）、语言前缀路由的文章页、静态 Docker 镜像均已跑通，双模式 HTML 一致性有 e2e 保障。当前处于阶段 1（自用 MVP）。开发交接文档见 `CLAUDE.md` 与 `docs/`。
+**状态：阶段 0–3 已完成** —— 双模式构建与 HTML 一致性 e2e、内容契约 schema、markdown 管线（KaTeX/Shiki/引用）、Notion 同步链（含图片物化）、双语路由、搜索、SEO/feed/OG、Docker 双模式部署均已跑通。阶段 4（开源化）进行中。开发交接文档见 `CLAUDE.md` 与 `docs/`。
 
 ```bash
 pnpm install
@@ -10,6 +10,18 @@ pnpm dev            # 开发服务器（示例文章在 content/posts/）
 pnpm build:static   # 纯静态构建 → dist/
 pnpm test && pnpm e2e
 ```
+
+## 用作模板（ADR-017）
+
+这个仓库是**公开模板**：它自带样例内容，构建完全自足，CI 与 GitHub Pages demo 部署全部只用 `GITHUB_TOKEN`，**不配置任何外部密钥**。你的站点是从它生成出去的**实例仓库**：
+
+1. **生成仓库**：GitHub 上点 "Use this template"（比 fork 干净，不带模板的开发历史）。
+2. **配置实例**（你自己仓库的 Settings）：
+   - Variables：`SITE_URL`（站点公网地址）；要开 Notion 同步则加 `SYNC_ENABLED=true`；要部署 Vercel 则加 `DEPLOY_VERCEL=true`。
+   - Secrets（仅在需要对应功能时）：`NOTION_TOKEN`、`NOTION_DB`；Vercel 需要 `VERCEL_TOKEN`、`VERCEL_ORG_ID`、`VERCEL_PROJECT_ID`。
+3. **替换内容**：编辑 `site.config.ts`（个人资料、模块、导航、首页编排），替换 `content/` 下的样例（posts 归同步管，pages/publications/projects/cv 直接改文件）。
+
+不设任何变量时，推送即得 GitHub Pages 静态站；sync 与 Vercel 工作流显示 skipped。自托管（Docker/server 模式）的密钥只放服务器本地 `.env`（见 `.env.example`），永远不进仓库。
 
 Offprint 把学术首页、博客、项目与 CV 放进同一个站点，并做了两件大多数静态站生成器不做的事：
 

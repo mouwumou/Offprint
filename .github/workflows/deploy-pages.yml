@@ -1,4 +1,8 @@
 # P1-12: GitHub Pages deployment (static baseline, ADR-003).
+# ADR-017: intentionally ungated — it needs only GITHUB_TOKEN, and the sample
+# content makes the build self-sufficient. On the template repo it publishes
+# the official demo site (and doubles as a real deploy test on every push);
+# on an instance repo the same workflow publishes the user's site.
 # Set the SITE_URL repository variable to the public origin; for a
 # project-pages URL (user.github.io/repo) also set an Astro `base` first.
 name: Deploy to GitHub Pages
@@ -22,6 +26,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      # Turns Pages on for repos that never visited the Pages settings —
+      # removes the one manual step between "Use this template" and a live site.
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
       - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:

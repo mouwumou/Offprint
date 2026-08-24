@@ -95,3 +95,11 @@
 **背景**：外部审计指出 schema 接受多个无实现的配置（`theme.fonts`、`theme.darkMode`、`modules.talks/news`、`runtime.store: 's3'`），形成"配置有效但行为不生效"的假 API，违背约束 4（schema 即校验）。
 **决定**：schema 只收留有实现支撑的键。未实现的自由度直接从 schema 移除（strictObject 使其在构建期报错），待对应实现落地（talks/news 模块=阶段 5，字体/暗色偏好=主题包，s3=ADR-004 阶段 2+）时再回到 schema。`theme.accent` 就地实现（BaseLayout 注入 `--primary/--accent/--ring` 覆盖，两种配色同值）。
 **后果**：配置文件里写了未实现的键会立刻失败而非静默无效；恢复这些键属于加法变更，不破坏既有配置。
+
+## ADR-017 模板仓库与实例仓库分离 — 已定
+
+**背景**：维护者指出验证部署链时不能把 Notion 等密钥配进本仓库的 GitHub 环境——本仓库是要公开的模板，必须保持干净。同时主仓库自身的编译与 Actions 测试又不可少。调研了两个参照系：al-folio 主仓库跑全套无密钥 CI 且 **deploy 工作流无门槛**（只用 `GITHUB_TOKEN` 推 Pages，主仓库跑=官方 demo，fork 跑=用户的站；需要主仓库专属资源的用 `if: github.repository_owner == …` owner 守卫）；NotionNext 靠**公开 demo Notion 页做缺省内容源**实现无密钥构建，镜像发 ghcr.io 只用 `GITHUB_TOKEN`。
+
+**决定**：仓库分两种角色。**模板仓库**（本仓库，公开）：代码 + 样例内容 + 工作流文件 + 文档，GitHub 环境**永不配置任何外部密钥**；得益于 ADR-010（样例内容随模板）与 ADR-012（构建不请求 Notion），它的构建完全自足，因此 CI 全套照跑，`deploy-pages.yml` 也**不设门**——在模板上它发布官方 demo 站并充当每次 push 的真实部署测试（`actions/configure-pages` 带 `enablement: true` 消除首跑摩擦）。**实例仓库**（Use this template 生成，或 fork）：用户替换 `site.config.ts` 与 `content/`，在自己仓库配置 Secrets（`NOTION_TOKEN`、`NOTION_DB`，可选 `VERCEL_*`）与 Variables（`SITE_URL`、开关）。**只有碰外部密钥的工作流设变量门**：`sync.yml` 以 `vars.SYNC_ENABLED == 'true'` 为门、`deploy-vercel.yml` 以 `vars.DEPLOY_VERCEL == 'true'` 为门——模板不设变量则显示 skipped，永远绿。自托管（server 模式）的密钥只存在于服务器本地 `.env`，与 GitHub 无关。
+
+**后果**：Notion 同步链是唯一无法在模板仓库验证的链路，其首跑验证在**私有测试实例**中进行（一次性 Use this template 仓库，验证后可删）；P1-16（维护者真实内容上线）发生在维护者自己的实例仓库，不在模板内。将来阶段 4 若发 Docker 镜像，学 NotionNext 发 ghcr.io（`GITHUB_TOKEN`，`IMAGE_NAME=github.repository`，fork 自动发到自己名下）；若出现模板专属发布物，用 al-folio 式 owner 守卫而非变量门。

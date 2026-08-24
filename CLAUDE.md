@@ -62,9 +62,10 @@ pnpm lhci                # Lighthouse CI（desktop preset，阈值 0.95）
 
 ## 当前状态
 
-ADR-001–013 已定（ADR-013 为方向已定、细节待敲定：lang/urlname 由 sync 派生，Notion 不加列，LLM 翻译管线另行设计）；`site.config.i18n.default = en`。
-**阶段 0–3 已完成**（2026-08-23）：唯一未完项是 P1-16（迁移维护者真实内容上线，需维护者提供旧站清单与域名）。阶段 4（开源化）与阶段 5（插件 API）未开始。
-elog 实测为 1.0 插件式工作流，与契约的字段差异记录在 `CONTENT-CONTRACT.md` §7.1；部署 workflow（CI/Pages/Vercel/sync）已写好，待仓库推上 GitHub 后首跑验证。
+ADR-001–017 已定（ADR-013 为方向已定、细节待敲定：lang/urlname 由 sync 派生，Notion 不加列，LLM 翻译管线另行设计）；`site.config.i18n.default = en`。
+**阶段 0–3 已完成**（2026-08-23），ADR-015 编排层与外部审计的全部高中优先级修复已落地（2026-08-24）。唯一未完项是 P1-16（在维护者的**实例仓库**迁移真实内容上线，不在本模板内）。阶段 4（开源化）已因 ADR-017 部分启动，阶段 5（插件 API）未开始。
+**本仓库是公开模板，GitHub 环境永不配置密钥**（ADR-017）：CI 与 Pages demo 只用 `GITHUB_TOKEN`；sync/Vercel 工作流由实例仓库的 `SYNC_ENABLED`/`DEPLOY_VERCEL` 变量开启；同步链的密钥验证在私有测试实例或服务器本地 `.env` 做。
+elog 实测为 1.0 插件式工作流，与契约的字段差异记录在 `CONTENT-CONTRACT.md` §7.1；部署 workflow 待模板推上 GitHub 后首跑验证（模板侧验证目标：CI 绿 + demo 部署成功 + sync/Vercel 显示 skipped）。
 
 ## 远程 Docker 测试环境
 

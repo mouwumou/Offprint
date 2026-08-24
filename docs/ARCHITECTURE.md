@@ -122,6 +122,8 @@ rehype：`rehype-slug`、`rehype-autolink-headings`、`rehype-katex`（服务端
 
 ## 7. 部署
 
+仓库角色（ADR-017）：本仓库是公开**模板**，零外部密钥——CI 与 Pages demo 部署只用 `GITHUB_TOKEN`；用户站点是 "Use this template" 生成的**实例仓库**，Secrets/Variables 配在实例里（`SYNC_ENABLED` / `DEPLOY_VERCEL` 为显式开关，模板中未设则对应工作流 skipped）；自托管密钥只在服务器本地 `.env`。
+
 | 目标 | 模式 | 方式 |
 | --- | --- | --- |
 | GitHub Pages | static | `deploy-pages.yml`：build → upload artifact |

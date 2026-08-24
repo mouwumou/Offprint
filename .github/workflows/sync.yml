@@ -23,6 +23,12 @@ permissions:
 
 jobs:
   sync:
+    # ADR-017: this workflow only runs on INSTANCE repositories. The template
+    # repo never carries Notion credentials, so the job is gated behind an
+    # explicit repository variable — set SYNC_ENABLED=true (Settings →
+    # Variables) plus the NOTION_* secrets in your own repo to activate it.
+    # Unset, every scheduled run shows as skipped instead of a red failure.
+    if: ${{ vars.SYNC_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
