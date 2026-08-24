@@ -1,51 +1,13 @@
-@import '@fontsource-variable/newsreader';
-@import '@fontsource-variable/newsreader/wght-italic.css';
-@import '@fontsource-variable/inter';
-@import '@fontsource-variable/jetbrains-mono';
 @import 'tailwindcss';
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ---------------------------------------------------------------------------
-   Scholarly typeset theme (DESIGN-REFERENCE §1, locked by ADR-011) — a
-   typeset-paper ground, old-style serif reading, neo-grotesque interface
-   chrome, mono for technical signals, claret accent.
+   Token-agnostic typographic base (ADR-018). Color/radius tokens and font
+   stacks arrive from the resolved theme: BaseLayout injects them as
+   :root/.dark CSS variables from the theme's theme.json (plus the user's
+   theme.tokens overrides); the theme's own theme.css loads its fonts.
    --------------------------------------------------------------------------- */
-:root {
-  --background: #faf8f3;
-  --foreground: #1c1a16;
-  --card: #ffffff;
-  --card-foreground: #1c1a16;
-  --primary: #6f2232;
-  --primary-foreground: #faf8f3;
-  --secondary: #efece4;
-  --secondary-foreground: #3a3730;
-  --muted: #f2efe8;
-  --muted-foreground: #6c675c;
-  --accent: #6f2232;
-  --accent-foreground: #faf8f3;
-  --border: #e4dfd4;
-  --ring: #6f2232;
-  --radius: 3px;
-}
-
-.dark {
-  --background: #16150f;
-  --foreground: #ebe6da;
-  --card: #1e1c15;
-  --card-foreground: #ebe6da;
-  --primary: #cf9aa4;
-  --primary-foreground: #16150f;
-  --secondary: #26241b;
-  --secondary-foreground: #d6d0c2;
-  --muted: #221f18;
-  --muted-foreground: #a29c8c;
-  --accent: #cf9aa4;
-  --accent-foreground: #16150f;
-  --border: #322e23;
-  --ring: #cf9aa4;
-}
-
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -62,17 +24,10 @@
   --color-border: var(--border);
   --color-ring: var(--ring);
 
-  /* Chinese fallbacks ride the system fonts (DESIGN-REFERENCE §1): a CJK
-     webfont would cost megabytes for no design win. */
-  --font-sans:
-    'Inter Variable', 'Inter Variable fallback', ui-sans-serif, system-ui, 'PingFang SC',
-    'Hiragino Sans GB', 'Noto Sans CJK SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif;
-  --font-serif:
-    'Newsreader Variable', 'Newsreader Variable fallback', ui-serif, Georgia, 'Times New Roman',
-    'Songti SC', 'Noto Serif CJK SC', 'Noto Serif SC', SimSun, serif;
-  --font-mono:
-    'JetBrains Mono Variable', 'JetBrains Mono Variable fallback', ui-monospace, 'SFMono-Regular',
-    Menlo, Consolas, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei', monospace;
+  /* Stacks come from the theme manifest (injected as *-stack variables). */
+  --font-sans: var(--font-sans-stack);
+  --font-serif: var(--font-serif-stack);
+  --font-mono: var(--font-mono-stack);
 
   --radius-sm: calc(var(--radius) - 1px);
   --radius-md: var(--radius);

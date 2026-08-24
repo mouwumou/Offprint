@@ -1,0 +1,44 @@
+{
+  "name": "paper",
+  "tokens": {
+    "light": {
+      "background": "#faf8f3",
+      "foreground": "#1c1a16",
+      "card": "#ffffff",
+      "card-foreground": "#1c1a16",
+      "primary": "#6f2232",
+      "primary-foreground": "#faf8f3",
+      "secondary": "#efece4",
+      "secondary-foreground": "#3a3730",
+      "muted": "#f2efe8",
+      "muted-foreground": "#6c675c",
+      "accent": "#6f2232",
+      "accent-foreground": "#faf8f3",
+      "border": "#e4dfd4",
+      "ring": "#6f2232",
+      "radius": "3px"
+    },
+    "dark": {
+      "background": "#16150f",
+      "foreground": "#ebe6da",
+      "card": "#1e1c15",
+      "card-foreground": "#ebe6da",
+      "primary": "#cf9aa4",
+      "primary-foreground": "#16150f",
+      "secondary": "#26241b",
+      "secondary-foreground": "#d6d0c2",
+      "muted": "#221f18",
+      "muted-foreground": "#a29c8c",
+      "accent": "#cf9aa4",
+      "accent-foreground": "#16150f",
+      "border": "#322e23",
+      "ring": "#cf9aa4",
+      "radius": "3px"
+    }
+  },
+  "fonts": {
+    "sans": "'Inter Variable', 'Inter Variable fallback', ui-sans-serif, system-ui, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif",
+    "serif": "'Newsreader Variable', 'Newsreader Variable fallback', ui-serif, Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'Noto Serif SC', SimSun, serif",
+    "mono": "'JetBrains Mono Variable', 'JetBrains Mono Variable fallback', ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei', monospace"
+  }
+}

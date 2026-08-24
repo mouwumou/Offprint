@@ -14,7 +14,7 @@ describe('defineConfig', () => {
       projects: { enabled: true },
       cv: { enabled: true },
     })
-    expect(config.theme.preset).toBe('paper')
+    expect(config.theme.name).toBe('paper')
     expect(config.i18n).toEqual({ default: 'en', locales: ['en', 'zh'] })
     expect(config.runtime).toEqual({ mode: 'static', store: 'fs' })
     expect(config.profile.nameVariants).toEqual([])

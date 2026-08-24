@@ -2,7 +2,9 @@ import { cp, stat } from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { join, resolve } from 'node:path'
 import type { AstroIntegration } from 'astro'
+import siteConfig from '../config/current'
 import { contentAssetResponse } from '../server/assets'
+import { resolveTheme } from '../theme/resolve'
 
 /**
  * The Offprint Astro integration. Phase 2 scope: inject the server-only API
@@ -40,7 +42,16 @@ export function offprint(): AstroIntegration {
           })
         })
       },
-      'astro:config:setup': ({ injectRoute }) => {
+      'astro:config:setup': ({ injectRoute, injectScript }) => {
+        // ADR-018: the resolved theme's stylesheet (font loading, theme-
+        // specific styles) joins every page; tokens are injected separately
+        // by BaseLayout from the manifest. Resolution failures abort the
+        // build here, before any page renders.
+        const theme = resolveTheme(siteConfig.theme.name)
+        if (theme.cssPath !== null) {
+          injectScript('page-ssr', `import ${JSON.stringify(theme.cssPath)};`)
+        }
+
         if ((process.env.RUNTIME_MODE ?? 'static') !== 'server') return
         injectRoute({
           pattern: '/api/health',

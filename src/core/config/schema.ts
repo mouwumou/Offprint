@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { localizedString } from '../schema/localized'
+import { TOKEN_NAMES } from '../theme/contract'
 
 // All config sections are strict objects: an unknown key is almost always a
 // typo and must fail the build, not be silently ignored (constraint: schema
@@ -172,17 +173,18 @@ export const footerSchema = z.strictObject({
 
 // ── theme (DESIGN-REFERENCE; tokens locked by ADR-011) ───────────────────────
 
-// ADR-016: only implemented freedoms live in the schema — accepted-but-inert
-// keys (fonts, darkMode, talks/news modules, the s3 store) are rejected until
-// their implementations land.
+// ADR-018: the theme is resolved by NAME against src/site/themes/ and the
+// built-ins — the resolver is the validation (unknown names fail the build
+// listing what exists), so no enum here to keep third-party themes possible.
 export const themeSchema = z.strictObject({
-  /** Visual preset; 'paper' is the only built-in until the theme-pack phase. */
-  preset: z.literal('paper').default('paper'),
-  /** Overrides the claret accent (both color schemes get the same value). */
+  name: z.string().min(1).default('paper'),
+  /** Shorthand for tokens: primary/accent/ring in one go, both schemes. */
   accent: z
     .string()
     .regex(/^#[0-9a-fA-F]{6}$/, 'expected a hex color like #6f2232')
     .optional(),
+  /** Per-token overrides on top of the theme, applied to both schemes. */
+  tokens: z.record(z.enum(TOKEN_NAMES), z.string().min(1)).optional(),
 })
 
 // ── i18n (ADR-007) ───────────────────────────────────────────────────────────

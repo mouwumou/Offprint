@@ -6,7 +6,8 @@ import { langPrefix } from '../config/nav'
 import { useTranslations } from '../i18n'
 import type { Alternate } from '../seo/alternates'
 import Head from '../seo/Head.astro'
-import '../theme/global.css'
+import { resolveTheme } from '../theme/resolve'
+import '../theme/base.css'
 
 interface Props {
   lang: string
@@ -35,6 +36,21 @@ const {
 } = Astro.props
 const t = useTranslations(lang)
 const prefix = langPrefix(config, lang)
+
+// ADR-018: tokens come from the resolved theme's manifest, overlaid with the
+// user's theme.tokens (both color schemes) and the accent shorthand.
+const { manifest } = resolveTheme(config.theme.name)
+const accent = config.theme.accent
+const overrides = {
+  ...(config.theme.tokens ?? {}),
+  ...(accent ? { primary: accent, accent, ring: accent } : {}),
+}
+const tokenBlock = (table: Record<string, string>): string =>
+  Object.entries({ ...table, ...overrides })
+    .map(([name, value]) => `--${name}:${value};`)
+    .join('')
+const fontBlock = `--font-sans-stack:${manifest.fonts.sans};--font-serif-stack:${manifest.fonts.serif};--font-mono-stack:${manifest.fonts.mono};`
+const themeCss = `:root{${tokenBlock(manifest.tokens.light)}${fontBlock}}.dark{${tokenBlock(manifest.tokens.dark)}}`
 ---
 
 <!doctype html>
@@ -93,13 +109,7 @@ const prefix = langPrefix(config, lang)
         }
       })()
     </script>
-    {
-      config.theme.accent && (
-        <style
-          set:html={`:root,.dark{--primary:${config.theme.accent};--accent:${config.theme.accent};--ring:${config.theme.accent};}`}
-        />
-      )
-    }
+    <style set:html={themeCss}></style>
     <slot name="head" />
   </head>
   <body>
