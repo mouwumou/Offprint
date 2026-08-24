@@ -1,20 +1,15 @@
 import { execSync, spawn, type ChildProcess } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
+import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
+import { discoverRedirects, discoverRoutes } from './lib/routes'
 
 // Constraint 2 / ADR-003: both runtime modes must emit identical HTML for the
 // same content. Static pages come from the dist-static build output; server
 // pages from a running node-adapter process fed the same content directory.
+// EVERY discovered HTML route is compared (content-agnostic — the list grows
+// with the instance's content instead of naming sample slugs).
 
-const ROUTES = [
-  '/',
-  '/zh/',
-  '/about/',
-  '/blog/',
-  '/blog/tag/geometry/',
-  '/blog/geometry-of-uncertainty/',
-  '/zh/blog/publishing-from-notion/',
-]
 const PORT = 4599
 const BASE = `http://127.0.0.1:${PORT}`
 
@@ -60,13 +55,25 @@ test.describe('dual-mode HTML parity', () => {
     server?.kill()
   })
 
-  for (const route of ROUTES) {
-    test(`static and server render identical HTML for ${route}`, async () => {
-      const staticHtml = await readFile(`dist-static${route}index.html`, 'utf8')
+  test('static and server render identical HTML for every route', async () => {
+    const routes = discoverRoutes('dist-static')
+    expect(routes.length).toBeGreaterThan(0)
+
+    for (const route of routes) {
+      const staticHtml = await readFile(join('dist-static', route, 'index.html'), 'utf8')
       const response = await fetch(BASE + route)
-      expect(response.status).toBe(200)
+      expect.soft(response.status, `${route} status`).toBe(200)
       const serverHtml = await response.text()
-      expect(normalize(serverHtml)).toBe(normalize(staticHtml))
-    })
-  }
+      expect.soft(normalize(serverHtml), route).toBe(normalize(staticHtml))
+    }
+  })
+
+  test('redirects agree across modes: meta-refresh target = server Location', async () => {
+    for (const { route, target } of discoverRedirects('dist-static')) {
+      const response = await fetch(BASE + route, { redirect: 'manual' })
+      expect.soft(response.status, `${route} status`).toBeGreaterThanOrEqual(300)
+      expect.soft(response.status, `${route} status`).toBeLessThan(400)
+      expect.soft(response.headers.get('location'), route).toBe(target)
+    }
+  })
 })
