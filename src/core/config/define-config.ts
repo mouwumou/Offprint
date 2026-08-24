@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { siteConfigSchema, type SiteConfig, type SiteConfigInput } from './schema'
+import { buildSiteConfigSchema, type SiteConfig, type SiteConfigInput } from './schema'
 
 /**
  * Validate the site configuration and return it fully typed with defaults
@@ -7,7 +7,7 @@ import { siteConfigSchema, type SiteConfig, type SiteConfigInput } from './schem
  * fail the build (static) or startup (server) loudly, never render.
  */
 export function defineConfig(config: SiteConfigInput): SiteConfig {
-  const result = siteConfigSchema.safeParse(config)
+  const result = buildSiteConfigSchema().safeParse(config)
   if (!result.success) {
     throw new Error(`Invalid site.config.ts:\n${z.prettifyError(result.error)}`)
   }

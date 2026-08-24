@@ -77,7 +77,11 @@ offprint/
 
 1. **配置**：上述 `site.config.ts` 字段，够用则到此为止。
 2. **部件覆盖**：`src/site/widgets/<section-type>.astro` 替换同名内置首页部件。收集点在 pages 层（`src/pages/[...path].astro` 的 `import.meta.glob`），因为 core 不得 import src/site（ADR-006）；覆盖组件收到与内置部件完全相同的 props（内置实现在 `src/core/components/home/`，即 props 契约）。
-3. **主题包**：阶段 5 的整套替换。
+3. **主题**：`theme.name` 解析目录式主题（ADR-018，规范见 `docs/THEMING.md`）：`src/site/themes/<name>/` 优先于内置 `src/core/themes/<name>/`；token 与字体栈来自 theme.json（BaseLayout 注入），字体加载与主题特有样式来自 theme.css（integration 注入）。
+
+### 3.2 模块注册（ADR-019）
+
+模块以代码注册获得合法性（"模块注册表"）：`registerModule({ id, configSchema?, enabledByDefault?, nav?, copy?, collections? })`（`src/core/modules/registry.ts`）。`modules` 配置的校验 schema 在 `defineConfig()` **调用时**由注册表组合——site.config.ts 里出现未注册的模块名会得到"module not registered"并列出当前已注册者。内置五模块在 `src/core/modules/builtin.ts` 自注册；**站点本地模块**放 `src/site/modules/<id>/`，其入口调用 `registerModule`，由 site.config.ts import 触发（schema 延迟构建，import 顺序任意）。nav 缺省槽位与落地页文案缺省均来自注册信息，core 内不再各处硬编码模块名单。内置模块的路由仍是 `src/pages` 文件路由（以 `modules.<id>.enabled` 为门）；第三方模块的路由经 integration `injectRoute` 注入（P5-1e）。
 - 模块接口（内部，阶段 5 才对外）：
 
 ```ts

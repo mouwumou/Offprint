@@ -1,4 +1,5 @@
 import { useTranslations, type MessageKey } from '../i18n'
+import { getModule, getModules } from '../modules/registry'
 import { resolveLocalized } from '../schema/localized'
 import type { SiteConfig } from './schema'
 
@@ -17,15 +18,14 @@ export interface NavPage {
   nav: boolean
 }
 
-const moduleTargets: Record<
-  'home' | 'blog' | 'publications' | 'projects' | 'cv',
-  { path: string; key: MessageKey; exact?: boolean }
-> = {
-  home: { path: '', key: 'nav.home', exact: true },
-  blog: { path: '/blog', key: 'nav.writing' },
-  publications: { path: '/publications', key: 'nav.publications' },
-  projects: { path: '/projects', key: 'nav.projects' },
-  cv: { path: '/cv', key: 'nav.cv' },
+// 'home' is the one non-module nav target; every other slot comes from the
+// module registry (ADR-019) — a registered module with a nav field gets one.
+const HOME_TARGET = { path: '', key: 'nav.home' as MessageKey, exact: true }
+
+function moduleTarget(id: string): { path: string; key: MessageKey; exact?: boolean } | null {
+  if (id === 'home') return HOME_TARGET
+  const nav = getModule(id)?.nav
+  return nav ? { path: nav.path, key: nav.labelKey } : null
 }
 
 /** URL prefix for a language: '' for the default language, '/zh' style otherwise. */
@@ -44,8 +44,9 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
   const prefix = langPrefix(config, lang)
   const items: NavItem[] = []
 
-  const pushModule = (name: keyof typeof moduleTargets, label?: string): void => {
-    const target = moduleTargets[name]
+  const pushModule = (name: string, label?: string): void => {
+    const target = moduleTarget(name)
+    if (target === null) return
     items.push({
       href: name === 'home' ? prefix || '/' : `${prefix}${target.path}`,
       label: label ?? t(target.key),
@@ -60,8 +61,8 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
 
   if (config.nav === undefined) {
     pushModule('home')
-    for (const name of ['blog', 'publications', 'projects', 'cv'] as const) {
-      if (config.modules[name].enabled) pushModule(name)
+    for (const module of getModules()) {
+      if (module.nav && config.modules[module.id]?.enabled) pushModule(module.id)
     }
     if (config.modules.pages.enabled) {
       for (const page of pages.filter((page) => page.nav)) {
@@ -74,7 +75,7 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
   for (const entry of config.nav) {
     const label = resolveLocalized(entry.label, lang, config.i18n.default)
     if ('module' in entry) {
-      if (entry.module !== 'home' && !config.modules[entry.module].enabled) continue
+      if (entry.module !== 'home' && config.modules[entry.module]?.enabled !== true) continue
       pushModule(entry.module, label)
     } else if ('page' in entry) {
       if (!config.modules.pages.enabled) continue

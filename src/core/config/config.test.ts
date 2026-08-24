@@ -188,3 +188,36 @@ describe('home sections (ADR-015)', () => {
     ).toThrow()
   })
 })
+
+describe('module registry (ADR-019)', () => {
+  it('rejects an unregistered module with a "not registered" error', () => {
+    expect(() => defineConfig({ ...minimal, modules: { talks: true } as never })).toThrow(
+      /module "talks" is not registered/,
+    )
+  })
+
+  it('a registered site-local module becomes legal config, nav, and copy', async () => {
+    const { registerModule } = await import('../modules/registry')
+    const { resolveNav } = await import('./nav')
+    const { moduleCopy } = await import('./copy')
+    registerModule({
+      id: 'guestbook',
+      nav: { path: '/guestbook', labelKey: 'nav.home' },
+    })
+    const config = defineConfig({
+      ...minimal,
+      modules: { guestbook: { title: { en: 'Guestbook' } } },
+      nav: [{ module: 'guestbook' }],
+    })
+    // Registry state is module-global per test file (vitest isolates files);
+    // the extra module is harmless to the remaining assertions here.
+    expect(config.modules['guestbook']).toEqual({ enabled: true, title: { en: 'Guestbook' } })
+    expect(resolveNav(config, 'en', [])).toEqual([{ href: '/guestbook', label: 'Home' }])
+    expect(moduleCopy(config, 'guestbook', 'en').title).toBe('Guestbook')
+  })
+
+  it('duplicate registration fails loudly', async () => {
+    const { registerModule } = await import('../modules/registry')
+    expect(() => registerModule({ id: 'blog' })).toThrow(/already registered/)
+  })
+})

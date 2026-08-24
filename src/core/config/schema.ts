@@ -1,4 +1,6 @@
 import { z } from 'zod'
+import '../modules/builtin'
+import { buildModulesSchema, getModules } from '../modules/registry'
 import { localizedString } from '../schema/localized'
 import { TOKEN_NAMES } from '../theme/contract'
 
@@ -39,46 +41,10 @@ export const profileSchema = z.strictObject({
   links: z.array(profileLinkSchema).default([]),
 })
 
-// ── modules ──────────────────────────────────────────────────────────────────
+// ── modules (ADR-019: composed from the module registry at call time) ────────
 
-/**
- * A disabled module generates no routes, no nav entry, and ships no code
- * (constraint 5). `true` enables with theme-default copy; an object enables
- * AND overrides the module's landing copy (ADR-015: the i18n dictionary
- * holds theme defaults, the author's voice lives here).
- */
-const moduleCopySchema = z.strictObject({
-  /** Landing-page heading override. */
-  title: localizedString.optional(),
-  /** Landing-page intro override. */
-  description: localizedString.optional(),
-  /** blog only: post colophon box override; false hides it. */
-  colophon: z.union([z.literal(false), localizedString]).optional(),
-})
-
-interface ModuleSettingShape {
-  enabled: boolean
-  title?: z.output<typeof localizedString> | undefined
-  description?: z.output<typeof localizedString> | undefined
-  colophon?: false | z.output<typeof localizedString> | undefined
-}
-
-const moduleToggle = z
-  .union([z.boolean(), moduleCopySchema])
-  .transform((value): ModuleSettingShape =>
-    typeof value === 'boolean' ? { enabled: value } : { enabled: true, ...value },
-  )
-
-export const modulesSchema = z.strictObject({
-  blog: moduleToggle.prefault(true),
-  pages: moduleToggle.prefault(true),
-  publications: moduleToggle.prefault(true),
-  projects: moduleToggle.prefault(true),
-  cv: moduleToggle.prefault(true),
-})
-
-export type ModuleName = keyof z.output<typeof modulesSchema>
-export type ModuleSetting = z.output<typeof moduleToggle>
+export type { ModuleSetting, ModulesConfig } from '../modules/registry'
+export type ModuleName = import('../modules/registry').BuiltinModuleId
 
 // ── home composition (ADR-015: the homepage is a section sequence) ───────────
 
@@ -138,16 +104,34 @@ export const homeSchema = z.strictObject({
  * defaults to the page title), `href` is a free link (internal paths get the
  * language prefix, absolute URLs pass through).
  */
-export const navEntrySchema = z.union([
-  z.strictObject({
-    module: z.enum(['home', 'blog', 'publications', 'projects', 'cv']),
-    label: localizedString.optional(),
-  }),
-  z.strictObject({ page: z.string().min(1), label: localizedString.optional() }),
-  z.strictObject({ href: z.string().min(1), label: localizedString }),
-])
+export function buildNavEntrySchema() {
+  // 'home' plus every registered module that has a nav landing page.
+  const moduleIds = [
+    'home',
+    ...getModules()
+      .filter((module) => module.nav !== null && module.nav !== undefined)
+      .map((module) => module.id),
+  ] as [string, ...string[]]
+  return z.union([
+    z.strictObject({ module: z.enum(moduleIds), label: localizedString.optional() }),
+    z.strictObject({ page: z.string().min(1), label: localizedString.optional() }),
+    z.strictObject({ href: z.string().min(1), label: localizedString }),
+  ])
+}
 
-export type NavEntry = z.output<typeof navEntrySchema>
+export interface NavEntryModule {
+  module: string
+  label?: z.output<typeof localizedString> | undefined
+}
+export interface NavEntryPage {
+  page: string
+  label?: z.output<typeof localizedString> | undefined
+}
+export interface NavEntryHref {
+  href: string
+  label: z.output<typeof localizedString>
+}
+export type NavEntry = NavEntryModule | NavEntryPage | NavEntryHref
 
 // ── chrome: header & footer (ADR-015) ────────────────────────────────────────
 
@@ -237,19 +221,27 @@ export const commentsSchema = z
 
 // ── site config ──────────────────────────────────────────────────────────────
 
-export const siteConfigSchema = z.strictObject({
-  profile: profileSchema,
-  modules: modulesSchema.prefault({}),
-  /** Absent → theme default: home, enabled modules, then nav:true pages. */
-  nav: z.array(navEntrySchema).optional(),
-  home: homeSchema.prefault({}),
-  header: headerSchema.prefault({}),
-  footer: footerSchema.prefault({}),
-  theme: themeSchema.prefault({}),
-  i18n: i18nSchema.prefault({}),
-  runtime: runtimeSchema.prefault({}),
-  comments: commentsSchema.prefault({}),
-})
+/**
+ * Built at defineConfig() CALL time, not module-load time (ADR-019): the
+ * modules and nav schemas come from the registry, and site-local modules
+ * register when site.config.ts imports them — lazy construction makes any
+ * import order work.
+ */
+export function buildSiteConfigSchema() {
+  return z.strictObject({
+    profile: profileSchema,
+    modules: buildModulesSchema().prefault({}),
+    /** Absent → theme default: home, enabled modules, then nav:true pages. */
+    nav: z.array(buildNavEntrySchema()).optional(),
+    home: homeSchema.prefault({}),
+    header: headerSchema.prefault({}),
+    footer: footerSchema.prefault({}),
+    theme: themeSchema.prefault({}),
+    i18n: i18nSchema.prefault({}),
+    runtime: runtimeSchema.prefault({}),
+    comments: commentsSchema.prefault({}),
+  })
+}
 
-export type SiteConfigInput = z.input<typeof siteConfigSchema>
-export type SiteConfig = z.output<typeof siteConfigSchema>
+export type SiteConfigInput = z.input<ReturnType<typeof buildSiteConfigSchema>>
+export type SiteConfig = z.output<ReturnType<typeof buildSiteConfigSchema>>
