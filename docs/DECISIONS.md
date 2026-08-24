@@ -103,3 +103,22 @@
 **决定**：仓库分两种角色。**模板仓库**（本仓库，公开）：代码 + 样例内容 + 工作流文件 + 文档，GitHub 环境**永不配置任何外部密钥**；得益于 ADR-010（样例内容随模板）与 ADR-012（构建不请求 Notion），它的构建完全自足，因此 CI 全套照跑，`deploy-pages.yml` 也**不设门**——在模板上它发布官方 demo 站并充当每次 push 的真实部署测试（`actions/configure-pages` 带 `enablement: true` 消除首跑摩擦）。**实例仓库**（Use this template 生成，或 fork）：用户替换 `site.config.ts` 与 `content/`，在自己仓库配置 Secrets（`NOTION_TOKEN`、`NOTION_DB`，可选 `VERCEL_*`）与 Variables（`SITE_URL`、开关）。**只有碰外部密钥的工作流设变量门**：`sync.yml` 以 `vars.SYNC_ENABLED == 'true'` 为门、`deploy-vercel.yml` 以 `vars.DEPLOY_VERCEL == 'true'` 为门——模板不设变量则显示 skipped，永远绿。自托管（server 模式）的密钥只存在于服务器本地 `.env`，与 GitHub 无关。
 
 **后果**：Notion 同步链是唯一无法在模板仓库验证的链路，其首跑验证在**私有测试实例**中进行（一次性 Use this template 仓库，验证后可删）；P1-16（维护者真实内容上线）发生在维护者自己的实例仓库，不在模板内。将来阶段 4 若发 Docker 镜像，学 NotionNext 发 ghcr.io（`GITHUB_TOKEN`，`IMAGE_NAME=github.repository`，fork 自动发到自己名下）；若出现模板专属发布物，用 al-folio 式 owner 守卫而非变量门。
+
+## ADR-018 主题是契约化的可贡献单元，校验来自解析而非枚举 — 已定
+
+**背景**：维护者两点纠偏：其一，Figma 原型是 AI 生成的概念图（受 Figma Make 风格影响），不应作为锁定的设计依据——ADR-011 把它的 token"锁定"从根上站不住；其二，`theme.preset: 'paper' | 'scholar'` 这种硬编码 union 违背开源初衷——第三方必须能贡献主题而不改核心代码。
+**决定**：主题 = 一个符合契约的目录/包：`defineTheme({ name, tokens: {light, dark}, fonts, voice?, css?, shiki? })`。tokens 是全量 token 白名单表；fonts 声明字体加载与回退栈；voice 是少量腔调开关（kicker、节标签样式、头像处理等）；主题**不含 JS、不做布局分叉**（布局归部件层）。配置 `theme.name` 是任意字符串，**解析器即校验**：按 `src/site/themes/<name>` → 内置主题 →（阶段 4 后）npm 包顺序解析，解析失败构建期报错并列出可用主题。`theme.tokens` 允许用户在所选主题之上做全局 token 覆盖（这是皮肤层变量，不违反 ADR-015 "不做逐处 CSS 旋钮"的非目标）。`THEMING.md` 给出制作规范，质量门直接复用内容无关的深度测试套件（e2e/axe/lhci 对任何主题照跑）。
+**修订**：ADR-011 的 token 从"系统锁定"降级为"paper 主题的定义"，Figma 原型降为概念参考；现有视觉迁移为第一个内置主题 `paper`，新的学术风默认主题按同一契约实现（一份规范至少要能表达两个差异明显的主题才算成立）。
+**后果**：ADR-016 的原则（无假 API 面）保留，但机制从"收缩枚举"换为"解析即校验"。
+
+## ADR-019 模块注册：合法性来自注册，配置校验由注册表组合 — 已定
+
+**背景**：`modulesSchema` 的 strictObject 硬写死模块键集合，ADR-016 又以删键方式处理未实现的 talks/news——维护者指出这违背设计初衷：想要一个模块就在配置里加进来并提供实现，不需要就不放，系统不该用白名单做门卫。
+**决定**：引入模块注册机制（下称"模块注册表"，指：模块以代码注册获得合法性，`modules` 配置的校验 schema 由已注册模块各自的 configSchema 组合而成；配置里出现未注册的模块名时报"未注册"而非"不在白名单"）。`defineModule({ id, configSchema?, nav?, copyDefaults?, collections?, widgets? })`（ARCHITECTURE §3 草图的落地）；内置五模块改为自注册；nav 缺省、模块文案缺省、首页 section 与模块的对应关系全部由注册信息驱动，不再各处硬编码。站点本地模块放 `src/site/modules/<id>/`，由 pages/integration 层聚合（ADR-006 边界内）；第三方路由经 integration `injectRoute` 注入。
+**修订**：ADR-016 对 talks/news 的删除是正确结论、错误机制——它们（及任何新模块）以"注册即合法"的方式回归。
+**后果**：P5-1 提前启动；插件 API（阶段 5）在此之上只剩"npm 分发 + 接口稳定化"。
+
+## ADR-020 配置只经版本化文本文件 — 已定
+
+**背景**：曾提议 `pnpm setup` 交互式向导降低上手门槛，维护者否决。
+**决定**：一切配置的唯一事实来源是版本化文本文件（`site.config.ts`、`content/*.yaml`、`.env`）；不提供任何交互式写入工具。理由：交互产生的状态无法 diff、无法复现，与声明式配置不对称。降低门槛的手段是文档与带注释的样例配置（P4-4 配置参考）。

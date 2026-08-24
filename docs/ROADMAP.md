@@ -82,7 +82,23 @@
 
 ## 阶段 5 — 插件 API（按需）
 
-- [ ] P5-1 `OffprintModule` 对外稳定化，第三方模块示例
+P5-1 与 P5-2 因 ADR-018/019 于 2026-08-24 提前启动，并行推进，任务展开如下。
+
+主题系统（P5-2 提前，ADR-018）：
+
+- [ ] P5-2a 主题契约 `defineTheme`（全量 token 表 + fonts + voice + 可选 css/shiki）与解析器（src/site/themes → 内置 → npm；解析失败构建期报错并列出可用主题）
+- [ ] P5-2b global.css 拆分：token 无关的版式基座 + 每主题自带样式；integration 按解析结果注入
+- [ ] P5-2c 现有视觉迁移为内置主题 `paper`（ADR-011 修订：token 降为该主题的定义）
+- [ ] P5-2d `theme.tokens` 用户级 token 覆盖
+- [ ] P5-2e `docs/THEMING.md` 制作规范（可定义/禁止事项；质量门 = 内容无关的 e2e/axe/lhci）
+- [ ] P5-2f 学术风新默认主题：三个视觉方向小样定调 → 实现为第二个内置主题并设为缺省
+
+模块注册（P5-1 提前，ADR-019；"模块注册表" = 模块以代码注册获得合法性、modules 配置校验由已注册模块的 schema 组合而成）：
+
+- [ ] P5-1a `defineModule` 接口与注册表（id、configSchema、nav/文案缺省、collections 声明）
+- [ ] P5-1c 内置五模块自注册；`modulesSchema` 由注册表组合，未注册键报"未注册"
+- [ ] P5-1d nav 缺省 / 模块文案缺省 / 首页 section 的模块对应改为注册驱动
+- [ ] P5-1e 站点本地模块发现（src/site/modules/*，pages/integration 层聚合）+ 第三方路由 injectRoute 通道 + 示例模块
+- [ ] P5-1 `OffprintModule` 对外稳定化，第三方模块示例（npm 分发形态，待阶段 4 拆包）
 - [ ] P5-1b 可选 loader：BibTeX 导入、手写 markdown 目录、Obsidian
-- [ ] P5-2 主题包机制
-- [ ] P5-3 `create-offprint` CLI
+- [ ] P5-3 `create-offprint` CLI（脚手架只生成文本文件，不做交互式配置写入 — ADR-020）
