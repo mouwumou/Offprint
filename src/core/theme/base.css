@@ -38,6 +38,18 @@
   * {
     border-color: var(--border);
   }
+  /* Applied by ThemeToggle only for the duration of a scheme switch: colors
+     cross-fade instead of hard-cutting. Not permanent — a resident
+     transition would slow every hover and tint the initial paint. */
+  html.theme-transition,
+  html.theme-transition * {
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      color 0.25s ease,
+      fill 0.25s ease,
+      stroke 0.25s ease !important;
+  }
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;

@@ -11,7 +11,12 @@ export default function ThemeToggle({ label }: { label: string }) {
   const toggle = (): void => {
     const next = !dark
     setDark(next)
-    document.documentElement.classList.toggle('dark', next)
+    const root = document.documentElement
+    // Cross-fade the scheme switch (base.css .theme-transition); removed
+    // right after so hovers and later paints stay instant.
+    root.classList.add('theme-transition')
+    root.classList.toggle('dark', next)
+    window.setTimeout(() => root.classList.remove('theme-transition'), 300)
     try {
       localStorage.setItem('theme', next ? 'dark' : 'light')
     } catch {
