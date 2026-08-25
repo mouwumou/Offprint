@@ -7,7 +7,7 @@
 一个目录，放在下列任一位置（同名时靠前者优先）：
 
 ```
-src/site/themes/<name>/     # 站点自有主题（实例仓库里直接写）
+extensions/themes/<name>/   # 安装的主题（只读：升级 = 整目录替换，ADR-022）
 src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 ```
 
@@ -15,11 +15,14 @@ src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 
 ```
 <name>/
-├─ theme.json     # 必需：manifest（tokens + fonts）
-└─ theme.css      # 可选：字体加载（@import fontsource 包）与主题特有样式
+├─ theme.json     # 必需：manifest（tokens + fonts + voice + options 声明）
+├─ theme.css      # 可选：字体加载（@import fontsource 包）与主题特有样式
+└─ widgets/       # 可选：主题自带的首页部件实现（ADR-022；站点散件可逐个压过）
 ```
 
 没有注册表、没有枚举：**放进目录、通过校验，就是合法主题**。`site.yaml` 里 `theme: { name: <name> }` 即启用；名字解析不到时构建失败并列出当前可用的主题。
+
+**只读原则（ADR-022）**：使用者永远不编辑主题目录内部——你的一切可调项都在 site.yaml：`theme.accent` / `theme.tokens`（通用覆盖）与 `theme.options`（主题自定义选项，见 §2b）；想改某个部件，在 `extensions/widgets/` 放同名文件压过它，不要 fork 主题。
 
 ## 2. theme.json
 
@@ -45,6 +48,19 @@ src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 - 字体栈**必须含 CJK 回退**（参照 paper 的栈；中文 webfont 体积不划算，走系统字体是项目约定）。
 
 token 的注入由 BaseLayout 完成（内联 `:root{…}.dark{…}`），主题不用也不要在 CSS 里重复定义它们。用户可在 config 里用 `theme.tokens` / `theme.accent` 在你的主题之上做覆盖——这是预期行为，不要用更高特异性对抗它。
+
+## 2b. options：主题自定义选项（ADR-022）
+
+在 theme.json 里**声明**你的选项，用户在 site.yaml `theme.options` 里**填值**：
+
+```json
+"options": {
+  "sidebar": { "type": "string", "enum": ["left", "right"], "default": "right", "description": "侧栏位置" },
+  "showAffiliations": { "type": "boolean", "default": true }
+}
+```
+
+构建期按声明精确校验（未知选项 / 类型不符 / 越出 enum 都报错）；`pnpm gen:schema` 会把声明并入 site.yaml 的编辑器补全。部件里经 `themeOptions`（`src/core/theme/current.ts`）读取解析后的值。
 
 ## 3. theme.css（可选）
 

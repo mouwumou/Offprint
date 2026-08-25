@@ -28,6 +28,7 @@ offprint/
 ├─ package.json  astro.config.ts  site.yaml  tsconfig.json
 ├─ schema/                   # site.yaml / home.yaml 的编辑器补全 schema（pnpm gen:schema 再生）
 ├─ .env.example
+├─ extensions/               # 装进来的扩展（ADR-022，只读安装）：themes/ widgets/ modules/
 ├─ content/                  # 维护者内容（sync 写入；模板用户替换）
 │  ├─ posts/<urlname>.<lang>.md
 │  ├─ pages/<slug>.<lang>.md # Notion type=Page 的独立页面（About、Now…）
@@ -35,7 +36,7 @@ offprint/
 │  ├─ assets/
 │  └─ manifest.json
 ├─ src/
-│  ├─ core/                  # 未来的 @offprint/core，内部不得 import src/sync 或 src/site
+│  ├─ core/                  # 未来的 @offprint/core，内部不得 import src/sync 或 extensions
 │  │  ├─ config/             # defineConfig + zod schema
 │  │  ├─ schema/             # posts / pages / publications / projects / cv / talks / news
 │  │  ├─ store/              # ContentStore: fs.ts (git.ts s3.ts 阶段 2) manifest.ts
@@ -45,20 +46,19 @@ offprint/
 │  │  ├─ i18n/               # en.ts zh.ts + 工具
 │  │  ├─ seo/                # Head、JSON-LD、Highwire、OG 图、feed、sitemap
 │  │  ├─ theme/              # token CSS、字体、dark mode
-│  │  ├─ components/         # .astro + React islands；home/ 下是首页部件（可被 src/site/widgets 覆盖）
+│  │  ├─ components/         # .astro + React islands；home/ 下是首页部件（可被 extensions 部件链覆盖）
 │  │  └─ server/             # 阶段 2：端点、watch、运行时索引（static 构建不打包）
 │  ├─ sync/                  # 未来的 @offprint/sync：elog 封装，只依赖 src/core/schema
 │  │  └─ { cli.ts, run.ts, elog-config.ts, manifest.ts, validate.ts, notify.ts }
 │  ├─ pages/                 # Astro 路由：[...lang]/ 下 blog / projects / cv / pages
-│  ├─ layouts/
-│  └─ site/                  # 维护者站点级覆盖（widgets/<type>.astro 替换首页部件；样式、自定义组件）
+│  └─ layouts/
 ├─ docker/                   # web.Dockerfile compose.static.yaml (site.Dockerfile compose.server.yaml 阶段 2)
 ├─ docs/
 ├─ .github/workflows/        # ci.yml sync.yml deploy-pages.yml
 └─ scripts/                  # build-static.sh（sync → build → 原子切换，自托管用）
 ```
 
-边界由 eslint-plugin-import 的 `import/no-restricted-paths`（zones 按解析后的真实文件路径判定，比 `no-restricted-imports` 的导入字符串匹配可靠）守住：`src/core/**` 不得引用 `src/sync/**`、`src/site/**`、`src/pages/**`；`src/sync/**` 只能引用 `src/core/schema/**`。阶段 4 拆包时按目录平移。
+边界由 eslint-plugin-import 的 `import/no-restricted-paths`（zones 按解析后的真实文件路径判定，比 `no-restricted-imports` 的导入字符串匹配可靠）守住：`src/core/**` 不得引用 `src/sync/**`、`extensions/**`、`src/pages/**`；`src/sync/**` 只能引用 `src/core/schema/**`。阶段 4 拆包时按目录平移。
 
 ## 3. 关键接口
 
@@ -77,12 +77,12 @@ offprint/
 三级定制阶梯：
 
 1. **配置**：`site.yaml` 字段与 `content/home.yaml` 的首页排布（ADR-021），够用则到此为止。
-2. **部件覆盖**：`src/site/widgets/<section-type>.astro` 替换同名内置首页部件。收集点在 pages 层（`src/pages/[...path].astro` 的 `import.meta.glob`），因为 core 不得 import src/site（ADR-006）；覆盖组件收到与内置部件完全相同的 props（内置实现在 `src/core/components/home/`，即 props 契约）。
-3. **主题**：`theme.name` 解析目录式主题（ADR-018，规范见 `docs/THEMING.md`）：`src/site/themes/<name>/` 优先于内置 `src/core/themes/<name>/`；token 与字体栈来自 theme.json（BaseLayout 注入），字体加载与主题特有样式来自 theme.css（integration 注入）。
+2. **部件覆盖**：`extensions/widgets/<section-type>.astro` 替换同名内置首页部件；启用主题包自带的 `widgets/` 居中间优先级（查找链：站点散件 > 主题 > 内置，ADR-022）。收集点在 pages 层（`src/pages/[...path].astro` 的 `import.meta.glob`，编译期字面量收集全部主题的部件、渲染期按启用主题过滤）；覆盖组件收到与内置部件完全相同的 props（内置实现在 `src/core/components/home/`，即 props 契约）。
+3. **主题**：`theme.name` 解析目录式主题（ADR-018/022，规范见 `docs/THEMING.md`）：`extensions/themes/<name>/` 优先于内置 `src/core/themes/<name>/`；token 与字体栈来自 theme.json（BaseLayout 注入），字体加载与主题特有样式来自 theme.css（integration 注入）；主题声明的选项在 site.yaml `theme.options` 填值（构建期校验 + 编辑器补全）。
 
 ### 3.2 模块注册（ADR-019）
 
-模块以代码注册获得合法性（"模块注册表"）：`registerModule({ id, configSchema?, enabledByDefault?, nav?, copy?, collections? })`（`src/core/modules/registry.ts`）。`modules` 配置的校验 schema 在 `defineConfig()` **调用时**由注册表组合——site.yaml 里出现未注册的模块名会得到"module not registered"并列出当前已注册者。内置五模块在 `src/core/modules/builtin.ts` 自注册；**站点本地模块**放 `src/site/modules/<id>/`，以 `module.yaml` 声明导航与文案（构建期 fs 读取自动注册，与主题机制对称，无 import 边界问题——ADR-021）。nav 缺省槽位与落地页文案缺省均来自注册信息，core 内不再各处硬编码模块名单。内置模块的路由仍是 `src/pages` 文件路由（以 `modules.<id>.enabled` 为门）；第三方模块的路由经 integration `injectRoute` 注入（P5-1e）。
+模块以代码注册获得合法性（"模块注册表"）：`registerModule({ id, configSchema?, enabledByDefault?, nav?, copy?, collections? })`（`src/core/modules/registry.ts`）。`modules` 配置的校验 schema 在 `defineConfig()` **调用时**由注册表组合——site.yaml 里出现未注册的模块名会得到"module not registered"并列出当前已注册者。内置五模块在 `src/core/modules/builtin.ts` 自注册；**安装的模块**放 `extensions/modules/<id>/`，以 `module.yaml` 声明导航与文案（构建期 fs 读取自动注册，与主题机制对称，无 import 边界问题——ADR-021/022）。nav 缺省槽位与落地页文案缺省均来自注册信息，core 内不再各处硬编码模块名单。内置模块的路由仍是 `src/pages` 文件路由（以 `modules.<id>.enabled` 为门）；第三方模块的路由经 integration `injectRoute` 注入（P5-1e）。
 - 模块接口（内部，阶段 5 才对外）：
 
 ```ts

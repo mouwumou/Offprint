@@ -771,6 +771,12 @@
             "ring",
             "radius"
           ]
+        },
+        "options": {
+          "type": "object",
+          "description": "当前主题声明的选项（构建时按启用主题精确校验）",
+          "properties": {},
+          "additionalProperties": true
         }
       },
       "additionalProperties": false

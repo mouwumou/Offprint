@@ -36,15 +36,15 @@ describe('theme resolution (ADR-018)', () => {
 
   describe('site-local themes shadow built-ins', () => {
     afterEach(async () => {
-      await rm('src/site/themes', { recursive: true, force: true })
+      await rm('extensions/themes', { recursive: true, force: true })
     })
 
     it('finds a theme dropped into src/site/themes', async () => {
       const { manifest } = resolveTheme('paper')
-      await mkdir('src/site/themes/mytheme', { recursive: true })
+      await mkdir('extensions/themes/mytheme', { recursive: true })
       const { voice: _voice, ...rest } = manifest
       await writeFile(
-        'src/site/themes/mytheme/theme.json',
+        'extensions/themes/mytheme/theme.json',
         JSON.stringify({ ...rest, name: 'mytheme' }),
       )
       expect(listThemes()).toContain('mytheme')

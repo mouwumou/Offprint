@@ -3,7 +3,7 @@
 # ──────────────────────────────────────────────────────────────────────────────
 # Offprint 站点配置（ADR-021）。这一个文件 = 站点长什么样。
 # 页面里显示什么在 content/ 目录；首页的排布在 content/home.yaml；
-# 代码级定制（主题/部件/模块）在 src/site/。密钥只放 .env，永不进仓库。
+# 装进来的扩展（主题/部件/模块）在 extensions/。密钥只放 .env，永不进仓库。
 #
 # 所有键都会在构建时校验：拼错键、类型不对会直接报错并指出位置。
 # 双语字段两种写法都行：  title: Hello   或   title: { en: Hello, zh: 你好 }
@@ -84,11 +84,12 @@ header:
 #   rss: true
 
 # ── 外观：内置主题 scholar（默认，学术白底）| paper（杂志纸面风，配 hero 排布）；
-#    自有主题放 src/site/themes/<name>/（docs/THEMING.md）──────────────────────
+#    安装的主题放 extensions/themes/<name>/（docs/THEMING.md，只读，一切可调项在这里配）
 # theme:
 #   name: paper
 #   accent: '#1756a9'           # 只换主色
 #   tokens: { radius: 0px }     # 逐个覆盖设计变量
+#   options: {}                 # 该主题声明的选项（编辑器有补全）
 
 # ── 语言：默认语言在根路径，其余带 /zh 一类前缀 ───────────────────────────────
 i18n:

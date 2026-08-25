@@ -193,6 +193,9 @@ export const themeSchema = z.strictObject({
     .optional(),
   /** Per-token overrides on top of the theme, applied to both schemes. */
   tokens: z.record(z.enum(TOKEN_NAMES), z.string().min(1)).optional(),
+  /** Values for the options the ACTIVE theme declares in its theme.json;
+   * validated against that declaration at build (ADR-022). */
+  options: z.record(z.string(), z.union([z.boolean(), z.string(), z.number()])).optional(),
 })
 
 // ── i18n (ADR-007) ───────────────────────────────────────────────────────────

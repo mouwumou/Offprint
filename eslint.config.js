@@ -68,8 +68,8 @@ export default defineConfig(
             },
             {
               target: './src/core',
-              from: './src/site',
-              message: 'src/core must not import src/site (ADR-006).',
+              from: './extensions',
+              message: 'src/core must not import extensions (ADR-006/022).',
             },
             {
               target: './src/core',
@@ -84,8 +84,8 @@ export default defineConfig(
             },
             {
               target: './src/sync',
-              from: './src/site',
-              message: 'src/sync must not import src/site (ADR-006).',
+              from: './extensions',
+              message: 'src/sync must not import extensions (ADR-006/022).',
             },
             {
               target: './src/sync',

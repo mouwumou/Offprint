@@ -48,9 +48,26 @@ export const themeVoiceSchema = z
   })
   .prefault({})
 
+/**
+ * A theme's own configurable options, DECLARED here and VALUED by the user
+ * in site.yaml `theme.options` (ADR-022: the theme package is read-only,
+ * every knob lives in the site config). Validated at build against this
+ * declaration; gen:schema folds it into site.yaml's editor completion.
+ */
+export const themeOptionDeclSchema = z.strictObject({
+  type: z.enum(['boolean', 'string', 'number']),
+  default: z.union([z.boolean(), z.string(), z.number()]).optional(),
+  enum: z.array(z.union([z.string(), z.number()])).optional(),
+  description: z.string().optional(),
+})
+
+export type ThemeOptionDecl = z.output<typeof themeOptionDeclSchema>
+export type ThemeOptionValue = boolean | string | number
+
 export const themeManifestSchema = z.strictObject({
   name: z.string().min(1),
   voice: themeVoiceSchema,
+  options: z.record(z.string(), themeOptionDeclSchema).prefault({}),
   /** Full token tables for both color schemes. */
   tokens: z.strictObject({ light: tokenTable, dark: tokenTable }),
   /** Complete font-family stacks (including CJK and system fallbacks). */

@@ -10,7 +10,7 @@ import { localizedString, type LocalizedString } from '../schema/localized'
 // schemas at defineConfig() time — an unregistered name in the config is a
 // "not registered" build error, not a hardcoded-whitelist rejection.
 // Built-ins register in ./builtin.ts; site-local modules are discovered
-// from src/site/modules/<id>/module.yaml manifests (ADR-021) right before
+// from extensions/modules/<id>/module.yaml manifests (ADR-021/022) right before
 // the modules schema is composed.
 
 const copyShape = {
@@ -94,7 +94,7 @@ export function registerModule(def: OffprintModuleDef): void {
 
 // ── site-local module discovery (ADR-021) ────────────────────────────────────
 
-/** src/site/modules/<id>/module.yaml — declarative manifest, fs-read like a
+/** extensions/modules/<id>/module.yaml — declarative manifest, fs-read like a
  * theme's theme.json (no import across the ADR-006 boundary, no bundle
  * timing). Behaviour (routes) is injected separately by the integration. */
 const moduleManifestSchema = z.strictObject({
@@ -112,7 +112,7 @@ const moduleManifestSchema = z.strictObject({
   enabledByDefault: z.boolean().optional(),
 })
 
-const SITE_MODULES_DIR = 'src/site/modules'
+const SITE_MODULES_DIR = 'extensions/modules'
 let siteModulesDiscovered = false
 
 /** Test hook: production discovers once per process; tests create/remove
@@ -183,7 +183,7 @@ export function buildModulesSchema(): z.ZodType<ModulesConfig, unknown> {
             .map((m) => m.id)
             .join(
               ', ',
-            )}. Site-local modules live in src/site/modules/<id>/ and register by being imported from site.config.ts (ADR-019).`,
+            )}. Installed modules live in extensions/modules/<id>/ with a module.yaml (ADR-019/022).`,
         })
       }
     }

@@ -3,11 +3,11 @@ import { join, resolve } from 'node:path'
 import { z } from 'zod'
 import { themeManifestSchema, type ResolvedTheme } from './contract'
 
-// Site-local themes shadow built-ins of the same name; npm-distributed
-// themes join the chain when the package split lands (phase 4). Reading
-// theme.json via fs keeps ADR-006 intact: core never imports src/site code,
-// and a manifest is data, not code.
-const THEME_ROOTS = ['src/site/themes', 'src/core/themes'] as const
+// Installed themes (extensions/, ADR-022) shadow built-ins of the same
+// name; npm-distributed themes join the chain when the package split lands
+// (phase 4). Reading theme.json via fs keeps ADR-006 intact: core never
+// imports extension code, and a manifest is data, not code.
+const THEME_ROOTS = ['extensions/themes', 'src/core/themes'] as const
 
 const cache = new Map<string, ResolvedTheme>()
 
@@ -41,7 +41,7 @@ export function resolveTheme(name: string): ResolvedTheme {
   if (dir === null) {
     throw new Error(
       `theme "${name}" not found — available themes: ${listThemes().join(', ') || '(none)'}. ` +
-        'A theme is a directory with a theme.json under src/site/themes/ or src/core/themes/ (docs/THEMING.md).',
+        'A theme is a directory with a theme.json under extensions/themes/ or src/core/themes/ (docs/THEMING.md).',
     )
   }
 
