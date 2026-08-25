@@ -44,6 +44,15 @@ const statusKey: Record<ProjectStatus, MessageKey> = {
   maintained: 'projects.status.maintained',
   archived: 'projects.status.archived',
 }
+
+/** repo/live links for the plain-register row list. */
+function projectLinks(project: (typeof projects)[number]): { label: string; href: string }[] {
+  const links: { label: string; href: string }[] = []
+  if (project.repo)
+    links.push({ label: t('projects.repository').replace(' →', ''), href: project.repo })
+  if (project.href) links.push({ label: t('projects.live').replace(' →', ''), href: project.href })
+  return links
+}
 ---
 
 <BaseLayout
@@ -98,30 +107,19 @@ const statusKey: Record<ProjectStatus, MessageKey> = {
                 </p>
               )}
               <p class="mt-1.5 text-sm">
-                {[
-                  project.repo && {
-                    label: t('projects.repository').replace(' →', ''),
-                    href: project.repo,
-                  },
-                  project.href && {
-                    label: t('projects.live').replace(' →', ''),
-                    href: project.href,
-                  },
-                ]
-                  .filter(Boolean)
-                  .map((link, index) => (
-                    <>
-                      {index > 0 && <span class="text-muted-foreground"> / </span>}
-                      <a
-                        href={link.href}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="text-primary hover:underline"
-                      >
-                        {link.label}
-                      </a>
-                    </>
-                  ))}
+                {projectLinks(project).map((link, index) => (
+                  <>
+                    {index > 0 && <span class="text-muted-foreground"> / </span>}
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-primary hover:underline"
+                    >
+                      {link.label}
+                    </a>
+                  </>
+                ))}
               </p>
               {project.tags.length > 0 && (
                 <p class="mt-0.5 text-xs text-muted-foreground">{project.tags.join(' · ')}</p>
