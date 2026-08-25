@@ -18,9 +18,12 @@ export function moduleCopy(
   const defaults = getModule(module)?.copy
   const title =
     resolveLocalized(setting?.title, lang, config.i18n.default) ??
-    (defaults ? t(defaults.title) : module)
+    (defaults?.titleKey !== undefined ? t(defaults.titleKey) : undefined) ??
+    resolveLocalized(defaults?.title, lang, config.i18n.default) ??
+    module
   const description =
     resolveLocalized(setting?.description, lang, config.i18n.default) ??
-    (defaults?.description ? t(defaults.description) : undefined)
+    (defaults?.descriptionKey !== undefined ? t(defaults.descriptionKey) : undefined) ??
+    resolveLocalized(defaults?.description, lang, config.i18n.default)
   return { title, description }
 }

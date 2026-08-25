@@ -1,14 +1,17 @@
+import { existsSync, readdirSync, readFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
+import YAML from 'yaml'
 import { z } from 'zod'
 import type { MessageKey } from '../i18n'
-import { localizedString } from '../schema/localized'
+import { localizedString, type LocalizedString } from '../schema/localized'
 
 // ADR-019 module registry: a module becomes legal by REGISTERING, and the
 // `modules` config schema is composed from the registered modules' own
 // schemas at defineConfig() time — an unregistered name in the config is a
 // "not registered" build error, not a hardcoded-whitelist rejection.
-// Built-ins register in ./builtin.ts; a site-local module registers itself
-// when site.config.ts imports it (any import order works, because schemas
-// are built lazily when defineConfig runs, after all imports settled).
+// Built-ins register in ./builtin.ts; site-local modules are discovered
+// from src/site/modules/<id>/module.yaml manifests (ADR-021) right before
+// the modules schema is composed.
 
 const copyShape = {
   /** Landing-page heading override. */
@@ -46,10 +49,19 @@ export interface OffprintModuleDef {
   /** Schema for this module's `modules.<id>` config value. */
   configSchema?: z.ZodType<ModuleSetting, unknown>
   enabledByDefault?: boolean
-  /** Default nav slot (language prefix applied by resolveNav); null = none. */
-  nav?: { path: string; labelKey: MessageKey } | null
-  /** Landing copy defaults (theme i18n keys; user overrides via config). */
-  copy?: { title: MessageKey; description?: MessageKey }
+  /**
+   * Default nav slot (language prefix applied by resolveNav); null = none.
+   * Built-ins label via theme i18n keys; site-local manifests via localized
+   * literals.
+   */
+  nav?: { path: string; labelKey?: MessageKey; label?: LocalizedString } | null
+  /** Landing copy defaults; same key/literal duality as nav. */
+  copy?: {
+    titleKey?: MessageKey
+    title?: LocalizedString
+    descriptionKey?: MessageKey
+    description?: LocalizedString
+  }
   /** Content collections this module reads. */
   collections?: string[]
 }
@@ -80,11 +92,69 @@ export function registerModule(def: OffprintModuleDef): void {
   })
 }
 
+// ── site-local module discovery (ADR-021) ────────────────────────────────────
+
+/** src/site/modules/<id>/module.yaml — declarative manifest, fs-read like a
+ * theme's theme.json (no import across the ADR-006 boundary, no bundle
+ * timing). Behaviour (routes) is injected separately by the integration. */
+const moduleManifestSchema = z.strictObject({
+  nav: z
+    .strictObject({
+      path: z.string().regex(/^\//, 'nav.path must start with /'),
+      label: localizedString,
+    })
+    .nullable()
+    .optional(),
+  copy: z
+    .strictObject({ title: localizedString, description: localizedString.optional() })
+    .optional(),
+  collections: z.array(z.string()).optional(),
+  enabledByDefault: z.boolean().optional(),
+})
+
+const SITE_MODULES_DIR = 'src/site/modules'
+let siteModulesDiscovered = false
+
+/** Test hook: production discovers once per process; tests create/remove
+ * manifest dirs mid-run and need to force a re-scan. */
+export function rediscoverSiteModules(): void {
+  siteModulesDiscovered = false
+}
+
+function discoverSiteModules(): void {
+  if (siteModulesDiscovered) return
+  siteModulesDiscovered = true
+  const root = resolve(SITE_MODULES_DIR)
+  if (!existsSync(root)) return
+  for (const id of readdirSync(root).sort()) {
+    const file = join(root, id, 'module.yaml')
+    if (!existsSync(file)) continue
+    const parsed = moduleManifestSchema.safeParse(YAML.parse(readFileSync(file, 'utf8')) ?? {})
+    if (!parsed.success) {
+      throw new Error(`invalid ${file}:\n${z.prettifyError(parsed.error)}`)
+    }
+    const manifest = parsed.data
+    registerModule({
+      id,
+      ...(manifest.enabledByDefault !== undefined && {
+        enabledByDefault: manifest.enabledByDefault,
+      }),
+      ...(manifest.nav !== undefined && {
+        nav: manifest.nav === null ? null : { path: manifest.nav.path, label: manifest.nav.label },
+      }),
+      ...(manifest.copy !== undefined && { copy: manifest.copy }),
+      ...(manifest.collections !== undefined && { collections: manifest.collections }),
+    })
+  }
+}
+
 export function getModules(): RegisteredModule[] {
+  discoverSiteModules()
   return [...registry.values()]
 }
 
 export function getModule(id: string): RegisteredModule | undefined {
+  discoverSiteModules()
   return registry.get(id)
 }
 

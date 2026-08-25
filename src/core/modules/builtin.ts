@@ -10,7 +10,7 @@ registerModule({
   configSchema: moduleToggleWithColophon,
   enabledByDefault: true,
   nav: { path: '/blog', labelKey: 'nav.writing' },
-  copy: { title: 'blog.title', description: 'blog.description' },
+  copy: { titleKey: 'blog.title', descriptionKey: 'blog.description' },
   collections: ['posts'],
 })
 
@@ -27,7 +27,7 @@ registerModule({
   id: 'publications',
   enabledByDefault: true,
   nav: { path: '/publications', labelKey: 'nav.publications' },
-  copy: { title: 'pub.title', description: 'pub.description' },
+  copy: { titleKey: 'pub.title', descriptionKey: 'pub.description' },
   collections: ['publications.yaml'],
 })
 
@@ -35,7 +35,7 @@ registerModule({
   id: 'projects',
   enabledByDefault: true,
   nav: { path: '/projects', labelKey: 'nav.projects' },
-  copy: { title: 'projects.title', description: 'projects.description' },
+  copy: { titleKey: 'projects.title', descriptionKey: 'projects.description' },
   collections: ['projects.yaml'],
 })
 
@@ -43,6 +43,6 @@ registerModule({
   id: 'cv',
   enabledByDefault: true,
   nav: { path: '/cv', labelKey: 'nav.cv' },
-  copy: { title: 'cv.title' },
+  copy: { titleKey: 'cv.title' },
   collections: ['cv.yaml'],
 })

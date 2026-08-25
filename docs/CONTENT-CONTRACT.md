@@ -82,7 +82,7 @@ BibTeX 文件导入作为可选 loader 留给模板用户（阶段 5）。
 
 遵循 https://jsonresume.org/schema，YAML 书写。扩展字段：`publicationsFromSite: true`（CV 的出版物段直接复用 §3）；所有文本字段允许 `{en, zh}`、`teaching[]`、`awards[]` 已在标准中。
 
-## 6. profile（`site.config.ts`）
+## 6. profile（`site.yaml`）
 
 `name`（`{en,zh}` 允许）、`nameVariants`（所有语言的署名写法，用于作者高亮）、`role`、`field`、`affiliation`、`location`、`email`、`photo`、`tagline`、`bio[]`、`interests[]`、`links[]`（`label`、`href`、`kind: scholar|orcid|github|…`）。`orcid` 与 `scholar` 单独字段以便输出 JSON-LD `sameAs` 与 Highwire meta。
 

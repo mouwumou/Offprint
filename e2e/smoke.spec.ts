@@ -1,8 +1,10 @@
 import { expect, test } from '@playwright/test'
-import siteConfig from '../site.config'
+import { loadSiteConfig } from '../src/core/config/load'
 import { resolveLocalized } from '../src/core/schema/localized'
 
-// Content-agnostic smoke: expectations come from site.config, the same
+const siteConfig = loadSiteConfig()
+
+// Content-agnostic smoke: expectations come from site.yaml, the same
 // source of truth the pages render from — no sample-content strings.
 const defaultLang = siteConfig.i18n.default
 const otherLang = siteConfig.i18n.locales.find((locale) => locale !== defaultLang)

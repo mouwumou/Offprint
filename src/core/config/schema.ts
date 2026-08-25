@@ -2,6 +2,7 @@ import { z } from 'zod'
 import '../modules/builtin'
 import { buildModulesSchema, getModules } from '../modules/registry'
 import { localizedString } from '../schema/localized'
+import { redirectsSchema } from '../schema/redirects'
 import { TOKEN_NAMES } from '../theme/contract'
 
 // All config sections are strict objects: an unknown key is almost always a
@@ -222,10 +223,9 @@ export const commentsSchema = z
 // ── site config ──────────────────────────────────────────────────────────────
 
 /**
- * Built at defineConfig() CALL time, not module-load time (ADR-019): the
- * modules and nav schemas come from the registry, and site-local modules
- * register when site.config.ts imports them — lazy construction makes any
- * import order work.
+ * Built at parse CALL time, not module-load time (ADR-019/021): the modules
+ * and nav schemas come from the registry, which discovers site-local module
+ * manifests (src/site/modules/<id>/module.yaml) right before composing.
  */
 export function buildSiteConfigSchema() {
   return z.strictObject({
@@ -240,6 +240,8 @@ export function buildSiteConfigSchema() {
     i18n: i18nSchema.prefault({}),
     runtime: runtimeSchema.prefault({}),
     comments: commentsSchema.prefault({}),
+    /** Old URL → new URL (P1-10); formerly the standalone redirects.yaml. */
+    redirects: redirectsSchema.prefault({}),
   })
 }
 

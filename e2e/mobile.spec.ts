@@ -1,7 +1,9 @@
 import { expect, test } from '@playwright/test'
-import siteConfig from '../site.config'
+import { loadSiteConfig } from '../src/core/config/load'
 import { selfLabel } from '../src/core/i18n'
 import { discoverRoutes, sampleRoutes } from './lib/routes'
+
+const siteConfig = loadSiteConfig()
 
 // Audit regression: at 375px the inline nav once forced pages to 791px wide.
 test.use({ viewport: { width: 375, height: 812 } })

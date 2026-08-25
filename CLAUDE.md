@@ -24,7 +24,7 @@ Offprint（抽印本）是一个开源、可插拔、易部署的学术个人网
 2. **static 是基线，server 是可选**（ADR-003）。任何改动后 `pnpm build:static` 与 `pnpm build:server` 都要成功；CI 会对两种模式做 HTML 快照比对。server 专属代码（端点、文件监听、运行时索引）不得进入 static 构建产物。阶段 1 不实现 server 功能，但不得写出只能在 server 下工作的页面。
 3. **内容契约是工具无关的**。schema 只描述 "markdown + YAML front-matter + 字段"，不得出现 elog 专属逻辑；elog 相关代码只能住在 `src/sync`。**不得在运行时或构建时直接请求 Notion**（ADR-012），内容一律先经 sync 物化到 `content/`。
 4. **schema 即校验**。所有集合用 zod 定义一次，构建期与请求期共用；不合规内容应报错或被标记，绝不静默渲染成坏页面。
-5. **模块可关**。`site.config.ts` 里关掉的模块不生成路由、不出现在导航、不进打包。新增功能先问"它是哪个模块的、配置项叫什么"。
+5. **模块可关**。`site.yaml` 里关掉的模块不生成路由、不出现在导航、不进打包。新增功能先问"它是哪个模块的、配置项叫什么"。
 6. **零 JS 默认**。只有真正交互的组件（主题切换、Cite 弹窗、TOC 高亮、搜索）才做 island；其余全部服务端渲染。
 7. **学术 SEO 不可省**：每篇文章/出版物页必须输出 canonical、OG、JSON-LD，出版物页额外输出 Highwire Press `citation_*` meta。
 8. **不提交密钥**。Notion token、图床密钥、revalidate secret 一律走环境变量，`.env.example` 列全。
@@ -62,7 +62,7 @@ pnpm lhci                # Lighthouse CI（desktop preset，阈值 0.95）
 
 ## 当前状态
 
-ADR-001–017 已定（ADR-013 为方向已定、细节待敲定：lang/urlname 由 sync 派生，Notion 不加列，LLM 翻译管线另行设计）；`site.config.i18n.default = en`。
+ADR-001–021 已定（ADR-013 为方向已定、细节待敲定：lang/urlname 由 sync 派生，Notion 不加列，LLM 翻译管线另行设计）；配置在根目录 `site.yaml`（ADR-021，i18n.default = en），首页排布在 `content/home.yaml`，改 zod 配置 schema 后须 `pnpm gen:schema` 再生编辑器补全用的 JSON Schema。
 **阶段 0–3 已完成**（2026-08-23），ADR-015 编排层与外部审计的全部高中优先级修复已落地（2026-08-24）。唯一未完项是 P1-16（在维护者的**实例仓库**迁移真实内容上线，不在本模板内）。阶段 4（开源化）已因 ADR-017 部分启动，阶段 5（插件 API）未开始。
 **本仓库是公开模板，GitHub 环境永不配置密钥**（ADR-017）：CI 与 Pages demo 只用 `GITHUB_TOKEN`；sync/Vercel 工作流由实例仓库的 `SYNC_ENABLED`/`DEPLOY_VERCEL` 变量开启；同步链的密钥验证在私有测试实例或服务器本地 `.env` 做。
 elog 实测为 1.0 插件式工作流，与契约的字段差异记录在 `CONTENT-CONTRACT.md` §7.1；部署 workflow 待模板推上 GitHub 后首跑验证（模板侧验证目标：CI 绿 + demo 部署成功 + sync/Vercel 显示 skipped）。

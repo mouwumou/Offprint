@@ -19,7 +19,7 @@ pnpm test && pnpm e2e
 2. **配置实例**（你自己仓库的 Settings）：
    - Variables：`SITE_URL`（站点公网地址）；要开 Notion 同步则加 `SYNC_ENABLED=true`；要部署 Vercel 则加 `DEPLOY_VERCEL=true`。
    - Secrets（仅在需要对应功能时）：`NOTION_TOKEN`、`NOTION_DB`；Vercel 需要 `VERCEL_TOKEN`、`VERCEL_ORG_ID`、`VERCEL_PROJECT_ID`。
-3. **替换内容**：编辑 `site.config.ts`（个人资料、模块、导航、首页编排），替换 `content/` 下的样例（posts 归同步管，pages/publications/projects/cv 直接改文件）。
+3. **替换内容**：编辑 `site.yaml`（个人资料、模块、导航、外观——所有选项都列在文件里，带注释）；页面内容与首页排布在 `content/` 目录（posts 归同步管，其余直接改文件，见 `content/README.md`）。
 
 不设任何变量时，推送即得 GitHub Pages 静态站；sync 与 Vercel 工作流显示 skipped。自托管（Docker/server 模式）的密钥只放服务器本地 `.env`（见 `.env.example`），永远不进仓库。
 

@@ -1,6 +1,6 @@
 import { useTranslations, type MessageKey } from '../i18n'
 import { getModule, getModules } from '../modules/registry'
-import { resolveLocalized } from '../schema/localized'
+import { resolveLocalized, type LocalizedString } from '../schema/localized'
 import type { SiteConfig } from './schema'
 
 export interface NavItem {
@@ -20,12 +20,19 @@ export interface NavPage {
 
 // 'home' is the one non-module nav target; every other slot comes from the
 // module registry (ADR-019) — a registered module with a nav field gets one.
-const HOME_TARGET = { path: '', key: 'nav.home' as MessageKey, exact: true }
+const HOME_TARGET: Target = { path: '', key: 'nav.home' as MessageKey, exact: true }
 
-function moduleTarget(id: string): { path: string; key: MessageKey; exact?: boolean } | null {
+interface Target {
+  path: string
+  key?: MessageKey | undefined
+  label?: LocalizedString | undefined
+  exact?: boolean
+}
+
+function moduleTarget(id: string): Target | null {
   if (id === 'home') return HOME_TARGET
   const nav = getModule(id)?.nav
-  return nav ? { path: nav.path, key: nav.labelKey } : null
+  return nav ? { path: nav.path, key: nav.labelKey, label: nav.label } : null
 }
 
 /** URL prefix for a language: '' for the default language, '/zh' style otherwise. */
@@ -47,9 +54,13 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
   const pushModule = (name: string, label?: string): void => {
     const target = moduleTarget(name)
     if (target === null) return
+    const fallback =
+      target.key !== undefined
+        ? t(target.key)
+        : (resolveLocalized(target.label, lang, config.i18n.default) ?? name)
     items.push({
       href: name === 'home' ? prefix || '/' : `${prefix}${target.path}`,
-      label: label ?? t(target.key),
+      label: label ?? fallback,
       ...(target.exact !== undefined && { exact: target.exact }),
     })
   }

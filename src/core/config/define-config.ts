@@ -2,9 +2,9 @@ import { z } from 'zod'
 import { buildSiteConfigSchema, type SiteConfig, type SiteConfigInput } from './schema'
 
 /**
- * Validate the site configuration and return it fully typed with defaults
- * applied. Runs once at module load of site.config.ts: an invalid config must
- * fail the build (static) or startup (server) loudly, never render.
+ * Validate a site configuration object and return it fully typed with
+ * defaults applied (the TS-facing API; site.yaml goes through load.ts which
+ * calls the same schema). Invalid config fails the build loudly.
  */
 export function defineConfig(config: SiteConfigInput): SiteConfig {
   const result = buildSiteConfigSchema().safeParse(config)

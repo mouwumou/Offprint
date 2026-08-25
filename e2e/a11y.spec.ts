@@ -1,7 +1,9 @@
 import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
-import siteConfig from '../site.config'
+import { loadSiteConfig } from '../src/core/config/load'
 import { discoverRoutes, sampleRoutes } from './lib/routes'
+
+const siteConfig = loadSiteConfig()
 
 // P3-9: axe audit over one representative page per URL shape, discovered
 // from the build output (content-agnostic; every language and page type is

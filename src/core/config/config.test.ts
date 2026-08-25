@@ -221,3 +221,33 @@ describe('module registry (ADR-019)', () => {
     expect(() => registerModule({ id: 'blog' })).toThrow(/already registered/)
   })
 })
+
+describe('site-local module manifests (ADR-021)', () => {
+  it('discovers src/site/modules/<id>/module.yaml and makes it legal config', async () => {
+    const { mkdir, rm, writeFile } = await import('node:fs/promises')
+    await mkdir('src/site/modules/reading', { recursive: true })
+    await writeFile(
+      'src/site/modules/reading/module.yaml',
+      'nav: { path: /reading, label: { en: Reading, zh: 在读 } }\ncopy: { title: { en: Reading list } }\n',
+    )
+    try {
+      const { getModule, rediscoverSiteModules } = await import('../modules/registry')
+      rediscoverSiteModules()
+      const { resolveNav } = await import('./nav')
+      const { moduleCopy } = await import('./copy')
+      expect(getModule('reading')?.nav).toEqual({
+        path: '/reading',
+        label: { en: 'Reading', zh: '在读' },
+      })
+      const config = defineConfig({
+        ...minimal,
+        modules: { reading: true },
+        nav: [{ module: 'reading' }],
+      })
+      expect(resolveNav(config, 'zh', [])).toEqual([{ href: '/zh/reading', label: '在读' }])
+      expect(moduleCopy(config, 'reading', 'en').title).toBe('Reading list')
+    } finally {
+      await rm('src/site/modules', { recursive: true, force: true })
+    }
+  })
+})

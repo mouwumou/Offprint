@@ -1,0 +1,15 @@
+# yaml-language-server: $schema=../schema/home.schema.json
+#
+# 首页的排布（ADR-021）：从上到下有哪些块、什么顺序、什么选项。
+# 删掉这个文件 = 使用内置默认排布。可用的块：
+#   hero                    个人资料大头图区
+#   about                   bio 段落 + 兴趣标签
+#   prose                   把 content/pages 里的某个页面内联进首页（page: <slug>）
+#   selected-publications   精选出版物（others: false 关闭下方的其余列表）
+#   recent-posts            近期文章（count: 3）
+#   projects                项目卡片（count 可限数量）
+sections:
+  - type: hero
+  - type: about
+  - type: selected-publications
+  - type: recent-posts

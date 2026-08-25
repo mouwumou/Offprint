@@ -22,7 +22,8 @@
     "format:check": "prettier --check .",
     "typecheck": "astro check",
     "sync": "tsx src/sync/cli.ts",
-    "lhci": "lhci autorun --config=lighthouserc.cjs"
+    "lhci": "lhci autorun --config=lighthouserc.cjs",
+    "gen:schema": "tsx scripts/gen-config-schema.ts"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

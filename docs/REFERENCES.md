@@ -17,7 +17,7 @@ Next.js + Tailwind 的 Notion 博客系统，中文社区最流行的 Notion 建
 **回避**
 - **运行时直接读 Notion**（通过 `notion-client` / react-notion-x 走非官方 API）。后果：Notion 接口变动或限流直接导致站点故障；首屏依赖 Notion 响应；内容不可版本化。Offprint 一律先物化为文件（CLAUDE.md 约束 3）。
 - **渲染 Notion 块树而非 markdown**：与 Notion 绑定过深，其他内容源无法接入，也不利于学术排版（公式、引用）的精细控制。
-- **配置分散**：几百个 `blog.config.js` 字段 + 环境变量 + Notion Config 行三处来源，fork 用户难以把握。Offprint 只有 `site.config.ts` 一处且有 zod 校验。
+- **配置分散**：几百个 `blog.config.js` 字段 + 环境变量 + Notion Config 行三处来源，fork 用户难以把握。Offprint 只有 `site.yaml` 一处且有 zod 校验（ADR-021）。
 - **大而全的主题目录**导致核心与主题耦合、升级困难。
 
 ## al-folio — https://github.com/alshedivat/al-folio

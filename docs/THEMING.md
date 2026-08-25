@@ -1,6 +1,6 @@
 # 主题制作规范（ADR-018）
 
-主题决定站点的**皮肤**：颜色、圆角、字体，以及主题自带的附加样式。布局与交互不属于主题——那是部件层（`src/site/widgets/`，见 ARCHITECTURE §3.1）与编排层（`site.config.ts` 的 `home.sections` / `nav` / `header` / `footer`）的职责。这个边界是刻意的：主题只要不碰结构，就永远不会因为核心升级而坏掉。
+主题决定站点的**皮肤**：颜色、圆角、字体，以及主题自带的附加样式。布局与交互不属于主题——那是部件层（`src/site/widgets/`，见 ARCHITECTURE §3.1）与编排层（`content/home.yaml` 的 sections、`site.yaml` 的 `nav` / `header` / `footer`）的职责。这个边界是刻意的：主题只要不碰结构，就永远不会因为核心升级而坏掉。
 
 ## 1. 一个主题是什么
 
@@ -19,7 +19,7 @@ src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 └─ theme.css      # 可选：字体加载（@import fontsource 包）与主题特有样式
 ```
 
-没有注册表、没有枚举：**放进目录、通过校验，就是合法主题**。`site.config.ts` 里 `theme: { name: '<name>' }` 即启用；名字解析不到时构建失败并列出当前可用的主题。
+没有注册表、没有枚举：**放进目录、通过校验，就是合法主题**。`site.yaml` 里 `theme: { name: <name> }` 即启用；名字解析不到时构建失败并列出当前可用的主题。
 
 ## 2. theme.json
 
