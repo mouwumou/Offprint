@@ -128,3 +128,10 @@
 **背景**：site.config.ts 的 TS 语法（export/花括号/引号）对不写代码的学术用户可读性差；维护者确认"config 只放站点配置，每张页面长什么样（含首页）归 content 目录"。关键认识：本项目的配置报错质量来自 zod 校验而非 TS 文件格式（al-folio 的"写错不报错"是 Jekyll 不校验所致），TS 独有优势只剩编辑器补全与写逻辑的能力——前者可由 JSON Schema 补回，后者本不该存在（ADR-020 配置是数据）。
 **决定**：站点配置迁移为根目录 **`site.yaml`**（纯数据；zod 校验不变，构建期报错带路径），文件头以 `# yaml-language-server: $schema=…` 指向由 zod 导出的 **JSON Schema**（提交进仓库，`pnpm gen:schema` 再生），主流 YAML 编辑器插件即获得自动补全/悬浮文档/实时红线——GitHub Actions yml 同款体验。**首页编排移入 `content/home.yaml`**（sections/width；缺失时用内置缺省），由 config 层消化成与原 config.home 相同的结构，页面代码不感知（约束 1 不变）。redirects 并入 site.yaml。site.config.ts 与根目录 redirects.yaml 退役。
 **连锁**：站点本地模块的注册不再依赖"TS 配置文件 import 触发"（配置已非 TS），改为与主题机制对称的 **manifest 发现**：`src/site/modules/<id>/module.yaml` 声明 id/nav/copy/collections（fs 读取，无 import 边界与打包时序问题），行为代码（路由）由 integration 以 injectRoute 路径引用；自定义 configSchema 的模块形态留待贡献进内置或阶段 5 npm 化。三入口模型定稿：**site.yaml（站点配置）/ content/（内容与页面编排）/ src/site/（代码定制：themes、widgets、modules）**；.env 只承载密钥与部署量。配置只在构建/启动时读取，改配置 = 重建或重启（与原 TS 行为一致）。
+
+## ADR-022 extensions/ 扩展目录：只读安装、配置单点、主题可携带部件 — 已定
+
+**背景**：主题与模板的第三方生态需要一个不触碰 `src/` 的落点；维护者确认目录方案并加两条约束——主题的一切可调项必须住在 site.yaml（"theme 配置都在 site 里"），装进来的东西不该被用户编辑（规避 Hugo 社区主题"用主题先改主题目录"的 fork-即-冲突反模式）。
+**决定**：仓库根新增 **`extensions/`**，原 `src/site/` 三机制平移至此并退役：`extensions/themes/<name>/`（主题包）、`extensions/widgets/<type>.astro`（站点散件部件覆盖，属用户代码不受只读约束）、`extensions/modules/<id>/`（站点模块）。**四目录四动词**：site.yaml 配置它、content/ 写它、extensions/ 装它、src/ 别动它。两条原则：①**只读安装**——扩展包升级即整目录替换；②**配置单点**——`theme.options` 落地：主题在 theme.json 里声明式定义自己的选项（类型/默认值/枚举/说明），用户在 site.yaml `theme.options` 填值，构建期按声明校验（未知选项、类型不符即报错），`pnpm gen:schema` 把已安装主题的选项声明并入 site.yaml 的 JSON Schema（编辑器对主题选项同样有补全与红线），部件经 `currentTheme()` 读取解析后的值。
+**修订 ADR-018**：主题包可携带 `widgets/` 目录经既有部件机制提供布局（"主题不做布局"修订为"主题的布局经具名部件承载"）；查找优先级链 = **站点散件 > 启用主题的 widgets > 内置**（Hugo lookup order 同款），装了主题仍可在站点层压过任意单件而无需 fork 主题。技术前提已 spike 验证：vite 构建期 glob 可指向 src 之外的项目根内目录；主题携带部件用"glob 全部主题的 widgets + 按启用主题运行时过滤"实现。ADR-006 边界扩展：`src/core` 不得 import `extensions/**`。
+**后果**：内页模板不做任意文件覆盖（升级即碎），走"具名部件清单扩容"路线（后续任务）；整页级替换属模块职责（injectRoute）。npm 分发（阶段 4）在解析链追加 node_modules 查找即可接上。
