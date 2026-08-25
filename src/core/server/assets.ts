@@ -1,5 +1,5 @@
 import { readFile } from 'node:fs/promises'
-import { extname, join, normalize, resolve } from 'node:path'
+import { extname, join, normalize, resolve, sep } from 'node:path'
 
 const TYPES: Record<string, string> = {
   '.png': 'image/png',
@@ -20,8 +20,16 @@ const TYPES: Record<string, string> = {
 export async function contentAssetResponse(pathname: string): Promise<Response | null> {
   if (!pathname.startsWith('/assets/')) return null
   const root = resolve(process.env['CONTENT_DIR'] ?? 'content', 'assets')
-  const file = normalize(join(root, pathname.slice('/assets/'.length)))
-  if (!file.startsWith(root)) return new Response(null, { status: 403 })
+  // Decode so author assets with spaces/CJK names resolve; compare against
+  // root + separator so a sibling like `assets-evil/` can't prefix-match.
+  let rel: string
+  try {
+    rel = decodeURIComponent(pathname.slice('/assets/'.length))
+  } catch {
+    return new Response(null, { status: 400 })
+  }
+  const file = normalize(join(root, rel))
+  if (file !== root && !file.startsWith(root + sep)) return new Response(null, { status: 403 })
   try {
     const body = await readFile(file)
     return new Response(new Uint8Array(body), {

@@ -13,7 +13,7 @@ const other = siteConfig.i18n.locales.find((locale) => locale !== lang)
 const tOther = other ? useTranslations(other) : null
 ---
 
-<BaseLayout lang={lang} title={t('notFound.title')}>
+<BaseLayout lang={lang} title={t('notFound.title')} noindex>
   <div
     class:list={[container, themeVoice.density === 'airy' ? 'pt-16 lg:pt-24' : 'pt-10 lg:pt-14']}
   >

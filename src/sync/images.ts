@@ -43,8 +43,15 @@ export function assetStem(value: string): string {
   return `notion-${hash.slice(0, 16)}`
 }
 
-/** Markdown image/link destinations plus front-matter cover values. */
-const URL_PATTERN = /https:\/\/[^\s"')<>\\]+/g
+// Markdown image/link destinations plus front-matter cover values. Excludes
+// the markdown link/image delimiters so a `](url)` or `]` boundary can't glue
+// two URLs into one match; trailing sentence punctuation is trimmed below.
+const URL_PATTERN = /https:\/\/[^\s"')\](<>\\]+/g
+const TRAILING_PUNCT = /[.,;:!?]+$/
+
+/** Download safety: cap the read, the wait, and re-check redirect hops. */
+const FETCH_TIMEOUT_MS = 30_000
+const MAX_IMAGE_BYTES = 25 * 1024 * 1024
 
 export interface ImageSummary {
   downloaded: number
@@ -80,13 +87,34 @@ export async function materializeImages(options: {
       summary.reused += 1
     } else {
       try {
-        const response = await fetchImpl(url)
+        // Follow redirects manually, re-checking each hop against the Notion
+        // allowlist: an allowed host could 302 to an internal address
+        // (169.254.169.254, a private IP) and blind follow would be SSRF.
+        let current = url
+        let response: Response
+        for (let hop = 0; ; hop++) {
+          if (hop > 5) throw new Error('too many redirects')
+          response = await fetchImpl(current, {
+            redirect: 'manual',
+            signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+          })
+          if (response.status < 300 || response.status >= 400) break
+          const location = response.headers.get('location')
+          if (!location) break
+          current = new URL(location, current).toString()
+          if (!isNotionAssetUrl(current)) throw new Error(`redirect to disallowed host: ${current}`)
+        }
         if (!response.ok) throw new Error(`HTTP ${response.status}`)
+        const declared = Number(response.headers.get('content-length') ?? 0)
+        if (declared > MAX_IMAGE_BYTES) throw new Error(`too large: ${declared} bytes`)
         const type = (response.headers.get('content-type') ?? '').split(';')[0] ?? ''
         const fromPath = /\.([a-z0-9]{2,4})$/i.exec(new URL(url).pathname)?.[1]?.toLowerCase()
         const ext = EXT_BY_TYPE[type] ?? fromPath ?? 'bin'
         filename = `${stem}.${ext}`
-        await writeFile(join(assetsDir, filename), Buffer.from(await response.arrayBuffer()))
+        const bytes = Buffer.from(await response.arrayBuffer())
+        if (bytes.byteLength > MAX_IMAGE_BYTES)
+          throw new Error(`too large: ${bytes.byteLength} bytes`)
+        await writeFile(join(assetsDir, filename), bytes)
         byStem.set(stem, filename)
         summary.downloaded += 1
       } catch (error) {
@@ -110,10 +138,14 @@ export async function materializeImages(options: {
     for (const name of names) {
       const path = join(dir, name)
       const raw = await readFile(path, 'utf8')
-      const urls = [...new Set(raw.match(URL_PATTERN) ?? [])].filter(isNotionAssetUrl)
+      const urls = [
+        ...new Set((raw.match(URL_PATTERN) ?? []).map((u) => u.replace(TRAILING_PUNCT, ''))),
+      ].filter(isNotionAssetUrl)
       if (urls.length === 0) continue
       const mapping = new Map<string, string>()
-      for (const url of urls) {
+      // Replace longest first so a URL that is a prefix of another never
+      // corrupts the longer one's tail.
+      for (const url of urls.sort((a, b) => b.length - a.length)) {
         const filename = await resolve(url)
         if (filename !== null) mapping.set(url, filename)
       }

@@ -56,3 +56,44 @@ describe('theme resolution (ADR-018)', () => {
     })
   })
 })
+
+describe('CSS injection guard (security audit)', () => {
+  it('rejects a token or font value that could break out of <style>', () => {
+    const base = {
+      name: 'x',
+      voice: {},
+      options: {},
+      fonts: { sans: 'a', serif: 'b', mono: 'c' },
+    }
+    const goodTokens = Object.fromEntries(
+      [
+        'background',
+        'foreground',
+        'card',
+        'card-foreground',
+        'primary',
+        'primary-foreground',
+        'secondary',
+        'secondary-foreground',
+        'muted',
+        'muted-foreground',
+        'accent',
+        'accent-foreground',
+        'border',
+        'ring',
+        'radius',
+      ].map((k) => [k, '#000']),
+    )
+    const evil = { ...goodTokens, primary: '#000}</style><script>alert(1)</script>' }
+    expect(
+      themeManifestSchema.safeParse({ ...base, tokens: { light: evil, dark: goodTokens } }).success,
+    ).toBe(false)
+    expect(
+      themeManifestSchema.safeParse({
+        ...base,
+        fonts: { sans: 'Inter</style>', serif: 'b', mono: 'c' },
+        tokens: { light: goodTokens, dark: goodTokens },
+      }).success,
+    ).toBe(false)
+  })
+})

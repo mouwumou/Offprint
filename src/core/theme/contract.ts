@@ -28,9 +28,19 @@ export const TOKEN_NAMES = [
 
 export type TokenName = (typeof TOKEN_NAMES)[number]
 
+// Token and font values are injected raw into a <style> block by BaseLayout,
+// so a value like `#000}</style><script>…` from a third-party theme package
+// would break out. Forbid the CSS-value metacharacters that enable that
+// (installed themes are untrusted data — ADR-022). Legit colors, radii, and
+// font stacks never contain these.
+export const cssValue = z
+  .string()
+  .min(1)
+  .refine((v) => !/[<>;{}]/.test(v), 'CSS value must not contain < > ; { }')
+
 // z.record over an enum key is exhaustive in zod 4: a missing token is an
 // error naming the key, an unknown token is rejected — exactly the contract.
-const tokenTable = z.record(z.enum(TOKEN_NAMES), z.string().min(1))
+const tokenTable = z.record(z.enum(TOKEN_NAMES), cssValue)
 
 /**
  * Voice: the theme's mannerisms (A3). `labels` governs the decorative
@@ -72,9 +82,9 @@ export const themeManifestSchema = z.strictObject({
   tokens: z.strictObject({ light: tokenTable, dark: tokenTable }),
   /** Complete font-family stacks (including CJK and system fallbacks). */
   fonts: z.strictObject({
-    sans: z.string().min(1),
-    serif: z.string().min(1),
-    mono: z.string().min(1),
+    sans: cssValue,
+    serif: cssValue,
+    mono: cssValue,
   }),
 })
 

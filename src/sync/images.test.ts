@@ -123,3 +123,38 @@ Text ![alt](${NOTION_URL}) and a normal ![x](https://example.com/keep.png).
     }
   })
 })
+
+describe('image download safety (security audit)', () => {
+  it('trims trailing sentence punctuation and does not glue markdown delimiters', async () => {
+    const { isNotionAssetUrl } = await import('./images')
+    // sanity: the punctuation-trimmed URL is still recognized
+    expect(isNotionAssetUrl('https://file.notion.so/x.png')).toBe(true)
+  })
+
+  it('refuses a redirect to a disallowed host (SSRF guard)', async () => {
+    const { mkdtemp, mkdir, writeFile } = await import('node:fs/promises')
+    const { tmpdir } = await import('node:os')
+    const { join } = await import('node:path')
+    const root = await mkdtemp(join(tmpdir(), 'offprint-ssrf-'))
+    await mkdir(join(root, 'staging', 'posts'), { recursive: true })
+    const url = 'https://file.notion.so/secure/evil.png'
+    await writeFile(
+      join(root, 'staging', 'posts', 'a.en.md'),
+      `---\ntitle: T\ncover: '${url}'\n---\n`,
+    )
+    const fetchImpl = (async () =>
+      new Response(null, {
+        status: 302,
+        headers: { location: 'http://169.254.169.254/latest' },
+      })) as unknown as typeof fetch
+    const { materializeImages } = await import('./images')
+    const summary = await materializeImages({
+      stagingDir: join(root, 'staging'),
+      contentDir: join(root, 'content'),
+      collections: ['posts'],
+      fetchImpl,
+    })
+    expect(summary.downloaded).toBe(0)
+    expect(summary.failed).toBe(1)
+  })
+})

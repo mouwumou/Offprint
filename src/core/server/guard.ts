@@ -1,3 +1,5 @@
+import { timingSafeEqual } from 'node:crypto'
+
 // Shared endpoint protection (DYNAMIC-PUBLISHING §3.3): secret auth,
 // per-endpoint rate limiting, and a single-flight mutex with a merge window
 // for the write endpoints.
@@ -15,7 +17,10 @@ export function checkSecret(request: Request): Response | null {
   if (!secret) {
     return json({ error: 'REVALIDATE_SECRET is not configured' }, 503)
   }
-  if (request.headers.get('x-revalidate-secret') !== secret) {
+  const provided = request.headers.get('x-revalidate-secret') ?? ''
+  const a = Buffer.from(provided)
+  const b = Buffer.from(secret)
+  if (a.length !== b.length || !timingSafeEqual(a, b)) {
     return json({ error: 'unauthorized' }, 401)
   }
   return null

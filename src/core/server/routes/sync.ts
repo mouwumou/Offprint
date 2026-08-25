@@ -11,8 +11,19 @@ const allow = createRateLimiter(6)
  * progress/outcome surfaces on /api/health. Concurrent and replayed triggers
  * are absorbed by the single-flight merge window (§6).
  */
+// Notion webhook payloads are tiny; anything larger is abuse. Cap the read so
+// an anonymous POST can't balloon memory (the route is public in server mode).
+const MAX_BODY = 64 * 1024
+
 export const POST: APIRoute = async ({ request }) => {
+  // Rate-limit BEFORE any work — including the pre-auth handshake path — so a
+  // flood cannot spin the body read or the token log line.
+  if (!allow()) return json({ error: 'rate limited' }, 429)
+
+  const declared = Number(request.headers.get('content-length') ?? 0)
+  if (declared > MAX_BODY) return json({ error: 'payload too large' }, 413)
   const rawBody = await request.text()
+  if (rawBody.length > MAX_BODY) return json({ error: 'payload too large' }, 413)
 
   // Notion's one-time subscription handshake comes BEFORE any secret exists
   // (the verification_token IS the future signing secret), so it cannot be
@@ -21,7 +32,7 @@ export const POST: APIRoute = async ({ request }) => {
   // happens on this path.
   try {
     const body = JSON.parse(rawBody) as { verification_token?: string }
-    if (body.verification_token) {
+    if (typeof body.verification_token === 'string') {
       console.log(`[offprint] notion webhook verification_token: ${body.verification_token}`)
       return json({ ok: true })
     }
@@ -35,8 +46,6 @@ export const POST: APIRoute = async ({ request }) => {
     const denied = checkSecret(request)
     if (denied) return denied
   }
-
-  if (!allow()) return json({ error: 'rate limited' }, 429)
 
   const outcome = syncFlight.run(runSyncProcess)
   return json({ sync: outcome.status }, outcome.status === 'merged' ? 200 : 202)

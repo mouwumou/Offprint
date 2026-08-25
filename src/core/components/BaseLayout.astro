@@ -20,6 +20,7 @@ interface Props {
   alternates?: Alternate[]
   jsonLd?: object | object[]
   canonical?: string | undefined
+  noindex?: boolean
 }
 
 const {
@@ -33,6 +34,7 @@ const {
   alternates,
   jsonLd,
   canonical,
+  noindex,
 } = Astro.props
 const t = useTranslations(lang)
 const prefix = langPrefix(config, lang)
@@ -68,6 +70,7 @@ const themeCss = `:root{${tokenBlock(manifest.tokens.light)}${fontBlock}}.dark{$
       publishedTime={publishedTime}
       modifiedTime={modifiedTime}
       canonical={canonical}
+      noindex={noindex}
       alternates={alternates ?? []}
       jsonLd={jsonLd}
     />

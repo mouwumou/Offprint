@@ -4,7 +4,7 @@
 // foreground and dies with its parent.
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { createServer } from 'node:http'
-import { extname, join, normalize, resolve } from 'node:path'
+import { extname, join, normalize, resolve, sep } from 'node:path'
 
 const root = resolve(process.argv[2] ?? 'dist')
 const port = Number(process.argv[3] ?? 4331)
@@ -27,9 +27,9 @@ const types = {
 }
 
 createServer((req, res) => {
-  const pathname = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname)
-  let file = normalize(join(root, pathname))
-  if (!file.startsWith(root)) {
+  const pathname = new URL(req.url ?? '/', 'http://localhost').pathname
+  let file = normalize(join(root, decodeURIComponent(pathname)))
+  if (file !== root && !file.startsWith(root + sep)) {
     res.writeHead(403)
     res.end()
     return

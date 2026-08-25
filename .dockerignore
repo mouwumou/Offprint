@@ -1,0 +1,15 @@
+# Never bake secrets or local cruft into image layers (security audit).
+.env
+.env.*
+!.env.example
+.git
+.gitignore
+node_modules
+dist
+dist-*
+.vercel
+.lighthouseci
+test-results
+playwright-report
+*.log
+.DS_Store

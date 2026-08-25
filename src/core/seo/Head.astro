@@ -18,6 +18,9 @@ interface Props {
   jsonLd?: object | object[]
   /** Canonical override (e.g. a syndicated post's original home). */
   canonical?: string | undefined
+  /** Keep the page out of the index (e.g. 404): emits robots noindex and
+   * suppresses the canonical link, whose URL would otherwise be the miss. */
+  noindex?: boolean
 }
 
 const {
@@ -31,7 +34,19 @@ const {
   alternates = [],
   jsonLd,
   canonical: canonicalOverride,
+  noindex = false,
 } = Astro.props
+
+// JSON.stringify does not escape '<', so a payload string containing
+// '</script>' (from a post title/venue etc.) would close the ld+json block
+// and inject HTML. Escape the three characters that can break out of, or be
+// misparsed inside, an inline script — plus the JS line terminators.
+const JSONLD_UNSAFE = /[<>&\u2028\u2029]/g
+const jsonLdSafe = (payload: object): string =>
+  JSON.stringify(payload).replace(
+    JSONLD_UNSAFE,
+    (c) => '\\u' + c.charCodeAt(0).toString(16).padStart(4, '0'),
+  )
 
 const site = Astro.site ?? new URL('https://example.com')
 const siteName = resolveLocalized(config.profile.name, lang, config.i18n.default) ?? 'Offprint'
@@ -45,7 +60,7 @@ const defaultLangAlternate = alternates.find((a) => a.lang === config.i18n.defau
 
 <title>{fullTitle}</title>
 {description && <meta name="description" content={description} />}
-<link rel="canonical" href={canonical} />
+{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
 
 {
   alternates.length > 1 &&
@@ -90,8 +105,4 @@ const defaultLangAlternate = alternates.find((a) => a.lang === config.i18n.defau
 {description && <meta name="twitter:description" content={description} />}
 {absoluteImage && <meta name="twitter:image" content={absoluteImage} />}
 
-{
-  payloads.map((payload) => (
-    <script type="application/ld+json" set:html={JSON.stringify(payload)} />
-  ))
-}
+{payloads.map((payload) => <script type="application/ld+json" set:html={jsonLdSafe(payload)} />)}
