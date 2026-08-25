@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: 安全漏洞 / Security vulnerability
+    url: https://github.com/mouwumou/Offprint/security/advisories/new
+    about: 请走私有漏洞报告，不要开公开 issue（见 SECURITY.md）。

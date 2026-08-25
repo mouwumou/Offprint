@@ -1,0 +1,45 @@
+name: Bug 报告 / Bug report
+description: 报告一个可复现的问题（安全漏洞请走 SECURITY.md，不要开公开 issue）
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: 发生了什么 / What happened
+      description: 期望的行为与实际的行为。
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: 最小复现步骤 / Steps to reproduce
+      placeholder: |
+        1. site.yaml 里配置 …
+        2. 运行 pnpm …
+        3. 打开 /zh/… 看到 …
+    validations:
+      required: true
+  - type: dropdown
+    id: mode
+    attributes:
+      label: 运行模式 / Runtime mode
+      options:
+        - static（pnpm build:static / Pages）
+        - server（pnpm build:server / Docker）
+        - dev（pnpm dev）
+        - sync（pnpm sync）
+    validations:
+      required: true
+  - type: textarea
+    id: env
+    attributes:
+      label: 环境 / Environment
+      placeholder: 'OS、Node 版本（node -v）、pnpm 版本、浏览器（如为样式问题）'
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: 日志 / Logs
+      description: 相关的构建输出或控制台报错。请自查不要粘贴任何密钥。
+      render: text
