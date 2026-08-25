@@ -4,20 +4,20 @@
   "type": "object",
   "properties": {
     "width": {
-      "default": "wide",
+      "default": "narrow",
       "type": "string",
       "enum": ["narrow", "wide"]
     },
     "sections": {
       "default": [
         {
-          "type": "hero"
+          "type": "bio-header"
         },
         {
-          "type": "about"
+          "type": "news"
         },
         {
-          "type": "selected-publications"
+          "type": "publication-list"
         },
         {
           "type": "recent-posts"

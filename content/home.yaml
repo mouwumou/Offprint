@@ -1,15 +1,20 @@
 # yaml-language-server: $schema=../schema/home.schema.json
 #
 # 首页的排布（ADR-021）：从上到下有哪些块、什么顺序、什么选项。
-# 删掉这个文件 = 使用内置默认排布。可用的块：
-#   hero                    个人资料大头图区
+# 删掉这个文件 = 使用内置默认（即下面这个学术排布）。可用的块：
+#   bio-header              紧凑头部：名字 + 小头像 + bio + 快捷链接行
+#   news                    近况列表（content/news.yaml；count: 5）
+#   publication-list        论文条目（缩略图/作者/venue/链接行；selectedOnly: true）
+#   recent-posts            近期文章（count: 3）
+#   hero                    杂志风大头图区（paper 主题的首页头部）
 #   about                   bio 段落 + 兴趣标签
 #   prose                   把 content/pages 里的某个页面内联进首页（page: <slug>）
-#   selected-publications   精选出版物（others: false 关闭下方的其余列表）
-#   recent-posts            近期文章（count: 3）
+#   selected-publications   精选出版物（paper 风卡片式）
 #   projects                项目卡片（count 可限数量）
+# width: narrow（学术窄栏，默认）| wide（宽栏，配 hero 序列用）
+width: narrow
 sections:
-  - type: hero
-  - type: about
-  - type: selected-publications
+  - type: bio-header
+  - type: news
+  - type: publication-list
   - type: recent-posts

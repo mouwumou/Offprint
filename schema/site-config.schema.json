@@ -708,7 +708,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "default": "paper",
+          "default": "scholar",
           "type": "string",
           "minLength": 1
         },

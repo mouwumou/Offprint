@@ -101,14 +101,14 @@ export type HomeSection = z.output<typeof homeSectionSchema>
 
 export const homeSchema = z.strictObject({
   /** Page column: narrow (~848px, the academic norm) or wide (max-w-6xl). */
-  width: z.enum(['narrow', 'wide']).default('wide'),
-  /** The default sequence reproduces the built-in homepage. */
+  width: z.enum(['narrow', 'wide']).default('narrow'),
+  /** The default sequence: the academic homepage (A4). */
   sections: z
     .array(homeSectionSchema)
     .prefault([
-      { type: 'hero' },
-      { type: 'about' },
-      { type: 'selected-publications' },
+      { type: 'bio-header' },
+      { type: 'news' },
+      { type: 'publication-list' },
       { type: 'recent-posts' },
     ]),
 })
@@ -178,7 +178,7 @@ export const footerSchema = z.strictObject({
 // built-ins — the resolver is the validation (unknown names fail the build
 // listing what exists), so no enum here to keep third-party themes possible.
 export const themeSchema = z.strictObject({
-  name: z.string().min(1).default('paper'),
+  name: z.string().min(1).default('scholar'),
   /** Shorthand for tokens: primary/accent/ring in one go, both schemes. */
   accent: z
     .string()

@@ -15,7 +15,7 @@ describe('defineConfig', () => {
       cv: { enabled: true },
       news: { enabled: true },
     })
-    expect(config.theme.name).toBe('paper')
+    expect(config.theme.name).toBe('scholar')
     expect(config.i18n).toEqual({ default: 'en', locales: ['en', 'zh'] })
     expect(config.runtime).toEqual({ mode: 'static', store: 'fs' })
     expect(config.profile.nameVariants).toEqual([])
@@ -147,12 +147,13 @@ describe('header/footer chrome (ADR-015)', () => {
 })
 
 describe('home sections (ADR-015)', () => {
-  it('defaults to the built-in hero/about/publications/posts sequence', () => {
+  it('defaults to the academic bio/news/publications/posts sequence (A4)', () => {
     const config = defineConfig(minimal)
+    expect(config.home.width).toBe('narrow')
     expect(config.home.sections).toEqual([
-      { type: 'hero' },
-      { type: 'about' },
-      { type: 'selected-publications', others: true },
+      { type: 'bio-header' },
+      { type: 'news', count: 5 },
+      { type: 'publication-list', selectedOnly: true },
       { type: 'recent-posts', count: 3 },
     ])
   })

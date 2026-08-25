@@ -77,10 +77,11 @@ modules:
 #   colophon: false             # 页脚署名行；false 只留 © 年份
 #   rss: true
 
-# ── 外观：主题目录见 src/core/themes 与 src/site/themes（docs/THEMING.md）─────
+# ── 外观：内置主题 scholar（默认，学术白底）| paper（杂志纸面风，配 hero 排布）；
+#    自有主题放 src/site/themes/<name>/（docs/THEMING.md）──────────────────────
 # theme:
 #   name: paper
-#   accent: '#6f2232'           # 只换主色
+#   accent: '#1756a9'           # 只换主色
 #   tokens: { radius: 0px }     # 逐个覆盖设计变量
 
 # ── 语言：默认语言在根路径，其余带 /zh 一类前缀 ───────────────────────────────
