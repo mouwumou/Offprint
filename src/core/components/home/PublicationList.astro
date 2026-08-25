@@ -1,0 +1,91 @@
+---
+import siteConfig from '../../config/current'
+import { langPrefix } from '../../config/nav'
+import { assetUrl } from '../../content/asset-url'
+import { useTranslations } from '../../i18n'
+import type { Publication } from '../../schema'
+import { resolveLocalized } from '../../schema'
+import Authors from '../Authors.astro'
+import PlainSection from './PlainSection.astro'
+
+// Barron-style publication rows (A2): thumbnail left, then title → authors
+// (self bolded) → venue in italics + year + award → a lowercase link row.
+interface Props {
+  lang: string
+  title: string
+  publications: Publication[]
+}
+
+const { lang, title, publications } = Astro.props
+const t = useTranslations(lang)
+const prefix = langPrefix(siteConfig, lang)
+const r = (value: Parameters<typeof resolveLocalized>[0]) =>
+  resolveLocalized(value, lang, siteConfig.i18n.default)
+
+const LINK_FIELDS = ['pdf', 'code', 'data', 'slides', 'poster', 'video', 'website'] as const
+
+function links(pub: Publication): { label: string; href: string }[] {
+  const row: { label: string; href: string }[] = []
+  for (const field of LINK_FIELDS) {
+    const href = pub[field]
+    if (href) row.push({ label: field, href })
+  }
+  if (pub.arxiv) row.push({ label: 'arXiv', href: `https://arxiv.org/abs/${pub.arxiv}` })
+  if (pub.doi) row.push({ label: 'doi', href: `https://doi.org/${pub.doi}` })
+  row.push({ label: 'cite', href: `${prefix}/publications/${pub.key}` })
+  return row
+}
+---
+
+<PlainSection
+  title={title}
+  moreHref={`${prefix}/publications`}
+  moreLabel={t('home.allPublications')}
+>
+  <div class="space-y-6">
+    {
+      publications.map((pub) => (
+        <article class="flex gap-5">
+          {pub.thumbnail && (
+            <a
+              href={`${prefix}/publications/${pub.key}`}
+              class="hidden shrink-0 sm:block"
+              aria-hidden="true"
+              tabindex="-1"
+            >
+              <img
+                src={assetUrl(pub.thumbnail)}
+                alt=""
+                loading="lazy"
+                class="h-[94px] w-[150px] rounded-sm border border-border object-cover"
+              />
+            </a>
+          )}
+          <div class="min-w-0">
+            <a
+              href={`${prefix}/publications/${pub.key}`}
+              class="font-serif text-[17px] leading-snug text-primary hover:underline"
+            >
+              {r(pub.title)}
+            </a>
+            <Authors authors={pub.authors} />
+            <p class="text-sm text-muted-foreground">
+              <i>{pub.venue}</i>, {pub.year}
+              {pub.award && <span class="font-medium text-foreground"> · {pub.award}</span>}
+            </p>
+            <p class="mt-0.5 text-sm">
+              {links(pub).map((link, index) => (
+                <>
+                  {index > 0 && <span class="text-muted-foreground"> / </span>}
+                  <a href={link.href} class="text-primary hover:underline">
+                    {link.label}
+                  </a>
+                </>
+              ))}
+            </p>
+          </div>
+        </article>
+      ))
+    }
+  </div>
+</PlainSection>

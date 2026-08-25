@@ -40,6 +40,7 @@ export function getProvider(): ContentProvider {
 export { createProvider } from './provider'
 export type {
   ContentProvider,
+  NewsItem,
   Page,
   PageSummary,
   Post,

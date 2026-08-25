@@ -11,7 +11,10 @@ import { personJsonLd, scholarlyArticlesJsonLd } from '../seo/jsonld'
 import { katexCss } from '../theme/katex'
 import BaseLayout from './BaseLayout.astro'
 import About from './home/About.astro'
+import BioHeader from './home/BioHeader.astro'
 import Hero from './home/Hero.astro'
+import NewsList from './home/NewsList.astro'
+import PublicationList from './home/PublicationList.astro'
 import Projects from './home/Projects.astro'
 import Prose from './home/Prose.astro'
 import RecentPosts from './home/RecentPosts.astro'
@@ -29,6 +32,9 @@ interface Props {
 
 const { lang, widgets = {} } = Astro.props
 const impl = {
+  'bio-header': (widgets['bio-header'] ?? BioHeader) as typeof BioHeader,
+  news: (widgets.news ?? NewsList) as typeof NewsList,
+  'publication-list': (widgets['publication-list'] ?? PublicationList) as typeof PublicationList,
   hero: (widgets.hero ?? Hero) as typeof Hero,
   about: (widgets.about ?? About) as typeof About,
   prose: (widgets.prose ?? Prose) as typeof Prose,
@@ -49,7 +55,8 @@ const name = resolveLocalized(profile.name, lang, fallback)
 // Data is fetched once per section kind actually present in the sequence;
 // sections whose module is off or whose data is empty are skipped at render.
 const wantsPubs =
-  modules.publications.enabled && sections.some((s) => s.type === 'selected-publications')
+  modules.publications.enabled &&
+  sections.some((s) => s.type === 'selected-publications' || s.type === 'publication-list')
 const publications = wantsPubs ? await provider.listPublications() : []
 const selected = publications.filter((pub) => pub.selected)
 const rest = publications.filter((pub) => !pub.selected)
@@ -59,6 +66,9 @@ const posts = wantsPosts ? postsForLanguage(await provider.listPosts(), lang) : 
 
 const wantsProjects = modules.projects.enabled && sections.some((s) => s.type === 'projects')
 const projects = wantsProjects ? await provider.listProjects() : []
+
+const wantsNews = (modules['news']?.enabled ?? false) && sections.some((s) => s.type === 'news')
+const news = wantsNews ? await provider.listNews() : []
 
 // Prose sections resolve their page in the requested language, falling back
 // to the default language.
@@ -92,9 +102,45 @@ const sectionTitle = (title: LocalizedString | undefined, key: MessageKey): stri
 >
   <Fragment slot="head">{hasMath && <style set:html={katexCss} />}</Fragment>
 
-  <div class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12">
+  <div
+    class:list={[
+      'mx-auto w-full px-5 sm:px-8',
+      siteConfig.home.width === 'narrow' ? 'max-w-[53rem]' : 'max-w-6xl lg:px-12',
+    ]}
+  >
     {
       sections.map((section, index) => {
+        if (section.type === 'bio-header') {
+          const Widget = impl['bio-header']
+          return <Widget lang={lang} />
+        }
+        if (section.type === 'news') {
+          const Widget = impl.news
+          return (
+            news.length > 0 && (
+              <Widget
+                lang={lang}
+                title={sectionTitle(section.title, 'home.news')}
+                items={news.slice(0, section.count)}
+              />
+            )
+          )
+        }
+        if (section.type === 'publication-list') {
+          const Widget = impl['publication-list']
+          const entries = section.selectedOnly
+            ? publications.filter((pub) => pub.selected)
+            : publications
+          return (
+            entries.length > 0 && (
+              <Widget
+                lang={lang}
+                title={sectionTitle(section.title, 'home.publications')}
+                publications={entries}
+              />
+            )
+          )
+        }
         if (section.type === 'hero') {
           const Widget = impl.hero
           return <Widget lang={lang} />

@@ -1,0 +1,31 @@
+---
+// Plain academic section frame (A2): an ordinary heading with a bottom rule
+// and an optional "all … →" link — no label column, no letterspaced caps.
+// The scholar-sequence widgets share it; the paper-sequence widgets keep
+// SectionShell.
+interface Props {
+  title: string
+  moreHref?: string | undefined
+  moreLabel?: string | undefined
+}
+
+const { title, moreHref, moreLabel } = Astro.props
+---
+
+<section class="mt-10">
+  <h2
+    class="flex items-baseline justify-between border-b border-border pb-1.5 font-serif text-2xl font-semibold"
+  >
+    {title}
+    {
+      moreHref && (
+        <a href={moreHref} class="font-serif text-sm font-normal text-primary hover:underline">
+          {moreLabel}
+        </a>
+      )
+    }
+  </h2>
+  <div class="mt-4">
+    <slot />
+  </div>
+</section>

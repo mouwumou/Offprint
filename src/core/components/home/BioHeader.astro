@@ -1,0 +1,70 @@
+---
+import siteConfig from '../../config/current'
+import { langPrefix } from '../../config/nav'
+import { useTranslations } from '../../i18n'
+import { resolveLocalized } from '../../schema'
+
+// Compact academic header (A2, from the approved layout prototype): the name
+// as an ordinary heading, a small square photo on the right, bio paragraphs,
+// then one row of quick links — substance in the first viewport, no stage.
+interface Props {
+  lang: string
+}
+
+const { lang } = Astro.props
+const t = useTranslations(lang)
+const prefix = langPrefix(siteConfig, lang)
+const profile = siteConfig.profile
+const r = (value: Parameters<typeof resolveLocalized>[0]) =>
+  resolveLocalized(value, lang, siteConfig.i18n.default)
+
+const name = r(profile.name)
+const bio = profile.bio.map((paragraph) => r(paragraph))
+
+const quicklinks: { label: string; href: string; external: boolean }[] = []
+if (profile.email) {
+  quicklinks.push({ label: t('bio.email'), href: `mailto:${profile.email}`, external: false })
+}
+if (siteConfig.modules['cv']?.enabled) {
+  quicklinks.push({ label: t('nav.cv'), href: `${prefix}/cv`, external: false })
+}
+for (const link of profile.links) {
+  quicklinks.push({ label: r(link.label) ?? link.href, href: link.href, external: true })
+}
+---
+
+<header class="pt-12">
+  <div class="flex flex-col-reverse items-start gap-6 sm:flex-row sm:gap-8">
+    <div class="min-w-0 flex-1">
+      <h1 class="font-serif text-3xl tracking-tight">{name}</h1>
+      <div class="mt-4 space-y-3">
+        {bio.map((paragraph) => <p class="font-serif leading-relaxed">{paragraph}</p>)}
+      </div>
+    </div>
+    {
+      profile.photo && (
+        <img
+          src={profile.photo}
+          alt={name}
+          class="h-36 w-36 rounded-md border border-border object-cover sm:h-44 sm:w-44"
+        />
+      )
+    }
+  </div>
+  <p class="mt-4 font-serif text-[15px]">
+    {
+      quicklinks.map((link, index) => (
+        <>
+          {index > 0 && <span class="text-muted-foreground"> / </span>}
+          <a
+            href={link.href}
+            {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}
+            class="text-primary hover:underline"
+          >
+            {link.label}
+          </a>
+        </>
+      ))
+    }
+  </p>
+</header>

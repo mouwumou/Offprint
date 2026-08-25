@@ -55,6 +55,20 @@ export type ModuleName = import('../modules/registry').BuiltinModuleId
  * skipped at render time rather than failing the build.
  */
 export const homeSectionSchema = z.discriminatedUnion('type', [
+  /** Compact academic header: name, small photo, bio, quick links (A2). */
+  z.strictObject({ type: z.literal('bio-header') }),
+  /** Dated one-liners from content/news.yaml, newest first. */
+  z.strictObject({
+    type: z.literal('news'),
+    title: localizedString.optional(),
+    count: z.number().int().min(1).max(20).default(5),
+  }),
+  /** Barron-style publication rows: thumbnail, authors, venue, links. */
+  z.strictObject({
+    type: z.literal('publication-list'),
+    title: localizedString.optional(),
+    selectedOnly: z.boolean().default(true),
+  }),
   /** Profile hero with the meta strip (affiliation / contact / elsewhere). */
   z.strictObject({ type: z.literal('hero') }),
   /** profile.bio paragraphs + interests chips. */
@@ -86,6 +100,8 @@ export const homeSectionSchema = z.discriminatedUnion('type', [
 export type HomeSection = z.output<typeof homeSectionSchema>
 
 export const homeSchema = z.strictObject({
+  /** Page column: narrow (~848px, the academic norm) or wide (max-w-6xl). */
+  width: z.enum(['narrow', 'wide']).default('wide'),
   /** The default sequence reproduces the built-in homepage. */
   sections: z
     .array(homeSectionSchema)
