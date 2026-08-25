@@ -52,6 +52,14 @@ const brandSubtitle =
 const current = Astro.url.pathname.replace(/\/+$/, '') || '/'
 const isActive = (item: NavItem): boolean =>
   item.exact ? current === (prefix || '/') : current.startsWith(item.href)
+
+// Capacity, decided at build time: in the narrow column (~784px usable) the
+// brand block (~330px) plus a full inline nav (~570px) plus the icon group
+// can never fit at ANY viewport — so with a visible brand, narrow mode sends
+// the nav to the disclosure drawer at every size instead of overflowing.
+// Without a brand (header.title: false — the academic norm, the name lives
+// in the page), the inline nav fits and behaves as before.
+const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
 ---
 
 <header
@@ -60,12 +68,14 @@ const isActive = (item: NavItem): boolean =>
   <div class:list={[container, 'flex h-16 items-center justify-between gap-4']}>
     {
       brandTitle !== null ? (
-        <a href={prefix || '/'} class="group flex items-baseline gap-2.5">
-          <span class="font-serif text-lg font-semibold tracking-tight">{brandTitle}</span>
+        <a href={prefix || '/'} class="group flex shrink-0 items-baseline gap-2.5">
+          <span class="font-serif text-lg font-semibold tracking-tight whitespace-nowrap">
+            {brandTitle}
+          </span>
           {brandSubtitle && (
             <span
               class:list={[
-                'hidden text-muted-foreground sm:inline',
+                'hidden text-muted-foreground whitespace-nowrap sm:inline',
                 themeVoice.labels === 'mono-caps'
                   ? 'font-mono text-[10px] tracking-[0.18em] uppercase'
                   : 'text-xs',
@@ -89,7 +99,8 @@ const isActive = (item: NavItem): boolean =>
             href={item.href}
             aria-current={isActive(item) ? 'page' : undefined}
             class:list={[
-              'hidden rounded-md px-2.5 py-1.5 transition-colors lg:inline-block lg:px-3',
+              'hidden rounded-md px-2.5 py-1.5 transition-colors lg:px-3',
+              inlineNavFits && 'lg:inline-block',
               themeVoice.labels === 'mono-caps'
                 ? 'font-mono text-xs tracking-[0.12em] uppercase'
                 : 'text-sm',
@@ -115,7 +126,8 @@ const isActive = (item: NavItem): boolean =>
         config.header.languageSwitcher && config.i18n.locales.length > 1 && (
           <span
             class:list={[
-              'ml-1 hidden items-center gap-1 sm:ml-2 lg:flex',
+              'ml-1 hidden items-center gap-1 sm:ml-2',
+              inlineNavFits && 'lg:flex',
               themeVoice.labels === 'mono-caps' ? 'font-mono text-xs' : 'text-sm',
             ]}
             aria-label={t('layout.switchLanguage')}
@@ -147,7 +159,7 @@ const isActive = (item: NavItem): boolean =>
           </div>
         )
       }
-      <details class="relative ml-1 lg:hidden">
+      <details class:list={['relative ml-1', inlineNavFits && 'lg:hidden']}>
         <summary
           aria-label={t('layout.menu')}
           class="grid size-9 cursor-pointer list-none place-items-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground [&::-webkit-details-marker]:hidden"

@@ -70,9 +70,11 @@ modules:
 #   width: narrow
 
 # ── 头部与页脚 ────────────────────────────────────────────────────────────────
-# header:
-#   title: false                # false 隐藏左上角站名；也可给字符串替换
-#   subtitle: { en: est. 2026 } # 站名旁的小字；false 隐藏
+# 学术形态（默认）：header 是纯导航行——名字已经在首页正文里，站名重复且窄栏放不下；
+# 想要杂志式站名头（配 paper/wide），把 title/subtitle 两行删掉即可恢复。
+header:
+  title: false
+  subtitle: false
 #   search: true
 #   themeToggle: true
 #   languageSwitcher: true
