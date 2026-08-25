@@ -52,14 +52,14 @@
 - [x] P2-6 `GitStore`（GitHub Contents API）与 Vercel ISR revalidate 路径（GitStore + ETag 缓存 + mock 测试；Vercel 路径 = sync notify → /api/revalidate 清缓存后按请求重取，边缘 ISR 细节待选定 vercel adapter 时补）
 - [x] P2-7 Notion webhook 触发（可选）（/api/sync 支持 X-Notion-Signature HMAC 校验与订阅握手 token 透出；真实 webhook 配置待维护者在 Notion 侧开启）
 - [x] P2-8 server 模式 feed/sitemap 按请求生成 + ETag（实测 If-None-Match→304；sitemap 端点与 static 同 URL，45 URL 含 hreflang）
-- [ ] P2-9 MiniSearch 内存索引（server）/ Pagefind（static）
+- [x] P2-9 MiniSearch 内存索引（server）/ Pagefind（static）（双后端已上线；MiniSearch 补 CJK bigram 分词，实测中文命中）
 - [x] P2-10 验收：DYNAMIC-PUBLISHING §7 全部通过（②③④⑤ 已实测：双模式 HTML 一致 e2e、无 sync 容器持续服务、错误文章隔离且 health 报 errors=1、RSS/sitemap 下一请求即含新文并滚动 ETag；① 的真实 Notion 端到端计时与 webhook 秒级路径待正式部署时用真实凭据复验）
 - [x] P2-11 验收：`RUNTIME_MODE` 切回 static 后，同一内容目录构建产物与 server 渲染 HTML 一致（dual-mode e2e 持续验收：7 条路由归一化 HTML 逐字节一致，每次 CI 运行）
 
 ## 阶段 3 — 学术打磨（2 周）
 
 - [x] P3-0 出版物独立页 + Highwire Press `citation_*` meta
-- [ ] P3-1 Cite 弹窗：由 YAML 生成 BibTeX / APA / MLA / Chicago（citation-js + CSL）
+- [x] P3-1 Cite 弹窗：由 YAML 生成 BibTeX / APA / MLA / Chicago（citation-js + CSL）（CiteDialog island，随 P3-5 一并落地）
 - [x] P3-2 文中引用 `[@key]`（key 对应 publications.yaml 或文内 references）+ 文末参考文献
 - [x] P3-3 定理/备注指令块样式
 - [x] P3-4 OG 图生成（satori）（拉丁字形已完成；zh 标题的 CJK 字体在 P3-7 处理）
@@ -86,19 +86,19 @@ P5-1 与 P5-2 因 ADR-018/019 于 2026-08-24 提前启动，并行推进，任�
 
 主题系统（P5-2 提前，ADR-018）：
 
-- [ ] P5-2a 主题契约 `defineTheme`（全量 token 表 + fonts + voice + 可选 css/shiki）与解析器（src/site/themes → 内置 → npm；解析失败构建期报错并列出可用主题）
-- [ ] P5-2b global.css 拆分：token 无关的版式基座 + 每主题自带样式；integration 按解析结果注入
-- [ ] P5-2c 现有视觉迁移为内置主题 `paper`（ADR-011 修订：token 降为该主题的定义）
-- [ ] P5-2d `theme.tokens` 用户级 token 覆盖
-- [ ] P5-2e `docs/THEMING.md` 制作规范（可定义/禁止事项；质量门 = 内容无关的 e2e/axe/lhci）
-- [ ] P5-2f 学术风新默认主题：三个视觉方向小样定调 → 实现为第二个内置主题并设为缺省
+- [x] P5-2a 主题契约（theme.json：全量 token 表 + fonts + voice + options 声明）与解析器（extensions/themes → 内置；解析失败构建期报错并列出可用主题）（shiki 自定义仍留待后续）
+- [x] P5-2b global.css 拆分：token 无关的 base.css + 主题 theme.css；token 由 BaseLayout 注入、theme.css 由 integration 注入
+- [x] P5-2c 现有视觉迁移为内置主题 `paper`（ADR-011 修订：token 降为该主题的定义；voice 声明 mono-caps/grayscale-hover/airy）
+- [x] P5-2d `theme.tokens` / `theme.accent` 用户级覆盖 + `theme.options` 主题自定义选项（ADR-022）
+- [x] P5-2e `docs/THEMING.md` 制作规范（含 voice/options；质量门 = 内容无关的 e2e/axe/lhci）
+- [x] P5-2f 学术默认形态：scholar 主题（白底/学术蓝/Charter 单字体/voice plain+compact）+ bio-header/news/publication-list 部件 + 全站一致性审计修复，设为缺省；paper 一键切回验证
 
 模块注册（P5-1 提前，ADR-019；"模块注册表" = 模块以代码注册获得合法性、modules 配置校验由已注册模块的 schema 组合而成）：
 
-- [ ] P5-1a `defineModule` 接口与注册表（id、configSchema、nav/文案缺省、collections 声明）
-- [ ] P5-1c 内置五模块自注册；`modulesSchema` 由注册表组合，未注册键报"未注册"
-- [ ] P5-1d nav 缺省 / 模块文案缺省 / 首页 section 的模块对应改为注册驱动
-- [ ] P5-1e 站点本地模块发现（src/site/modules/*，pages/integration 层聚合）+ 第三方路由 injectRoute 通道 + 示例模块
+- [x] P5-1a `defineModule`/`registerModule` 接口与注册表（id、configSchema、nav/文案缺省、collections 声明）
+- [x] P5-1c 内置模块自注册（含 news）；`modulesSchema` 由注册表在 parse 时组合，未注册键报"未注册"
+- [x] P5-1d nav 缺省 / 模块文案缺省 / 首页 section 的模块对应改为注册驱动
+- [ ] P5-1e 安装模块的路由通道（injectRoute）+ 示例模块（manifest 发现已上线：extensions/modules/<id>/module.yaml 自动注册，ADR-021/022）
 - [ ] P5-1 `OffprintModule` 对外稳定化，第三方模块示例（npm 分发形态，待阶段 4 拆包）
 - [ ] P5-1b 可选 loader：BibTeX 导入、手写 markdown 目录、Obsidian
 - [ ] P5-3 `create-offprint` CLI（脚手架只生成文本文件，不做交互式配置写入 — ADR-020）
