@@ -1,5 +1,5 @@
 import { z } from 'zod'
-import { slugSchema } from './common'
+import { coverSource, slugSchema } from './common'
 import { localizedString } from './localized'
 
 export const publicationTypeSchema = z.enum([
@@ -39,6 +39,8 @@ export const publicationSchema = z
     video: z.url().optional(),
     website: z.url().optional(),
     award: z.string().optional(),
+    /** Entry thumbnail for list layouts: assets/… path or absolute URL. */
+    thumbnail: coverSource.optional(),
     abstract: localizedString.optional(),
     /** Hand-written override; phase 3 generates BibTeX from the fields above. */
     bibtex: z.string().optional(),
@@ -62,6 +64,7 @@ export const publicationSchema = z
       video,
       website,
       award,
+      thumbnail,
       abstract,
       bibtex,
       ...extra
@@ -83,6 +86,7 @@ export const publicationSchema = z
       video,
       website,
       award,
+      thumbnail,
       abstract,
       bibtex,
       extra: extra as Record<string, unknown>,

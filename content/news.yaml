@@ -1,0 +1,15 @@
+# 首页"近况"条目（可选文件；删掉 = 首页不显示 news 块）。
+# 每条：date + text（可双语）+ 可选 href（站内路径或完整 URL）。
+- date: 2025-06-20
+  text:
+    en: '"The geometry of uncertainty" is out in Nature Neuroscience.'
+    zh: 《不确定性的几何》发表于 Nature Neuroscience。
+  href: /publications/voss2025geometry
+- date: 2025-03-04
+  text:
+    en: Awarded an SNSF Spark grant for uncertainty benchmarking.
+    zh: 获得 SNSF Spark 不确定性基准评测项目资助。
+- date: 2024-12-12
+  text:
+    en: 'Talk at the Bernstein Conference on population geometry.'
+    zh: 在 Bernstein 会议做群体几何报告。

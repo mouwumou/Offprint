@@ -40,6 +40,14 @@ registerModule({
 })
 
 registerModule({
+  id: 'news',
+  enabledByDefault: true,
+  // Homepage section only in v1 — no archive route, no nav entry.
+  nav: null,
+  collections: ['news.yaml'],
+})
+
+registerModule({
   id: 'cv',
   enabledByDefault: true,
   nav: { path: '/cv', labelKey: 'nav.cv' },

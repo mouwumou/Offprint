@@ -233,6 +233,18 @@ describe('createProvider · cache & revalidate', () => {
     expect((await provider.getPost('alpha', 'en'))?.body).toContain('Fresh.')
   })
 
+  it('lists news newest-first and returns [] without the file', async () => {
+    expect(await provider.listNews()).toEqual([])
+    const { writeFile: wf } = await import('node:fs/promises')
+    const { join: j } = await import('node:path')
+    await wf(
+      j(root, 'news.yaml'),
+      '- { date: 2025-01-01, text: older }\n- { date: 2025-06-01, text: { en: newer, zh: 更新 } }\n',
+    )
+    const news = await provider.listNews()
+    expect(news.map((item) => item.text)).toEqual([{ en: 'newer', zh: '更新' }, 'older'])
+  })
+
   it('exposes a version derived from the manifest', async () => {
     await writeManifest()
     const version = await provider.version()

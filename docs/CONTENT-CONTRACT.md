@@ -59,6 +59,7 @@ Notion 里维护一个 publications 数据库，sync 导出为 `publications.yam
 | `doi`、`arxiv` | string | | 自动生成链接 |
 | `pdf`、`code`、`data`、`slides`、`poster`、`video`、`website` | url | | |
 | `award` | string | | 如 "Best Paper" |
+| `thumbnail` | string | | 列表条目缩略图：`assets/…` 路径或绝对 URL |
 | `abstract` | string | | |
 | `bibtex` | string | | 可选：手填的 BibTeX；缺省时阶段 3 由上述字段生成 |
 
@@ -81,6 +82,18 @@ BibTeX 文件导入作为可选 loader 留给模板用户（阶段 5）。
 ## 5. cv（JSON Resume）
 
 遵循 https://jsonresume.org/schema，YAML 书写。扩展字段：`publicationsFromSite: true`（CV 的出版物段直接复用 §3）；所有文本字段允许 `{en, zh}`、`teaching[]`、`awards[]` 已在标准中。
+
+## 5b. news（`content/news.yaml`，可选）
+
+首页"近况"块的数据（批次 A / ADR-019 注册模块 news）。数组，每条：
+
+| 字段 | 类型 | 必填 | 说明 |
+| --- | --- | --- | --- |
+| `date` | ISO 日期 | ✓ | 显示与排序（新在前） |
+| `text` | string 或 `{en, zh}` | ✓ | 一句话 |
+| `href` | string | | 站内路径（`/blog/…`）或完整 URL |
+
+文件缺失 = 首页不渲染 news 块。v1 无归档页（维护者决定）。
 
 ## 6. profile（`site.yaml`）
 

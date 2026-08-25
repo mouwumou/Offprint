@@ -13,6 +13,7 @@ describe('defineConfig', () => {
       publications: { enabled: true },
       projects: { enabled: true },
       cv: { enabled: true },
+      news: { enabled: true },
     })
     expect(config.theme.name).toBe('paper')
     expect(config.i18n).toEqual({ default: 'en', locales: ['en', 'zh'] })

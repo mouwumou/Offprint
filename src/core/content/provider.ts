@@ -3,11 +3,13 @@ import matter from 'gray-matter'
 import YAML from 'yaml'
 import { z } from 'zod'
 import {
+  newsFileSchema,
   pageFrontmatterSchema,
   postFrontmatterSchema,
   projectsFileSchema,
   publicationsFileSchema,
   resumeSchema,
+  type NewsItem,
   type PageFrontmatter,
   type PostFrontmatter,
   type Project,
@@ -20,7 +22,7 @@ export type PostSummary = PostFrontmatter
 export type Post = PostFrontmatter & { body: string }
 export type PageSummary = PageFrontmatter
 export type Page = PageFrontmatter & { body: string }
-export type { Project, Publication, Resume } from '../schema'
+export type { NewsItem, Project, Publication, Resume } from '../schema'
 
 /**
  * The semantic content layer (DYNAMIC-PUBLISHING §3.2): parsed + validated +
@@ -37,6 +39,8 @@ export interface ContentProvider {
   getPage(slug: string, lang: string): Promise<Page | null>
   listPublications(): Promise<Publication[]>
   listProjects(): Promise<Project[]>
+  /** Homepage news entries, newest first. Absent file = empty list. */
+  listNews(): Promise<NewsItem[]>
   getCV(): Promise<Resume | null>
   /** Drop cached entries (manifest keys); no argument drops everything. */
   revalidate(keys?: string[]): Promise<void>
@@ -94,7 +98,7 @@ export function createProvider(store: ContentStore): ContentProvider {
         hash.update((await store.read(path)) ?? '')
       }
     }
-    for (const file of ['publications.yaml', 'projects.yaml', 'cv.yaml']) {
+    for (const file of ['publications.yaml', 'projects.yaml', 'cv.yaml', 'news.yaml']) {
       hash.update(file)
       hash.update((await store.read(file)) ?? '')
     }
@@ -225,6 +229,17 @@ export function createProvider(store: ContentStore): ContentProvider {
     async listProjects() {
       // Authored order is curated by the maintainer — no sorting.
       return (await load('projects.yaml', parseProjects)) ?? []
+    },
+
+    async listNews() {
+      const news = await load('news.yaml', (raw, path) => {
+        const result = newsFileSchema.safeParse(YAML.parse(raw))
+        if (!result.success) {
+          throw new Error(`Invalid ${path}:\n${z.prettifyError(result.error)}`)
+        }
+        return result.data
+      })
+      return (news ?? []).slice().sort((a, b) => b.date.getTime() - a.date.getTime())
     },
 
     async getCV() {
