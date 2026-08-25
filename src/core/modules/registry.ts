@@ -175,7 +175,7 @@ export function buildModulesSchema(): z.ZodType<ModulesConfig, unknown> {
   )
   const schema = z.looseObject(shape).superRefine((value, ctx) => {
     for (const key of Object.keys(value)) {
-      if (!(key in shape)) {
+      if (!Object.hasOwn(shape, key)) {
         ctx.addIssue({
           code: 'custom',
           path: [key],

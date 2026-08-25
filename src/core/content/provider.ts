@@ -66,6 +66,14 @@ function parseWith<T>(
   return { ...result.data, body: content }
 }
 
+// Route params flow straight into store paths; reject anything that isn't a
+// clean slug so a decoded `..%2F` can never escape content/ in server mode.
+// Front matter is already slug-constrained, so this rejects nothing valid.
+const SAFE_SEGMENT = /^[a-z0-9-]+$/i
+function safeParam(value: string): boolean {
+  return SAFE_SEGMENT.test(value)
+}
+
 /** posts/<urlname>.<lang>.md — the filename is part of the contract (§1). */
 function checkFilename(path: string, expected: string): void {
   const basename = path.slice(path.lastIndexOf('/') + 1)
@@ -181,6 +189,7 @@ export function createProvider(store: ContentStore): ContentProvider {
     },
 
     async getPost(urlname, lang) {
+      if (!safeParam(urlname) || !safeParam(lang)) return null
       return load(`posts/${urlname}.${lang}.md`, parsePost)
     },
 
@@ -214,6 +223,7 @@ export function createProvider(store: ContentStore): ContentProvider {
     },
 
     async getPage(slug, lang) {
+      if (!safeParam(slug) || !safeParam(lang)) return null
       return load(`pages/${slug}.${lang}.md`, parsePage)
     },
 

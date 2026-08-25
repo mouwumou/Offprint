@@ -30,7 +30,10 @@
       "esbuild",
       "sharp",
       "unrs-resolver"
-    ]
+    ],
+    "overrides": {
+      "tmp": ">=0.2.6"
+    }
   },
   "dependencies": {
     "@astrojs/node": "^11.1.4",

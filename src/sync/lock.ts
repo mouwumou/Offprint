@@ -1,4 +1,4 @@
-import { mkdir, rm, stat } from 'node:fs/promises'
+import { mkdir, rename, rm, stat } from 'node:fs/promises'
 import { join } from 'node:path'
 
 /** A crashed holder is stolen after this long. Full syncs finish in minutes. */
@@ -13,7 +13,7 @@ const STALE_MS = 15 * 60_000
  */
 export async function acquireSyncLock(contentDir: string): Promise<() => Promise<void>> {
   const lockDir = join(contentDir, '.sync-lock')
-  for (let attempt = 0; attempt < 2; attempt++) {
+  for (let attempt = 0; attempt < 3; attempt++) {
     try {
       await mkdir(lockDir)
       return async () => {
@@ -23,7 +23,17 @@ export async function acquireSyncLock(contentDir: string): Promise<() => Promise
       const info = await stat(lockDir).catch(() => null)
       if (info === null) continue // released between mkdir and stat — retry
       if (Date.now() - info.mtimeMs > STALE_MS) {
-        await rm(lockDir, { recursive: true, force: true })
+        // Steal atomically: rename is a single winner even if two processes
+        // both see the stale lock (a plain rm+mkdir would let both proceed).
+        // The winner then removes the renamed dir and retries mkdir; the
+        // loser's rename fails (ENOENT) and it retries the whole loop.
+        const stolen = `${lockDir}.stale-${process.pid}-${info.mtimeMs}`
+        try {
+          await rename(lockDir, stolen)
+        } catch {
+          continue // another process won the steal — retry
+        }
+        await rm(stolen, { recursive: true, force: true })
         continue
       }
       throw new Error(

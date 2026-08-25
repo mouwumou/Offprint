@@ -49,8 +49,13 @@ export async function runSync(options: {
   try {
     return await syncPass(contentDir, staging, options.defaultLang)
   } finally {
-    await rm(staging, { recursive: true, force: true })
-    await releaseLock()
+    // Release the lock even if staging cleanup throws (EBUSY/EACCES would
+    // otherwise lock out syncs for STALE_MS).
+    try {
+      await rm(staging, { recursive: true, force: true })
+    } finally {
+      await releaseLock()
+    }
   }
 }
 
@@ -149,6 +154,9 @@ async function syncPass(
   await atomicSwitch(contentDir, staging, includePages ? ['posts', 'pages'] : ['posts'], manifest)
 
   const diff = diffManifests(previous, manifest)
-  await notifyRevalidate([...diff.added, ...diff.changed, ...diff.removed])
+  const changed = [...diff.added, ...diff.changed, ...diff.removed]
+  // An empty diff must NOT notify: notifyRevalidate([]) posts {} which the
+  // endpoint reads as "revalidate everything" — the inverse of intent.
+  if (changed.length > 0) await notifyRevalidate(changed)
   return summary
 }

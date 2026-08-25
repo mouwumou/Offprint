@@ -95,8 +95,9 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
       items.push({ href: pageHref(page), label: label ?? page.title })
     } else {
       const isExternal = /^[a-z][a-z0-9+.-]*:|^\/\//i.test(entry.href)
+      const internalHref = entry.href.startsWith('/') ? entry.href : `/${entry.href}`
       items.push({
-        href: isExternal ? entry.href : `${prefix}${entry.href}`,
+        href: isExternal ? entry.href : `${prefix}${internalHref}`,
         label: label ?? entry.href,
       })
     }

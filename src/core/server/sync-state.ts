@@ -22,12 +22,18 @@ export const syncFlight: SingleFlight<SyncResult> = createSingleFlight<SyncResul
  * the ADR-006 core→sync rule stays intact) and drop the provider caches when
  * it succeeds.
  */
+// A hung child (stalled elog or a slow image drip) must not pin the
+// single-flight `running` flag forever — kill it so future syncs can run.
+const SYNC_TIMEOUT_MS = 15 * 60_000
+
 export function runSyncProcess(): Promise<SyncResult> {
   return new Promise((resolve) => {
     const tsx = join(process.cwd(), 'node_modules', '.bin', 'tsx')
     const child = spawn(tsx, ['src/sync/cli.ts', 'sync'], {
       cwd: process.cwd(),
       stdio: ['ignore', 'inherit', 'inherit'],
+      timeout: SYNC_TIMEOUT_MS,
+      killSignal: 'SIGKILL',
     })
     child.on('close', (code) => {
       void (async () => {

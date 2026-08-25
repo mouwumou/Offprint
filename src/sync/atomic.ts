@@ -42,5 +42,10 @@ export async function atomicSwitch(
     }
     await rm(old, { recursive: true, force: true })
   }
-  await writeFile(join(contentDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
+  // Write tmp + rename so a concurrent request-path read (FsStore.manifest
+  // JSON.parses with no guard) never sees a half-written file.
+  const manifestPath = join(contentDir, 'manifest.json')
+  const tmp = `${manifestPath}.tmp`
+  await writeFile(tmp, `${JSON.stringify(manifest, null, 2)}\n`)
+  await rename(tmp, manifestPath)
 }

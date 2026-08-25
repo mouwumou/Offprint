@@ -1,5 +1,5 @@
 import { readdir, readFile } from 'node:fs/promises'
-import { join, relative } from 'node:path'
+import { join, relative, resolve, sep } from 'node:path'
 import { z } from 'zod'
 import { diffManifests } from './diff'
 import { manifestSchema, type ContentStore, type Manifest, type ManifestDiff } from './types'
@@ -20,8 +20,13 @@ export class FsStore implements ContentStore {
   constructor(private readonly root: string) {}
 
   async read(path: string): Promise<string | null> {
+    // Containment check against the ABSOLUTE root (this.root may be relative,
+    // e.g. 'content'); a path escaping via '..' reads nothing.
+    const base = resolve(this.root)
+    const resolved = resolve(base, path)
+    if (resolved !== base && !resolved.startsWith(base + sep)) return null
     try {
-      return await readFile(join(this.root, path), 'utf8')
+      return await readFile(resolved, 'utf8')
     } catch (error) {
       if (isNotFound(error)) return null
       throw error
