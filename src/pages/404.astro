@@ -1,0 +1,40 @@
+---
+import BaseLayout from '../core/components/BaseLayout.astro'
+import siteConfig from '../core/config/current'
+import { container } from '../core/config/layout'
+import { useTranslations } from '../core/i18n'
+import { themeVoice } from '../core/theme/current'
+
+// B1: without this page a miss falls through to the host's bare 404 (GitHub
+// Pages serves 404.html; the node adapter renders this route for misses).
+const lang = siteConfig.i18n.default
+const t = useTranslations(lang)
+const other = siteConfig.i18n.locales.find((locale) => locale !== lang)
+const tOther = other ? useTranslations(other) : null
+---
+
+<BaseLayout lang={lang} title={t('notFound.title')}>
+  <div
+    class:list={[container, themeVoice.density === 'airy' ? 'pt-16 lg:pt-24' : 'pt-10 lg:pt-14']}
+  >
+    <p class="text-sm text-muted-foreground">404</p>
+    <h1 class="mt-1 font-serif text-3xl tracking-tight">{t('notFound.title')}</h1>
+    <p class="mt-3 font-serif leading-relaxed text-muted-foreground">
+      {t('notFound.body')}
+      {tOther && <span class="block">{tOther('notFound.body')}</span>}
+    </p>
+    <p class="mt-5 font-serif">
+      <a href="/" class="text-primary hover:underline">{t('notFound.home')}</a>
+      {
+        tOther && (
+          <>
+            <span class="text-muted-foreground"> / </span>
+            <a href={`/${other}`} class="text-primary hover:underline">
+              {tOther('notFound.home')}
+            </a>
+          </>
+        )
+      }
+    </p>
+  </div>
+</BaseLayout>

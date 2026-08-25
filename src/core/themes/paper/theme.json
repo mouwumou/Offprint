@@ -2,7 +2,8 @@
   "name": "paper",
   "voice": {
     "labels": "mono-caps",
-    "photo": "grayscale-hover"
+    "photo": "grayscale-hover",
+    "density": "airy"
   },
   "tokens": {
     "light": {

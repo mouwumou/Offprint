@@ -6,6 +6,7 @@ import { useTranslations } from '../../i18n'
 import type { Publication } from '../../schema'
 import { resolveLocalized } from '../../schema'
 import Authors from '../Authors.astro'
+import PublicationLinks from '../PublicationLinks.astro'
 import PlainSection from './PlainSection.astro'
 
 // Barron-style publication rows (A2): thumbnail left, then title → authors
@@ -21,20 +22,6 @@ const t = useTranslations(lang)
 const prefix = langPrefix(siteConfig, lang)
 const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   resolveLocalized(value, lang, siteConfig.i18n.default)
-
-const LINK_FIELDS = ['pdf', 'code', 'data', 'slides', 'poster', 'video', 'website'] as const
-
-function links(pub: Publication): { label: string; href: string }[] {
-  const row: { label: string; href: string }[] = []
-  for (const field of LINK_FIELDS) {
-    const href = pub[field]
-    if (href) row.push({ label: field, href })
-  }
-  if (pub.arxiv) row.push({ label: 'arXiv', href: `https://arxiv.org/abs/${pub.arxiv}` })
-  if (pub.doi) row.push({ label: 'doi', href: `https://doi.org/${pub.doi}` })
-  row.push({ label: 'cite', href: `${prefix}/publications/${pub.key}` })
-  return row
-}
 ---
 
 <PlainSection
@@ -73,16 +60,11 @@ function links(pub: Publication): { label: string; href: string }[] {
               <i>{pub.venue}</i>, {pub.year}
               {pub.award && <span class="font-medium text-foreground"> · {pub.award}</span>}
             </p>
-            <p class="mt-0.5 text-sm">
-              {links(pub).map((link, index) => (
-                <>
-                  {index > 0 && <span class="text-muted-foreground"> / </span>}
-                  <a href={link.href} class="text-primary hover:underline">
-                    {link.label}
-                  </a>
-                </>
-              ))}
-            </p>
+            <PublicationLinks
+              publication={pub}
+              lang={lang}
+              citeHref={`${prefix}/publications/${pub.key}`}
+            />
           </div>
         </article>
       ))

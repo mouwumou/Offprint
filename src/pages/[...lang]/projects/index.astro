@@ -52,7 +52,7 @@ const statusKey: Record<ProjectStatus, MessageKey> = {
   description={copy.description}
   alternates={uniformAlternates(siteConfig, '/projects')}
 >
-  <div class:list={[container, 'pt-16 lg:pt-24']}>
+  <div class:list={[container, themeVoice.density === 'airy' ? 'pt-16 lg:pt-24' : 'pt-8 lg:pt-10']}>
     <header class="max-w-2xl">
       {
         themeVoice.labels === 'mono-caps' && (
@@ -61,80 +61,149 @@ const statusKey: Record<ProjectStatus, MessageKey> = {
           </p>
         )
       }
-      <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{copy.title}</h1>
-      <p class="mt-4 font-serif text-lg leading-relaxed text-muted-foreground">
+      <h1
+        class:list={[
+          'font-serif tracking-tight',
+          themeVoice.density === 'airy' ? 'mt-4 text-4xl sm:text-5xl' : 'text-3xl',
+        ]}
+      >
+        {copy.title}
+      </h1>
+      <p
+        class:list={[
+          'font-serif leading-relaxed text-muted-foreground',
+          themeVoice.density === 'airy' ? 'mt-4 text-lg' : 'mt-2 text-base',
+        ]}
+      >
         {copy.description}
       </p>
     </header>
 
-    <div
-      class="mt-12 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2 xl:grid-cols-3"
-    >
-      {
-        projects.map((project) => (
-          <article class="flex flex-col bg-card transition-colors hover:bg-muted/50">
-            {project.image && (
-              <img
-                src={assetUrl(project.image)}
-                alt=""
-                loading="lazy"
-                class="aspect-[16/9] w-full border-b border-border object-cover"
-              />
-            )}
-            <div class="flex flex-1 flex-col p-6">
-              <div class="flex items-start justify-between gap-4">
-                <h2 class="font-mono text-lg font-medium tracking-tight">{project.name}</h2>
-                <span
-                  class:list={[
-                    'shrink-0 rounded-full border px-2.5 py-0.5 font-mono text-[10px] tracking-[0.12em] uppercase',
-                    statusStyles[project.status],
-                  ]}
-                >
-                  {t(statusKey[project.status])}
+    {
+      themeVoice.labels === 'plain' && (
+        <div class="mt-6 divide-y divide-border">
+          {projects.map((project) => (
+            <article class="py-5">
+              <div class="flex flex-wrap items-baseline justify-between gap-x-4">
+                <h2 class="font-serif text-[17px] font-semibold">{project.name}</h2>
+                <span class="text-sm text-muted-foreground">
+                  {project.year}
+                  {project.status !== 'active' && ` · ${t(statusKey[project.status])}`}
                 </span>
               </div>
-              <p class="mt-3 font-serif text-lg leading-snug">{r(project.blurb)}</p>
+              <p class="mt-1 font-serif leading-relaxed">{r(project.blurb)}</p>
               {project.description && (
-                <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+                <p class="mt-1 text-sm leading-relaxed text-muted-foreground">
                   {r(project.description)}
                 </p>
               )}
-              {project.tags.length > 0 && (
-                <div class="mt-4 flex flex-wrap gap-x-3 gap-y-1">
-                  {project.tags.map((tag) => (
-                    <span class="font-mono text-[11px] text-muted-foreground">{tag}</span>
+              <p class="mt-1.5 text-sm">
+                {[
+                  project.repo && {
+                    label: t('projects.repository').replace(' →', ''),
+                    href: project.repo,
+                  },
+                  project.href && {
+                    label: t('projects.live').replace(' →', ''),
+                    href: project.href,
+                  },
+                ]
+                  .filter(Boolean)
+                  .map((link, index) => (
+                    <>
+                      {index > 0 && <span class="text-muted-foreground"> / </span>}
+                      <a
+                        href={link.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-primary hover:underline"
+                      >
+                        {link.label}
+                      </a>
+                    </>
                   ))}
-                </div>
+              </p>
+              {project.tags.length > 0 && (
+                <p class="mt-0.5 text-xs text-muted-foreground">{project.tags.join(' · ')}</p>
               )}
-              <div class="mt-5 flex flex-1 items-end justify-between border-t border-border pt-4">
-                <span class="font-mono text-xs text-muted-foreground">{project.year}</span>
-                <div class="flex gap-4">
-                  {project.repo && (
-                    <a
-                      href={project.repo}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
-                    >
-                      {t('projects.repository')}
-                    </a>
-                  )}
-                  {project.href && (
-                    <a
-                      href={project.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
-                    >
-                      {t('projects.live')}
-                    </a>
-                  )}
+            </article>
+          ))}
+        </div>
+      )
+    }
+    {
+      themeVoice.labels === 'mono-caps' && (
+        <div
+          class:list={[
+            'mt-12 grid gap-px overflow-hidden rounded-md border border-border bg-border sm:grid-cols-2',
+            siteConfig.layout.width === 'wide' && 'xl:grid-cols-3',
+          ]}
+        >
+          {projects.map((project) => (
+            <article class="flex flex-col bg-card transition-colors hover:bg-muted/50">
+              {project.image && (
+                <img
+                  src={assetUrl(project.image)}
+                  alt=""
+                  loading="lazy"
+                  class="aspect-[16/9] w-full border-b border-border object-cover"
+                />
+              )}
+              <div class="flex flex-1 flex-col p-6">
+                <div class="flex items-start justify-between gap-4">
+                  <h2 class="font-mono text-lg font-medium tracking-tight">{project.name}</h2>
+                  <span
+                    class:list={[
+                      'shrink-0 rounded-full border px-2.5 py-0.5 font-mono text-[10px] tracking-[0.12em] uppercase',
+                      statusStyles[project.status],
+                    ]}
+                  >
+                    {t(statusKey[project.status])}
+                  </span>
+                </div>
+                <p class="mt-3 font-serif text-lg leading-snug">{r(project.blurb)}</p>
+                {project.description && (
+                  <p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+                    {r(project.description)}
+                  </p>
+                )}
+                {project.tags.length > 0 && (
+                  <div class="mt-4 flex flex-wrap gap-x-3 gap-y-1">
+                    {project.tags.map((tag) => (
+                      <span class="font-mono text-[11px] text-muted-foreground">{tag}</span>
+                    ))}
+                  </div>
+                )}
+                <div class="mt-5 flex flex-1 items-end justify-between border-t border-border pt-4">
+                  <span class="font-mono text-xs text-muted-foreground">{project.year}</span>
+                  <div class="flex gap-4">
+                    {project.repo && (
+                      <a
+                        href={project.repo}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
+                      >
+                        {t('projects.repository')}
+                      </a>
+                    )}
+                    {project.href && (
+                      <a
+                        href={project.href}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
+                      >
+                        {t('projects.live')}
+                      </a>
+                    )}
+                  </div>
                 </div>
               </div>
-            </div>
-          </article>
-        ))
-      }
-    </div>
+            </article>
+          ))}
+        </div>
+      )
+    }
   </div>
 </BaseLayout>

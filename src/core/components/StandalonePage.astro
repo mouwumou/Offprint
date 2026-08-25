@@ -4,6 +4,7 @@ import type { Page } from '../content'
 import type { RenderedMarkdown } from '../content/markdown'
 import { formatDate, useTranslations } from '../i18n'
 import type { Alternate } from '../seo/alternates'
+import { themeVoice } from '../theme/current'
 import BaseLayout from './BaseLayout.astro'
 
 interface Props {
@@ -20,9 +21,22 @@ const t = useTranslations(lang)
 <BaseLayout lang={lang} title={page.title} alternates={alternates}>
   <Fragment slot="head">{rendered.hasMath && <style set:html={katexCss} />}</Fragment>
 
-  <article class="mx-auto w-full max-w-3xl px-5 pt-14 pb-20 sm:px-8 lg:pt-20" data-pagefind-body>
-    <header class="border-b border-border pb-8">
-      <h1 class="font-serif text-4xl leading-[1.12] tracking-tight sm:text-[2.75rem]">
+  <article
+    class:list={[
+      'mx-auto w-full max-w-3xl px-5 pb-20 sm:px-8',
+      themeVoice.density === 'airy' ? 'pt-14 lg:pt-20' : 'pt-8 lg:pt-10',
+    ]}
+    data-pagefind-body
+  >
+    <header
+      class:list={['border-b border-border', themeVoice.density === 'airy' ? 'pb-8' : 'pb-5']}
+    >
+      <h1
+        class:list={[
+          'font-serif leading-[1.15] tracking-tight',
+          themeVoice.density === 'airy' ? 'text-4xl sm:text-[2.75rem]' : 'text-[2rem]',
+        ]}
+      >
         {page.title}
       </h1>
       {

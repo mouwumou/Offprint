@@ -144,7 +144,13 @@ const jsonLd = blogPostingJsonLd(
     class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12 xl:grid xl:max-w-7xl xl:grid-cols-[1fr_minmax(0,48rem)_1fr] xl:gap-8"
   >
     <div class="hidden xl:block" aria-hidden="true"></div>
-    <article class="mx-auto w-full max-w-3xl pt-14 pb-20 lg:pt-20" data-pagefind-body>
+    <article
+      class:list={[
+        'mx-auto w-full max-w-3xl pb-20',
+        themeVoice.density === 'airy' ? 'pt-14 lg:pt-20' : 'pt-8 lg:pt-10',
+      ]}
+      data-pagefind-body
+    >
       <a
         href={`${prefix}/blog`}
         class:list={[
@@ -157,7 +163,12 @@ const jsonLd = blogPostingJsonLd(
         {t('post.back')}
       </a>
 
-      <header class="mt-6 border-b border-border pb-8">
+      <header
+        class:list={[
+          'border-b border-border',
+          themeVoice.density === 'airy' ? 'mt-6 pb-8' : 'mt-4 pb-6',
+        ]}
+      >
         {
           kicker &&
             (themeVoice.labels === 'mono-caps' ? (
@@ -166,12 +177,22 @@ const jsonLd = blogPostingJsonLd(
               <p class="text-sm text-muted-foreground">{kicker}</p>
             ))
         }
-        <h1 class="mt-3 font-serif text-4xl leading-[1.12] tracking-tight sm:text-[2.75rem]">
+        <h1
+          class:list={[
+            'font-serif leading-[1.15] tracking-tight',
+            themeVoice.density === 'airy' ? 'mt-3 text-4xl sm:text-[2.75rem]' : 'mt-2 text-[2rem]',
+          ]}
+        >
           {post.title}
         </h1>
         {
           post.description && (
-            <p class="mt-4 font-serif text-xl leading-relaxed text-muted-foreground">
+            <p
+              class:list={[
+                'font-serif leading-relaxed text-muted-foreground',
+                themeVoice.density === 'airy' ? 'mt-4 text-xl' : 'mt-2 text-lg',
+              ]}
+            >
               {post.description}
             </p>
           )
@@ -214,7 +235,12 @@ const jsonLd = blogPostingJsonLd(
             citePost && (
               <>
                 <span aria-hidden="true">·</span>
-                <CiteDialog client:load formats={citePost} labels={citeLabels} />
+                <CiteDialog
+                  client:load
+                  formats={citePost}
+                  labels={citeLabels}
+                  mono={themeVoice.labels === 'mono-caps'}
+                />
               </>
             )
           }
@@ -354,7 +380,12 @@ const jsonLd = blogPostingJsonLd(
 
     {
       rendered.toc.length > 0 && (
-        <aside class="hidden xl:sticky xl:top-20 xl:mt-24 xl:block xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto">
+        <aside
+          class:list={[
+            'hidden xl:sticky xl:top-20 xl:block xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto',
+            themeVoice.density === 'airy' ? 'xl:mt-24' : 'xl:mt-12',
+          ]}
+        >
           <nav aria-label={t('post.onThisPage')}>
             <p
               class:list={[

@@ -31,7 +31,7 @@ const t = useTranslations(lang)
   title={t('search.title')}
   alternates={uniformAlternates(siteConfig, '/search')}
 >
-  <div class:list={[container, 'pt-16 lg:pt-24']}>
+  <div class:list={[container, themeVoice.density === 'airy' ? 'pt-16 lg:pt-24' : 'pt-8 lg:pt-10']}>
     <header class="mb-8">
       {
         themeVoice.labels === 'mono-caps' && (
@@ -40,7 +40,14 @@ const t = useTranslations(lang)
           </p>
         )
       }
-      <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{t('search.heading')}</h1>
+      <h1
+        class:list={[
+          'font-serif tracking-tight',
+          themeVoice.density === 'airy' ? 'mt-4 text-4xl sm:text-5xl' : 'text-3xl',
+        ]}
+      >
+        {t('search.heading')}
+      </h1>
     </header>
     <SearchBox
       client:load

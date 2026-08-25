@@ -46,56 +46,103 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   alternates={uniformAlternates(siteConfig, '/publications')}
   jsonLd={scholarlyArticlesJsonLd(siteConfig, publications, lang)}
 >
-  <div class:list={[container, 'pt-16 pb-6 lg:pt-24']}>
+  <div
+    class:list={[
+      container,
+      'pb-6',
+      themeVoice.density === 'airy' ? 'pt-16 lg:pt-24' : 'pt-8 lg:pt-10',
+    ]}
+  >
     <header class="max-w-2xl">
       {
         themeVoice.labels === 'mono-caps' && (
           <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">{t('pub.kicker')}</p>
         )
       }
-      <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{copy.title}</h1>
-      <p class="mt-4 font-serif text-lg leading-relaxed text-muted-foreground">
+      <h1
+        class:list={[
+          'font-serif tracking-tight',
+          themeVoice.density === 'airy' ? 'mt-4 text-4xl sm:text-5xl' : 'text-3xl',
+        ]}
+      >
+        {copy.title}
+      </h1>
+      <p
+        class:list={[
+          'font-serif leading-relaxed text-muted-foreground',
+          themeVoice.density === 'airy' ? 'mt-4 text-lg' : 'mt-2 text-base',
+        ]}
+      >
         {copy.description}
       </p>
     </header>
 
     {
-      years.map((year) => (
-        <section class="mt-12 grid gap-4 border-t border-border pt-8 md:grid-cols-[120px_1fr] md:gap-10">
-          <h2 class="font-mono text-sm text-primary">{year}</h2>
-          <ol class="space-y-8">
-            {publications
-              .filter((pub) => pub.year === year)
-              .map((pub) => (
-                <li>
-                  <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-                    <span class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
-                      {pub.venue}
-                    </span>
-                    <span class="font-mono text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
-                      {pub.type}
-                    </span>
-                    {pub.award && (
-                      <span class="rounded-full border border-primary/40 px-2 py-0.5 font-mono text-[10px] tracking-[0.12em] text-primary uppercase">
-                        {pub.award}
-                      </span>
-                    )}
-                  </div>
-                  <h3 class="mt-1.5 font-serif text-xl leading-snug">
+      themeVoice.labels === 'plain' &&
+        years.map((year) => (
+          <section class:list={[themeVoice.density === 'airy' ? 'mt-12' : 'mt-8']}>
+            <h2 class="border-b border-border pb-1.5 font-serif text-2xl font-semibold">{year}</h2>
+            <ol class="mt-4 space-y-5">
+              {publications
+                .filter((pub) => pub.year === year)
+                .map((pub) => (
+                  <li>
                     <a
                       href={`${prefix}/publications/${pub.key}`}
-                      class="transition-colors hover:text-primary"
+                      class="font-serif text-[17px] leading-snug text-primary hover:underline"
                     >
                       {r(pub.title)}
                     </a>
-                  </h3>
-                  <Authors authors={pub.authors} />
-                  <PublicationLinks publication={pub} lang={lang} />
-                </li>
-              ))}
-          </ol>
-        </section>
-      ))
+                    <Authors authors={pub.authors} />
+                    <p class="text-sm text-muted-foreground">
+                      <i>{pub.venue}</i>, {pub.year} · {pub.type}
+                      {pub.award && <span class="font-medium text-foreground"> · {pub.award}</span>}
+                    </p>
+                    <PublicationLinks publication={pub} lang={lang} />
+                  </li>
+                ))}
+            </ol>
+          </section>
+        ))
+    }
+    {
+      themeVoice.labels === 'mono-caps' &&
+        years.map((year) => (
+          <section class="mt-12 grid gap-4 border-t border-border pt-8 md:grid-cols-[120px_1fr] md:gap-10">
+            <h2 class="font-mono text-sm text-primary">{year}</h2>
+            <ol class="space-y-8">
+              {publications
+                .filter((pub) => pub.year === year)
+                .map((pub) => (
+                  <li>
+                    <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+                      <span class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+                        {pub.venue}
+                      </span>
+                      <span class="font-mono text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
+                        {pub.type}
+                      </span>
+                      {pub.award && (
+                        <span class="rounded-full border border-primary/40 px-2 py-0.5 font-mono text-[10px] tracking-[0.12em] text-primary uppercase">
+                          {pub.award}
+                        </span>
+                      )}
+                    </div>
+                    <h3 class="mt-1.5 font-serif text-xl leading-snug">
+                      <a
+                        href={`${prefix}/publications/${pub.key}`}
+                        class="transition-colors hover:text-primary"
+                      >
+                        {r(pub.title)}
+                      </a>
+                    </h3>
+                    <Authors authors={pub.authors} />
+                    <PublicationLinks publication={pub} lang={lang} />
+                  </li>
+                ))}
+            </ol>
+          </section>
+        ))
     }
   </div>
 </BaseLayout>

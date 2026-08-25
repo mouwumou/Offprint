@@ -42,6 +42,9 @@ export const themeVoiceSchema = z
   .strictObject({
     labels: z.enum(['mono-caps', 'plain']).default('plain'),
     photo: z.enum(['grayscale-hover', 'plain']).default('plain'),
+    /** Page-header rhythm: airy = magazine stage (~96px gaps, display-size
+     * titles), compact = academic density (~40px gaps, document titles). */
+    density: z.enum(['airy', 'compact']).default('compact'),
   })
   .prefault({})
 

@@ -10,7 +10,11 @@ describe('theme resolution (ADR-018)', () => {
     expect(manifest.tokens.light['background']).toBe('#faf8f3')
     expect(manifest.tokens.dark['primary']).toBe('#cf9aa4')
     expect(manifest.fonts.serif).toContain('Newsreader')
-    expect(manifest.voice).toEqual({ labels: 'mono-caps', photo: 'grayscale-hover' })
+    expect(manifest.voice).toEqual({
+      labels: 'mono-caps',
+      photo: 'grayscale-hover',
+      density: 'airy',
+    })
     expect(cssPath).toMatch(/themes\/paper\/theme\.css$/)
     expect(listThemes()).toContain('paper')
   })
@@ -48,7 +52,7 @@ describe('theme resolution (ADR-018)', () => {
       expect(local.manifest.name).toBe('mytheme')
       expect(local.cssPath).toBeNull()
       // A manifest without voice defaults to the plain register.
-      expect(local.manifest.voice).toEqual({ labels: 'plain', photo: 'plain' })
+      expect(local.manifest.voice).toEqual({ labels: 'plain', photo: 'plain', density: 'compact' })
     })
   })
 })
