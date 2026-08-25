@@ -122,3 +122,9 @@
 
 **背景**：曾提议 `pnpm setup` 交互式向导降低上手门槛，维护者否决。
 **决定**：一切配置的唯一事实来源是版本化文本文件（`site.config.ts`、`content/*.yaml`、`.env`）；不提供任何交互式写入工具。理由：交互产生的状态无法 diff、无法复现，与声明式配置不对称。降低门槛的手段是文档与带注释的样例配置（P4-4 配置参考）。
+
+## ADR-021 站点配置 YAML 化，页面编排归 content — 已定
+
+**背景**：site.config.ts 的 TS 语法（export/花括号/引号）对不写代码的学术用户可读性差；维护者确认"config 只放站点配置，每张页面长什么样（含首页）归 content 目录"。关键认识：本项目的配置报错质量来自 zod 校验而非 TS 文件格式（al-folio 的"写错不报错"是 Jekyll 不校验所致），TS 独有优势只剩编辑器补全与写逻辑的能力——前者可由 JSON Schema 补回，后者本不该存在（ADR-020 配置是数据）。
+**决定**：站点配置迁移为根目录 **`site.yaml`**（纯数据；zod 校验不变，构建期报错带路径），文件头以 `# yaml-language-server: $schema=…` 指向由 zod 导出的 **JSON Schema**（提交进仓库，`pnpm gen:schema` 再生），主流 YAML 编辑器插件即获得自动补全/悬浮文档/实时红线——GitHub Actions yml 同款体验。**首页编排移入 `content/home.yaml`**（sections/width；缺失时用内置缺省），由 config 层消化成与原 config.home 相同的结构，页面代码不感知（约束 1 不变）。redirects 并入 site.yaml。site.config.ts 与根目录 redirects.yaml 退役。
+**连锁**：站点本地模块的注册不再依赖"TS 配置文件 import 触发"（配置已非 TS），改为与主题机制对称的 **manifest 发现**：`src/site/modules/<id>/module.yaml` 声明 id/nav/copy/collections（fs 读取，无 import 边界与打包时序问题），行为代码（路由）由 integration 以 injectRoute 路径引用；自定义 configSchema 的模块形态留待贡献进内置或阶段 5 npm 化。三入口模型定稿：**site.yaml（站点配置）/ content/（内容与页面编排）/ src/site/（代码定制：themes、widgets、modules）**；.env 只承载密钥与部署量。配置只在构建/启动时读取，改配置 = 重建或重启（与原 TS 行为一致）。
