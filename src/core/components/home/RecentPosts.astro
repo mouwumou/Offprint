@@ -3,6 +3,8 @@ import siteConfig from '../../config/current'
 import { langPrefix } from '../../config/nav'
 import type { PostSummary } from '../../content/provider'
 import { formatDate, useTranslations } from '../../i18n'
+import { themeVoice } from '../../theme/current'
+import PlainSection from './PlainSection.astro'
 import SectionShell from './SectionShell.astro'
 
 interface Props {
@@ -17,46 +19,81 @@ const prefix = langPrefix(siteConfig, lang)
 
 const postHref = (post: { urlname: string; lang: string }) =>
   `${langPrefix(siteConfig, post.lang)}/blog/${post.urlname}`
+
+// The section frame follows the theme's voice (A3): the plain academic
+// heading in scholar-like themes, the label-column shell in paper.
+const plain = themeVoice.labels === 'plain'
 ---
 
-<SectionShell label={title}>
-  <a
-    slot="aside"
-    href={`${prefix}/blog`}
-    class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
-  >
-    {t('home.allPosts')}
-  </a>
-  <div class="divide-y divide-border">
-    {
-      posts.map((post) => (
-        <a href={postHref(post)} class="group block py-5 first:pt-0">
-          <div class="flex items-baseline gap-3">
-            <time
-              datetime={post.date.toISOString()}
-              class="font-mono text-xs text-muted-foreground"
-            >
-              {formatDate(post.date, lang)}
-            </time>
-            {post.categories[0] && (
-              <span class="font-mono text-[11px] tracking-[0.14em] text-primary uppercase">
-                {post.categories[0]}
-              </span>
+{
+  plain && (
+    <PlainSection title={title} moreHref={`${prefix}/blog`} moreLabel={t('home.allPosts')}>
+      <div class="divide-y divide-border">
+        {posts.map((post) => (
+          <a href={postHref(post)} class="group block py-4 first:pt-0">
+            <div class="flex items-baseline gap-3">
+              <time datetime={post.date.toISOString()} class="text-sm text-muted-foreground">
+                {formatDate(post.date, lang)}
+              </time>
+              {post.lang !== lang && (
+                <span class="rounded-sm border border-border px-1.5 text-xs text-muted-foreground">
+                  {post.lang}
+                </span>
+              )}
+            </div>
+            <span class="mt-0.5 block font-serif text-[17px] leading-snug text-primary group-hover:underline">
+              {post.title}
+            </span>
+            {post.description && (
+              <p class="mt-0.5 max-w-2xl text-sm text-muted-foreground">{post.description}</p>
             )}
-            {post.lang !== lang && (
-              <span class="rounded-sm border border-border px-1.5 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                {post.lang}
-              </span>
+          </a>
+        ))}
+      </div>
+    </PlainSection>
+  )
+}
+
+{
+  !plain && (
+    <SectionShell label={title}>
+      <a
+        slot="aside"
+        href={`${prefix}/blog`}
+        class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
+      >
+        {t('home.allPosts')}
+      </a>
+      <div class="divide-y divide-border">
+        {posts.map((post) => (
+          <a href={postHref(post)} class="group block py-5 first:pt-0">
+            <div class="flex items-baseline gap-3">
+              <time
+                datetime={post.date.toISOString()}
+                class="font-mono text-xs text-muted-foreground"
+              >
+                {formatDate(post.date, lang)}
+              </time>
+              {post.categories[0] && (
+                <span class="font-mono text-[11px] tracking-[0.14em] text-primary uppercase">
+                  {post.categories[0]}
+                </span>
+              )}
+              {post.lang !== lang && (
+                <span class="rounded-sm border border-border px-1.5 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
+                  {post.lang}
+                </span>
+              )}
+            </div>
+            <h3 class="mt-1.5 font-serif text-xl leading-snug transition-colors group-hover:text-primary">
+              {post.title}
+            </h3>
+            {post.description && (
+              <p class="mt-1 max-w-2xl text-muted-foreground">{post.description}</p>
             )}
-          </div>
-          <h3 class="mt-1.5 font-serif text-xl leading-snug transition-colors group-hover:text-primary">
-            {post.title}
-          </h3>
-          {post.description && (
-            <p class="mt-1 max-w-2xl text-muted-foreground">{post.description}</p>
-          )}
-        </a>
-      ))
-    }
-  </div>
-</SectionShell>
+          </a>
+        ))}
+      </div>
+    </SectionShell>
+  )
+}

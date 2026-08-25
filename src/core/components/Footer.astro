@@ -3,6 +3,7 @@ import config from '../config/current'
 import { langPrefix } from '../config/nav'
 import { useTranslations } from '../i18n'
 import { resolveLocalized } from '../schema'
+import { themeVoice } from '../theme/current'
 
 interface Props {
   lang: string
@@ -39,7 +40,12 @@ const colophon =
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                class="font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase transition-colors hover:text-primary"
+                class:list={[
+                  'text-muted-foreground transition-colors hover:text-primary',
+                  themeVoice.labels === 'mono-caps'
+                    ? 'font-mono text-xs tracking-[0.12em] uppercase'
+                    : 'text-sm',
+                ]}
               >
                 {link.label}
               </a>
@@ -47,13 +53,23 @@ const colophon =
             {config.footer.rss && config.modules.blog.enabled && (
               <a
                 href={`${prefix}/rss.xml`}
-                class="font-mono text-xs tracking-[0.12em] text-muted-foreground uppercase transition-colors hover:text-primary"
+                class:list={[
+                  'text-muted-foreground transition-colors hover:text-primary',
+                  themeVoice.labels === 'mono-caps'
+                    ? 'font-mono text-xs tracking-[0.12em] uppercase'
+                    : 'text-sm',
+                ]}
               >
                 {t('layout.rss')}
               </a>
             )}
           </div>
-          <p class="font-mono text-[11px] text-muted-foreground">
+          <p
+            class:list={[
+              'text-muted-foreground',
+              themeVoice.labels === 'mono-caps' ? 'font-mono text-[11px]' : 'text-xs',
+            ]}
+          >
             {colophon !== null && <>{colophon} · </>}© {year}
           </p>
         </div>

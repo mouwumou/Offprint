@@ -32,8 +32,22 @@ export type TokenName = (typeof TOKEN_NAMES)[number]
 // error naming the key, an unknown token is rejected — exactly the contract.
 const tokenTable = z.record(z.enum(TOKEN_NAMES), z.string().min(1))
 
+/**
+ * Voice: the theme's mannerisms (A3). `labels` governs the decorative
+ * register — mono-caps = letterspaced uppercase mono kickers/labels/nav
+ * (the paper look), plain = ordinary type and no kickers (the academic
+ * norm). `photo` governs the hero portrait treatment.
+ */
+export const themeVoiceSchema = z
+  .strictObject({
+    labels: z.enum(['mono-caps', 'plain']).default('plain'),
+    photo: z.enum(['grayscale-hover', 'plain']).default('plain'),
+  })
+  .prefault({})
+
 export const themeManifestSchema = z.strictObject({
   name: z.string().min(1),
+  voice: themeVoiceSchema,
   /** Full token tables for both color schemes. */
   tokens: z.strictObject({ light: tokenTable, dark: tokenTable }),
   /** Complete font-family stacks (including CJK and system fallbacks). */

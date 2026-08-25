@@ -1,6 +1,7 @@
 ---
 import siteConfig from '../../../core/config/current'
 import { assetUrl } from '../../../core/content/asset-url'
+import { themeVoice } from '../../../core/theme/current'
 import { getProvider } from '../../../core/content'
 import { moduleCopy } from '../../../core/config/copy'
 import { useTranslations, type MessageKey } from '../../../core/i18n'
@@ -52,9 +53,13 @@ const statusKey: Record<ProjectStatus, MessageKey> = {
 >
   <div class="mx-auto w-full max-w-6xl px-5 pt-16 sm:px-8 lg:px-12 lg:pt-24">
     <header class="max-w-2xl">
-      <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">
-        {t('projects.kicker')}
-      </p>
+      {
+        themeVoice.labels === 'mono-caps' && (
+          <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">
+            {t('projects.kicker')}
+          </p>
+        )
+      }
       <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{copy.title}</h1>
       <p class="mt-4 font-serif text-lg leading-relaxed text-muted-foreground">
         {copy.description}

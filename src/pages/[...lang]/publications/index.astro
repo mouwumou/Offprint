@@ -7,6 +7,7 @@ import { langPrefix } from '../../../core/config/nav'
 import { getProvider } from '../../../core/content'
 import { moduleCopy } from '../../../core/config/copy'
 import { useTranslations } from '../../../core/i18n'
+import { themeVoice } from '../../../core/theme/current'
 import { resolveLocalized } from '../../../core/schema'
 import { uniformAlternates } from '../../../core/seo/alternates'
 import { scholarlyArticlesJsonLd } from '../../../core/seo/jsonld'
@@ -46,7 +47,11 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
 >
   <div class="mx-auto w-full max-w-4xl px-5 pt-16 pb-6 sm:px-8 lg:pt-24">
     <header class="max-w-2xl">
-      <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">{t('pub.kicker')}</p>
+      {
+        themeVoice.labels === 'mono-caps' && (
+          <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">{t('pub.kicker')}</p>
+        )
+      }
       <h1 class="mt-4 font-serif text-4xl tracking-tight sm:text-5xl">{copy.title}</h1>
       <p class="mt-4 font-serif text-lg leading-relaxed text-muted-foreground">
         {copy.description}

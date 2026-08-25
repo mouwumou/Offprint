@@ -6,6 +6,7 @@ import { pagesForLanguage } from '../content/posts-view'
 import { selfLabel, useTranslations } from '../i18n'
 import { resolveLocalized } from '../schema'
 import type { Alternate } from '../seo/alternates'
+import { themeVoice } from '../theme/current'
 import ThemeToggle from './ThemeToggle'
 
 interface Props {
@@ -63,7 +64,14 @@ const isActive = (item: NavItem): boolean =>
         <a href={prefix || '/'} class="group flex items-baseline gap-2.5">
           <span class="font-serif text-lg font-semibold tracking-tight">{brandTitle}</span>
           {brandSubtitle && (
-            <span class="hidden font-mono text-[10px] tracking-[0.18em] text-muted-foreground uppercase sm:inline">
+            <span
+              class:list={[
+                'hidden text-muted-foreground sm:inline',
+                themeVoice.labels === 'mono-caps'
+                  ? 'font-mono text-[10px] tracking-[0.18em] uppercase'
+                  : 'text-xs',
+              ]}
+            >
               {brandSubtitle}
             </span>
           )}
@@ -82,7 +90,10 @@ const isActive = (item: NavItem): boolean =>
             href={item.href}
             aria-current={isActive(item) ? 'page' : undefined}
             class:list={[
-              'hidden rounded-md px-2.5 py-1.5 font-mono text-xs tracking-[0.12em] uppercase transition-colors lg:inline-block lg:px-3',
+              'hidden rounded-md px-2.5 py-1.5 transition-colors lg:inline-block lg:px-3',
+              themeVoice.labels === 'mono-caps'
+                ? 'font-mono text-xs tracking-[0.12em] uppercase'
+                : 'text-sm',
               isActive(item) ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
             ]}
           >
@@ -156,7 +167,10 @@ const isActive = (item: NavItem): boolean =>
                 href={item.href}
                 aria-current={isActive(item) ? 'page' : undefined}
                 class:list={[
-                  'block rounded-md px-3 py-2 font-mono text-xs tracking-[0.12em] uppercase transition-colors',
+                  'block rounded-md px-3 py-2 transition-colors',
+                  themeVoice.labels === 'mono-caps'
+                    ? 'font-mono text-xs tracking-[0.12em] uppercase'
+                    : 'text-sm',
                   isActive(item) ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
                 ]}
               >

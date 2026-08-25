@@ -3,6 +3,7 @@ import siteConfig from '../../config/current'
 import { langPrefix } from '../../config/nav'
 import { useTranslations } from '../../i18n'
 import { resolveLocalized } from '../../schema'
+import { themeVoice } from '../../theme/current'
 
 interface Props {
   lang: string
@@ -27,7 +28,11 @@ const links = profile.links.map((link) => ({ href: link.href, label: r(link.labe
           <img
             src={profile.photo}
             alt={name}
-            class="aspect-[4/5] w-full rounded-md border border-border bg-muted object-cover grayscale transition-all duration-500 group-hover:grayscale-0"
+            class:list={[
+              'aspect-[4/5] w-full rounded-md border border-border bg-muted object-cover',
+              themeVoice.photo === 'grayscale-hover' &&
+                'grayscale transition-all duration-500 group-hover:grayscale-0',
+            ]}
           />
         </figure>
       )

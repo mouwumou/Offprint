@@ -10,6 +10,7 @@ describe('theme resolution (ADR-018)', () => {
     expect(manifest.tokens.light['background']).toBe('#faf8f3')
     expect(manifest.tokens.dark['primary']).toBe('#cf9aa4')
     expect(manifest.fonts.serif).toContain('Newsreader')
+    expect(manifest.voice).toEqual({ labels: 'mono-caps', photo: 'grayscale-hover' })
     expect(cssPath).toMatch(/themes\/paper\/theme\.css$/)
     expect(listThemes()).toContain('paper')
   })
@@ -37,14 +38,17 @@ describe('theme resolution (ADR-018)', () => {
     it('finds a theme dropped into src/site/themes', async () => {
       const { manifest } = resolveTheme('paper')
       await mkdir('src/site/themes/mytheme', { recursive: true })
+      const { voice: _voice, ...rest } = manifest
       await writeFile(
         'src/site/themes/mytheme/theme.json',
-        JSON.stringify({ ...manifest, name: 'mytheme' }),
+        JSON.stringify({ ...rest, name: 'mytheme' }),
       )
       expect(listThemes()).toContain('mytheme')
       const local = resolveTheme('mytheme')
       expect(local.manifest.name).toBe('mytheme')
       expect(local.cssPath).toBeNull()
+      // A manifest without voice defaults to the plain register.
+      expect(local.manifest.voice).toEqual({ labels: 'plain', photo: 'plain' })
     })
   })
 })

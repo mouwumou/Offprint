@@ -26,6 +26,7 @@ src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 ```json
 {
   "name": "<name>",
+  "voice": { "labels": "plain", "photo": "plain" },
   "tokens": {
     "light": { "background": "#ffffff", "...": "全部 15 个 token 必填" },
     "dark": { "...": "同上" }
@@ -38,6 +39,7 @@ src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 }
 ```
 
+- **voice（腔调，可省略，缺省全 plain）**：`labels: mono-caps | plain` 控制装饰语域——mono-caps 是等宽大写宽字距的 kicker/节标签/导航（paper 的样子），plain 是普通字体且不渲染装饰性 kicker（学术常态）；`photo: grayscale-hover | plain` 控制首页大头图的灰度悬停处理。
 - **token 词表**（15 个，见 `src/core/theme/contract.ts` 的 `TOKEN_NAMES`）：`background` `foreground` `card` `card-foreground` `primary` `primary-foreground` `secondary` `secondary-foreground` `muted` `muted-foreground` `accent` `accent-foreground` `border` `ring` `radius`。缺一个、多一个都是构建期错误（zod 逐键报名）。
 - 两种配色（light/dark）都必须给全——站点有用户可切换的暗色模式，主题不能只管一半。
 - 字体栈**必须含 CJK 回退**（参照 paper 的栈；中文 webfont 体积不划算，走系统字体是项目约定）。
@@ -74,5 +76,4 @@ pnpm lhci                                 # 四类 Lighthouse ≥ 0.95（性能/
 
 以下字段**现在写了会被 schema 拒绝**（ADR-016：schema 只收已实现的）：
 
-- `voice`：少量腔调开关（kicker 大写与否、节标签样式、头像灰度处理），随新默认主题落地（P5-2f）。
-- `shiki`:代码高亮双主题自定义（现为全站统一的 offprint 双主题）。
+- `shiki`：代码高亮双主题自定义（现为全站统一的 offprint 双主题）。

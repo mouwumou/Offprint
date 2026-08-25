@@ -1,5 +1,9 @@
 {
   "name": "paper",
+  "voice": {
+    "labels": "mono-caps",
+    "photo": "grayscale-hover"
+  },
   "tokens": {
     "light": {
       "background": "#faf8f3",
