@@ -2,6 +2,10 @@
 
 > 抽印本 — 一个开源、可插拔、易部署的学术个人网站系统。
 
+[![Use this template](https://img.shields.io/badge/GitHub-Use_this_template-2ea44f?logo=github)](https://github.com/mouwumou/Offprint/generate)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmouwumou%2FOffprint)
+[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/mouwumou/Offprint)
+
 **状态：阶段 0–3 已完成** —— 双模式构建与 HTML 一致性 e2e、内容契约 schema、markdown 管线（KaTeX/Shiki/引用）、Notion 同步链（含图片物化）、双语路由、搜索、SEO/feed/OG、Docker 双模式部署均已跑通。阶段 4（开源化）进行中。开发交接文档见 `CLAUDE.md` 与 `docs/`。
 
 ```bash
@@ -15,7 +19,7 @@ pnpm test && pnpm e2e
 
 这个仓库是**公开模板**：它自带样例内容，构建完全自足，CI 与 GitHub Pages demo 部署全部只用 `GITHUB_TOKEN`，**不配置任何外部密钥**。你的站点是从它生成出去的**实例仓库**：
 
-1. **生成仓库**：GitHub 上点 "Use this template"（比 fork 干净，不带模板的开发历史）。
+1. **生成仓库**：GitHub 上点 "Use this template"（比 fork 干净，不带模板的开发历史）。上面的 Vercel / Netlify 一键按钮也会自动生成你的仓库副本并首次部署——两个平台都会执行 `pnpm build`（即 `build:static`，含搜索索引），零配置可用。
 2. **配置实例**（你自己仓库的 Settings）：
    - Variables：`SITE_URL`（站点公网地址）；要开 Notion 同步则加 `SYNC_ENABLED=true`；要部署 Vercel 则加 `DEPLOY_VERCEL=true`。
    - Secrets（仅在需要对应功能时）：`NOTION_TOKEN`、`NOTION_DB`；Vercel 需要 `VERCEL_TOKEN`、`VERCEL_ORG_ID`、`VERCEL_PROJECT_ID`。
@@ -34,6 +38,8 @@ Offprint 把学术首页、博客、项目与 CV 放进同一个站点，并做�
 
 | | |
 | --- | --- |
+| `CONTRIBUTING.md` | 贡献指南（开发、约束、主题贡献、PR 要求） |
+| `SECURITY.md` | 安全策略：漏洞报告、密钥模型、扩展信任模型 |
 | `CLAUDE.md` | 开发约束与工作方式 |
 | `docs/PLANNING.md` | 规划：框架分析、功能清单、风险 |
 | `docs/DECISIONS.md` | 架构决策记录 |

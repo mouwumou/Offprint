@@ -12,6 +12,7 @@
   "packageManager": "pnpm@10.33.4",
   "scripts": {
     "dev": "astro dev",
+    "build": "pnpm run build:static",
     "build:static": "cross-env RUNTIME_MODE=static astro build && node scripts/postbuild-pagefind.mjs",
     "build:server": "cross-env RUNTIME_MODE=server astro build",
     "preview": "astro preview",
