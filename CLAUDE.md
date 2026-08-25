@@ -29,7 +29,7 @@ Offprint（抽印本）是一个开源、可插拔、易部署的学术个人网
 7. **学术 SEO 不可省**：每篇文章/出版物页必须输出 canonical、OG、JSON-LD，出版物页额外输出 Highwire Press `citation_*` meta。
 8. **不提交密钥**。Notion token、图床密钥、revalidate secret 一律走环境变量，`.env.example` 列全。
 9. **双语是一等公民**（ADR-007）。每个页面都要在两种语言下可达；新增 UI 文案必须进 `src/core/i18n/`，不得硬编码；内容字段支持 `{en, zh}` 形式。
-10. **包边界**（ADR-006）。`src/core` 不得 import `src/sync` / `src/site` / `src/pages`；`src/sync` 只能 import `src/core/schema`。
+10. **包边界**（ADR-006/022）。`src/core` 不得 import `src/sync` / `extensions` / `src/pages`；`src/sync` 只能 import `src/core/schema`。
 
 ## 工作方式
 
