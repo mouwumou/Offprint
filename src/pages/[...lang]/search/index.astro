@@ -2,6 +2,7 @@
 import siteConfig from '../../../core/config/current'
 import SearchBox from '../../../core/components/SearchBox'
 import BaseLayout from '../../../core/components/BaseLayout.astro'
+import { container } from '../../../core/config/layout'
 import { useTranslations } from '../../../core/i18n'
 import { themeVoice } from '../../../core/theme/current'
 import { uniformAlternates } from '../../../core/seo/alternates'
@@ -30,7 +31,7 @@ const t = useTranslations(lang)
   title={t('search.title')}
   alternates={uniformAlternates(siteConfig, '/search')}
 >
-  <div class="mx-auto w-full max-w-3xl px-5 pt-16 sm:px-8 lg:pt-24">
+  <div class:list={[container, 'pt-16 lg:pt-24']}>
     <header class="mb-8">
       {
         themeVoice.labels === 'mono-caps' && (

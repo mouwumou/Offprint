@@ -100,8 +100,6 @@ export const homeSectionSchema = z.discriminatedUnion('type', [
 export type HomeSection = z.output<typeof homeSectionSchema>
 
 export const homeSchema = z.strictObject({
-  /** Page column: narrow (~848px, the academic norm) or wide (max-w-6xl). */
-  width: z.enum(['narrow', 'wide']).default('narrow'),
   /** The default sequence: the academic homepage (A4). */
   sections: z
     .array(homeSectionSchema)
@@ -149,6 +147,15 @@ export interface NavEntryHref {
   label: z.output<typeof localizedString>
 }
 export type NavEntry = NavEntryModule | NavEntryPage | NavEntryHref
+
+// ── layout ───────────────────────────────────────────────────────────────────
+
+/** Site-wide page column — one width for every page, nav and footer included
+ * (mixed widths between pages read as jumps). */
+export const layoutSchema = z.strictObject({
+  /** narrow (~848px, the academic norm) | wide (max-w-6xl, suits paper). */
+  width: z.enum(['narrow', 'wide']).default('narrow'),
+})
 
 // ── chrome: header & footer (ADR-015) ────────────────────────────────────────
 
@@ -250,6 +257,7 @@ export function buildSiteConfigSchema() {
     /** Absent → theme default: home, enabled modules, then nav:true pages. */
     nav: z.array(buildNavEntrySchema()).optional(),
     home: homeSchema.prefault({}),
+    layout: layoutSchema.prefault({}),
     header: headerSchema.prefault({}),
     footer: footerSchema.prefault({}),
     theme: themeSchema.prefault({}),

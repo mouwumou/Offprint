@@ -65,6 +65,10 @@ modules:
 #   - { module: home }
 #   - { module: blog }
 
+# ── 页面栏宽：全站统一（含导航与页脚）。narrow（学术窄栏，默认）| wide（宽栏，配 paper）
+# layout:
+#   width: narrow
+
 # ── 头部与页脚 ────────────────────────────────────────────────────────────────
 # header:
 #   title: false                # false 隐藏左上角站名；也可给字符串替换

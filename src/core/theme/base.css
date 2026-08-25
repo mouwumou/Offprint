@@ -41,6 +41,9 @@
   html {
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
+    /* Reserve the scrollbar gutter: without this, short pages (no scrollbar)
+       render the centered layout ~15px to the right of long pages. */
+    scrollbar-gutter: stable;
   }
   body {
     background-color: var(--background);

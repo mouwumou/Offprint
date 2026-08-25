@@ -3,11 +3,6 @@
   "title": "Offprint content/home.yaml",
   "type": "object",
   "properties": {
-    "width": {
-      "default": "narrow",
-      "type": "string",
-      "enum": ["narrow", "wide"]
-    },
     "sections": {
       "default": [
         {

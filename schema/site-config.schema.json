@@ -597,6 +597,18 @@
         ]
       }
     },
+    "layout": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "width": {
+          "default": "narrow",
+          "type": "string",
+          "enum": ["narrow", "wide"]
+        }
+      },
+      "additionalProperties": false
+    },
     "header": {
       "default": {},
       "type": "object",

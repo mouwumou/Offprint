@@ -11,8 +11,6 @@
 #   prose                   把 content/pages 里的某个页面内联进首页（page: <slug>）
 #   selected-publications   精选出版物（paper 风卡片式）
 #   projects                项目卡片（count 可限数量）
-# width: narrow（学术窄栏，默认）| wide（宽栏，配 hero 序列用）
-width: narrow
 sections:
   - type: bio-header
   - type: news

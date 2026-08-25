@@ -4,6 +4,7 @@ import Authors from '../../../core/components/Authors.astro'
 import BaseLayout from '../../../core/components/BaseLayout.astro'
 import PublicationLinks from '../../../core/components/PublicationLinks.astro'
 import { langPrefix } from '../../../core/config/nav'
+import { container } from '../../../core/config/layout'
 import { getProvider } from '../../../core/content'
 import { moduleCopy } from '../../../core/config/copy'
 import { useTranslations } from '../../../core/i18n'
@@ -45,7 +46,7 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   alternates={uniformAlternates(siteConfig, '/publications')}
   jsonLd={scholarlyArticlesJsonLd(siteConfig, publications, lang)}
 >
-  <div class="mx-auto w-full max-w-4xl px-5 pt-16 pb-6 sm:px-8 lg:pt-24">
+  <div class:list={[container, 'pt-16 pb-6 lg:pt-24']}>
     <header class="max-w-2xl">
       {
         themeVoice.labels === 'mono-caps' && (

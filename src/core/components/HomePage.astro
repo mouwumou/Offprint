@@ -1,5 +1,6 @@
 ---
 import siteConfig from '../config/current'
+import { container } from '../config/layout'
 import type { Page } from '../content'
 import { getProvider } from '../content'
 import { renderMarkdown, type RenderedMarkdown } from '../content/markdown'
@@ -102,12 +103,7 @@ const sectionTitle = (title: LocalizedString | undefined, key: MessageKey): stri
 >
   <Fragment slot="head">{hasMath && <style set:html={katexCss} />}</Fragment>
 
-  <div
-    class:list={[
-      'mx-auto w-full px-5 sm:px-8',
-      siteConfig.home.width === 'narrow' ? 'max-w-[53rem]' : 'max-w-6xl lg:px-12',
-    ]}
-  >
+  <div class={container}>
     {
       sections.map((section, index) => {
         if (section.type === 'bio-header') {

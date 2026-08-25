@@ -2,6 +2,7 @@
 import siteConfig from '../../../core/config/current'
 import { assetUrl } from '../../../core/content/asset-url'
 import { themeVoice } from '../../../core/theme/current'
+import { container } from '../../../core/config/layout'
 import { getProvider } from '../../../core/content'
 import { moduleCopy } from '../../../core/config/copy'
 import { useTranslations, type MessageKey } from '../../../core/i18n'
@@ -51,7 +52,7 @@ const statusKey: Record<ProjectStatus, MessageKey> = {
   description={copy.description}
   alternates={uniformAlternates(siteConfig, '/projects')}
 >
-  <div class="mx-auto w-full max-w-6xl px-5 pt-16 sm:px-8 lg:px-12 lg:pt-24">
+  <div class:list={[container, 'pt-16 lg:pt-24']}>
     <header class="max-w-2xl">
       {
         themeVoice.labels === 'mono-caps' && (
