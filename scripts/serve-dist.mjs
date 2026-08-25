@@ -36,8 +36,14 @@ createServer((req, res) => {
   }
   if (existsSync(file) && statSync(file).isDirectory()) file = join(file, 'index.html')
   if (!existsSync(file)) {
+    // Serve the site's 404 page like GitHub Pages / most static hosts do.
+    const notFound = join(root, '404.html')
     res.writeHead(404, { 'content-type': 'text/html; charset=utf-8' })
-    res.end('Not Found')
+    if (existsSync(notFound)) {
+      createReadStream(notFound).pipe(res)
+    } else {
+      res.end('Not Found')
+    }
     return
   }
   res.writeHead(200, { 'content-type': types[extname(file)] ?? 'application/octet-stream' })
