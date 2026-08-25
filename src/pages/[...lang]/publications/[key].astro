@@ -61,7 +61,8 @@ const citeLabels = {
 <BaseLayout
   lang={lang}
   title={title}
-  description={abstract}
+  description={abstract ??
+    `${publication.authors.join(', ')} — ${publication.venue}, ${publication.year}.`}
   alternates={uniformAlternates(siteConfig, `/publications/${publication.key}`)}
   jsonLd={scholarlyArticlesJsonLd(siteConfig, [publication], lang)}
 >

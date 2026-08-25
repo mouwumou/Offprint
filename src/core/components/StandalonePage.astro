@@ -2,6 +2,7 @@
 import { katexCss } from '../theme/katex'
 import type { Page } from '../content'
 import type { RenderedMarkdown } from '../content/markdown'
+import { plainText } from '../content/text'
 import { formatDate, useTranslations } from '../i18n'
 import type { Alternate } from '../seo/alternates'
 import { themeVoice } from '../theme/current'
@@ -16,9 +17,12 @@ interface Props {
 
 const { lang, page, rendered, alternates } = Astro.props
 const t = useTranslations(lang)
+// SEO: every page carries a meta description (constraint 7) — front matter
+// first, else the opening of the body.
+const description = page.description ?? plainText(page.body).slice(0, 160)
 ---
 
-<BaseLayout lang={lang} title={page.title} alternates={alternates}>
+<BaseLayout lang={lang} title={page.title} description={description} alternates={alternates}>
   <Fragment slot="head">{rendered.hasMath && <style set:html={katexCss} />}</Fragment>
 
   <article

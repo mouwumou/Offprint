@@ -11,16 +11,19 @@ export const pageFrontmatterSchema = z
     slug: slugSchema,
     /** Required (ADR-007). */
     lang: z.string().min(2),
+    /** Meta description; absent → derived from the body's opening text. */
+    description: z.string().optional(),
     updated: isoDate.optional(),
     /** Whether the page appears in the site navigation. */
     nav: z.boolean().default(false),
     /** Navigation position among pages; lower comes first. */
     order: z.number().int().default(0),
   })
-  .transform(({ title, slug, lang, updated, nav, order, ...extra }) => ({
+  .transform(({ title, slug, lang, description, updated, nav, order, ...extra }) => ({
     title,
     slug,
     lang,
+    description,
     updated,
     nav,
     order,

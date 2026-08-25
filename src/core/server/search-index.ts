@@ -2,6 +2,7 @@ import MiniSearch from 'minisearch'
 import siteConfig from '../config/current'
 import { langPrefix } from '../config/nav'
 import { getProvider } from '../content'
+import { plainText } from '../content/text'
 import { tokenizeCjk } from './tokenize'
 
 export interface SearchHit {
@@ -19,19 +20,6 @@ interface SearchDoc extends SearchHit {
 // Server-mode in-memory index (P2-9): rebuilt lazily whenever the content
 // version changes (which revalidate/watch roll on every sync).
 let cached: { version: string; index: MiniSearch<SearchDoc> } | null = null
-
-/** Rough markdown → text for indexing/excerpts. */
-function plainText(markdown: string): string {
-  return markdown
-    .replace(/```[\s\S]*?```/g, ' ')
-    .replace(/`([^`]*)`/g, '$1')
-    .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
-    .replace(/\[([^\]]*)\]\([^)]*\)/g, '$1')
-    .replace(/^#{1,6}\s+/gm, '')
-    .replace(/[*_>~]/g, '')
-    .replace(/\s+/g, ' ')
-    .trim()
-}
 
 async function buildIndex(): Promise<MiniSearch<SearchDoc>> {
   const provider = getProvider()

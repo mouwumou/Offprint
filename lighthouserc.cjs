@@ -6,8 +6,30 @@
 /* eslint-disable @typescript-eslint/no-require-imports -- lhci loads this file as CommonJS */
 const { readdirSync, readFileSync, statSync, existsSync } = require('node:fs')
 const { join } = require('node:path')
+const { homedir } = require('node:os')
 
 const DIST = 'dist-e2e'
+
+// Point chrome-launcher at Playwright's Linux Chromium. Under WSL it would
+// otherwise launch the WINDOWS Chrome, whose DevTools port lives on the
+// Windows side — unreachable from WSL in NAT networking mode (and Windows
+// Chrome cannot interpret our /tmp profile path either). The Linux binary
+// shares our network namespace and matches the CI runners.
+if (!process.env.CHROME_PATH) {
+  const cache = join(homedir(), '.cache', 'ms-playwright')
+  if (existsSync(cache)) {
+    const dir = readdirSync(cache)
+      .filter((name) => /^chromium-\d+$/.test(name))
+      .sort()
+      .pop()
+    const candidate =
+      dir &&
+      ['chrome-linux64', 'chrome-linux']
+        .map((sub) => join(cache, dir, sub, 'chrome'))
+        .find((path) => existsSync(path))
+    if (candidate && existsSync(candidate)) process.env.CHROME_PATH = candidate
+  }
+}
 
 function discoverUrls() {
   if (!existsSync(DIST)) return ['http://localhost/index.html']
@@ -60,7 +82,7 @@ module.exports = {
         preset: 'desktop',
         // chrome-launcher on WSL otherwise creates a literal 'C:\Users\…'
         // profile dir inside the repo — pin it to the system tmpdir.
-        chromeFlags: '--user-data-dir=/tmp/lhci-chrome-profile',
+        chromeFlags: '--headless=new --user-data-dir=/tmp/lhci-chrome-profile',
         onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
       },
     },
