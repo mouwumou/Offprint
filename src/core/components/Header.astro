@@ -115,7 +115,10 @@ const isActive = (item: NavItem): boolean =>
       {
         config.header.languageSwitcher && config.i18n.locales.length > 1 && (
           <span
-            class="ml-1 hidden items-center gap-1 font-mono text-xs sm:ml-2 lg:flex"
+            class:list={[
+              'ml-1 hidden items-center gap-1 sm:ml-2 lg:flex',
+              themeVoice.labels === 'mono-caps' ? 'font-mono text-xs' : 'text-sm',
+            ]}
             aria-label={t('layout.switchLanguage')}
           >
             {switcher.map((entry, index) => (
@@ -181,7 +184,10 @@ const isActive = (item: NavItem): boolean =>
           {
             config.header.languageSwitcher && config.i18n.locales.length > 1 && (
               <div
-                class="mt-1 flex items-center gap-1 border-t border-border px-3 pt-2 pb-1 font-mono text-xs"
+                class:list={[
+                  'mt-1 flex items-center gap-1 border-t border-border px-3 pt-2 pb-1',
+                  themeVoice.labels === 'mono-caps' ? 'font-mono text-xs' : 'text-sm',
+                ]}
                 aria-label={t('layout.switchLanguage')}
               >
                 {switcher.map((entry, index) => (
