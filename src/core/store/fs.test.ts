@@ -1,6 +1,6 @@
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
-import { join } from 'node:path'
+import { join, relative } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it } from 'vitest'
 import { FsStore } from './fs'
 
@@ -57,6 +57,31 @@ describe('FsStore', () => {
   it('rejects a malformed manifest instead of serving it silently', async () => {
     await writeFile(join(root, 'manifest.json'), JSON.stringify({ entries: {} }))
     await expect(store.manifest()).rejects.toThrow(/Invalid manifest/)
+  })
+
+  it('refuses paths that escape the root, including sibling-prefix dirs', async () => {
+    const parent = await mkdtemp(join(tmpdir(), 'offprint-escape-'))
+    try {
+      const contentRoot = join(parent, 'content')
+      await mkdir(contentRoot)
+      await mkdir(join(parent, 'content-evil'))
+      await writeFile(join(parent, 'secret.txt'), 'leak')
+      await writeFile(join(parent, 'content-evil', 'secret.txt'), 'leak')
+      const escaping = new FsStore(contentRoot)
+      expect(await escaping.read('../secret.txt')).toBeNull()
+      expect(await escaping.read('../content-evil/secret.txt')).toBeNull()
+      expect(await escaping.read(join(parent, 'secret.txt'))).toBeNull()
+    } finally {
+      await rm(parent, { recursive: true, force: true })
+    }
+  })
+
+  it('reads through a RELATIVE root (server mode passes CONTENT_DIR=content)', async () => {
+    // Regression: the containment check once compared the relative root
+    // against an absolute path and nulled every read (CV 404 in server mode).
+    await writeFile(join(root, 'x.md'), 'ok')
+    const relativeStore = new FsStore(relative(process.cwd(), root))
+    expect(await relativeStore.read('x.md')).toBe('ok')
   })
 })
 

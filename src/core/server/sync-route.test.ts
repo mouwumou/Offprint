@@ -41,4 +41,22 @@ describe('POST /api/sync', () => {
     } as Ctx)
     expect(ok.status).toBe(202)
   })
+
+  // NOTE: the route's rate limiter (6/min) is module state shared by every
+  // test in this file — keep the total request count here at 6 or fewer.
+  it('caps the body BEFORE reading it when Content-Length declares too much', async () => {
+    process.env['REVALIDATE_SECRET'] = 'shared'
+    const response = await POST({
+      request: post('{}', { 'content-length': String(1024 * 1024) }),
+    } as Ctx)
+    expect(response.status).toBe(413)
+  })
+
+  it('caps the body by actual size when Content-Length is absent', async () => {
+    process.env['REVALIDATE_SECRET'] = 'shared'
+    const response = await POST({
+      request: post('x'.repeat(64 * 1024 + 1)),
+    } as Ctx)
+    expect(response.status).toBe(413)
+  })
 })
