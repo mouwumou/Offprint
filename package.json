@@ -6,6 +6,11 @@
   "description": "Pluggable academic personal website: homepage + blog + projects + CV. Content authored in Notion, published as markdown.",
   "license": "MIT",
   "author": "Q <mouwumou@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/mouwumou/Offprint.git"
+  },
+  "bugs": "https://github.com/mouwumou/Offprint/issues",
   "engines": {
     "node": ">=22"
   },
