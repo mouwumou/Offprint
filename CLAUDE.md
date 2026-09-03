@@ -13,10 +13,10 @@ Offprint（抽印本）是一个开源、可插拔、易部署的学术个人网
 | `docs/ARCHITECTURE.md` | 分层、双模式、仓库结构、包边界 | 动任何结构性代码前 |
 | `docs/CONTENT-CONTRACT.md` | 各内容集合的 front-matter / 数据 schema | 写 loader、schema、页面时 |
 | `docs/DYNAMIC-PUBLISHING.md` | server 模式发布链、`ContentStore`/`ContentProvider` 接口、compose | 阶段 2 |
-| `docs/DESIGN-REFERENCE.md` | 设计 token、版式、原型组件清单 | 写任何 UI 时 |
-| `docs/ROADMAP.md` | 阶段与任务清单，勾选进度 | 选下一个任务时 |
-| `docs/PLANNING.md` | 原始规划（框架分析、功能清单、风险） | 需要"为什么"时 |
-| `docs/REFERENCES.md` | 参考项目（NotionNext、al-folio、elog）借鉴与回避 | 设计 Notion 侧体验、主题、部署流程时 |
+| `docs/dev/DESIGN-REFERENCE.md` | 设计 token、版式、原型组件清单 | 写任何 UI 时 |
+| `docs/dev/ROADMAP.md` | 阶段与任务清单，勾选进度 | 选下一个任务时 |
+| `docs/dev/PLANNING.md` | 原始规划（框架分析、功能清单、风险） | 需要"为什么"时 |
+| `docs/dev/REFERENCES.md` | 参考项目（NotionNext、al-folio、elog）借鉴与回避 | 设计 Notion 侧体验、主题、部署流程时 |
 
 ## 不可违反的约束
 
@@ -33,11 +33,11 @@ Offprint（抽印本）是一个开源、可插拔、易部署的学术个人网
 
 ## 工作方式
 
-- 从 `docs/ROADMAP.md` 取当前阶段的任务，完成后勾选并在 PR/commit 里引用任务编号。
+- 从 `docs/dev/ROADMAP.md` 取当前阶段的任务，完成后勾选并在 PR/commit 里引用任务编号。
 - 做出新的结构性决定时，在 `docs/DECISIONS.md` 追加一条 ADR（状态、背景、决定、后果），不要只写在代码注释里。
 - 优先小步提交：一个任务一个 commit；提交信息用 Conventional Commits（`feat(core): …`、`docs: …`）。
 - 新建包 / 目录前先对照 `docs/ARCHITECTURE.md` 的结构；需要偏离时先改文档再改代码。
-- 写 UI 时对照 `docs/DESIGN-REFERENCE.md` 的 token 与版式，不要引入第二套颜色/字体/圆角。
+- 写 UI 时对照 `docs/dev/DESIGN-REFERENCE.md` 的 token 与版式，不要引入第二套颜色/字体/圆角。
 - 依赖选择偏保守：少而稳、有类型、维护活跃；引入新依赖在 PR 描述里说明理由。
 
 ## 常用命令

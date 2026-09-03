@@ -1,6 +1,8 @@
 # 路线图与任务清单
 
-勾选即完成；任务编号在 commit / PR 中引用（如 `P0-3`）。阶段定义与验收见 `PLANNING.md` §5、`DYNAMIC-PUBLISHING.md` §7。
+> **开发过程文档**：项目从 0 到 1 的工作文件，服务维护者与贡献者，随开发滚动更新。使用文档见 [docs/guide/](../guide/)。
+
+勾选即完成；任务编号在 commit / PR 中引用（如 `P0-3`）。阶段定义与验收见 `PLANNING.md` §5、`../DYNAMIC-PUBLISHING.md` §7。
 
 ## 阶段 0 — 决策与技术验证（约 1 周）
 
@@ -76,9 +78,10 @@
 - [ ] P4-1 `@offprint/core`、`@offprint/sync` 发布到 npm（changesets）
 - [ ] P4-2 模板仓库 `offprint-template`（干净副本 + 示例内容）
 - [x] P4-3 一键部署按钮（Vercel / Netlify 已加进 README；CF Pages 暂缓）+ GH Pages workflow（已有）+ compose（P1-15/P2-5 已有）；补根 `build` 脚本指向 `build:static`，否则平台自动检测会跳过 pagefind 索引；按钮点击链路待仓库公开后首跑验证（2026-08-26）
-- [ ] P4-4 文档站（用 core 自建）：快速开始、内容契约、elog 配置、部署、配置参考
+- [ ] P4-4 文档站（用 core 自建）：快速开始、内容契约、elog 配置、部署、配置参考（2026-09-04：仓库内 `docs/guide/` 四篇使用文档 + `docs/README.md` 索引已就位，开发过程文件移入 `docs/dev/`；独立文档站未做）
 - [x] P4-5 LICENSE（已有）、CONTRIBUTING、CoC（Contributor Covenant 2.1）、SECURITY（含扩展信任模型）、issue/PR 模板（2026-08-26）
 - [ ] P4-6 Renovate、release workflow
+- [ ] P4-7 子路径部署支持：从 `SITE_URL` 的 pathname 派生 Astro `base`，并让 `langPrefix`、feed/sitemap/canonical/OG、sync 写入的 `/assets/…` 链接、redirects 全部带上前缀；目标是 `user.github.io/repo` 形态的 Pages 零配置可用（含模板自己的 demo）。跨切面改动，需逐个消费方推演 + 双模式 e2e 覆盖
 
 ## 阶段 5 — 插件 API（按需）
 

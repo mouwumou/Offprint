@@ -1,5 +1,7 @@
 # Offprint — 项目规划
 
+> **开发过程文档**：项目从 0 到 1 的工作文件，服务维护者与贡献者，随开发滚动更新。使用文档见 [docs/guide/](../guide/)。
+
 > 状态：规划草案 v0.1（2026-08-22）
 > 输入：Figma Make 原型（React 19 + Vite + Tailwind 4 SPA，已定义 elog front-matter 契约、`BlogProvider` 接口、Home / Blog / Post / Projects / CV 五页）
 
@@ -165,7 +167,7 @@
 | 内容量上限 | 构建时间随文章数增长 | 无关 |
 | 可复现性 | 本地 build 即复现 | 需复现缓存状态 |
 
-static 加"服务器上同步后自动重建"已覆盖"Notion 点发布、不碰仓库、一两分钟上线"的核心体验（见 `DYNAMIC-PUBLISHING.md` §0）。server 模式用一个常驻进程的全部成本换取秒级发布与运行时功能，作为产品能力在阶段 2 实现；维护者自己的站先跑 static，需要时再切换，内容与模板不变。
+static 加"服务器上同步后自动重建"已覆盖"Notion 点发布、不碰仓库、一两分钟上线"的核心体验（见 `../DYNAMIC-PUBLISHING.md` §0）。server 模式用一个常驻进程的全部成本换取秒级发布与运行时功能，作为产品能力在阶段 2 实现；维护者自己的站先跑 static，需要时再切换，内容与模板不变。
 
 **static 模式**（默认；GitHub Pages / 任何 CDN / 自托管静态）
 GH Pages：Notion → elog（GitHub Action 定时或 webhook）→ 提交 md 到仓库 → CI 构建 → 部署。

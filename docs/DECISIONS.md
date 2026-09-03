@@ -20,7 +20,7 @@
 
 **背景**：自用需要"发布即生效 + SEO"，公开模板需要纯静态；三类部署目标都要支持。
 **决定**：`RUNTIME_MODE=static | server`，**static 是默认与基线，server 是可选运行时**（2026-08-22 与维护者确认）。页面只依赖 `ContentProvider`；static 模式构建期调用 provider 喂 loader，server 模式请求期调用。CI 双模式构建 + HTML 快照比对。
-**理由**：两种模式输出相同 HTML；static 加"同步后自动重建"已覆盖"Notion 点发布即上线"的核心体验，且无常驻进程、无端点、错误在构建期暴露、可部署到 GH Pages。server 用一个常驻进程的全部成本（运维、安全面、可复现性、首字节）换取秒级发布与运行时功能（草稿预览、评论、按访客切换），详见 `PLANNING.md` §3.3 对比表。
+**理由**：两种模式输出相同 HTML；static 加"同步后自动重建"已覆盖"Notion 点发布即上线"的核心体验，且无常驻进程、无端点、错误在构建期暴露、可部署到 GH Pages。server 用一个常驻进程的全部成本（运维、安全面、可复现性、首字节）换取秒级发布与运行时功能（草稿预览、评论、按访客切换），详见 `dev/PLANNING.md` §3.3 对比表。
 **后果**：阶段 1 只交付 static（含自托管自动重建）；阶段 2 交付 server 作为产品能力；维护者自己的站先跑 static。必须维护 provider 抽象层；禁止页面直接使用框架的集合 API；server 关闭后站点须退化为 static 且行为一致。
 
 ## ADR-004 动态模式不引入数据库 — 已定
@@ -31,7 +31,7 @@
 
 ## ADR-005 前端框架 — 已定（Astro）
 
-**背景**：`PLANNING.md` §2 的对比分析。
+**背景**：`dev/PLANNING.md` §2 的对比分析。
 **决定**：Astro 5+，React islands 复用原型交互组件，Tailwind 4（2026-08-22 确认）。
 **后果**：adapter 矩阵 `@astrojs/node`（Docker）/ `vercel` / `netlify` / `cloudflare`；static 模式直出 `dist/`。P0-11（Next.js spike）取消。
 
@@ -66,11 +66,11 @@
 
 ## ADR-011 设计稿定稿状态 — 已定
 
-**决定**（2026-08-22 确认）：token（颜色、字体、圆角）按 `DESIGN-REFERENCE.md` 锁定；布局允许在移植中按 Astro 结构微调，不改视觉语言。
+**决定**（2026-08-22 确认）：token（颜色、字体、圆角）按 `dev/DESIGN-REFERENCE.md` 锁定；布局允许在移植中按 Astro 结构微调，不改视觉语言。
 
 ## ADR-012 参考项目 — 已定
 
-**决定**：以 NotionNext、al-folio、elog 为参照，借鉴与回避清单见 `REFERENCES.md`。特别地：**不直接在运行时读 Notion**（NotionNext 的做法依赖非官方 API 且把站点可用性绑在 Notion 上），内容始终经 sync 物化为文件；但借鉴其"Notion 数据库 `type` 列区分 Post / Page / Config"的思路，允许在 Notion 中维护独立页面（About、Now 等）。
+**决定**：以 NotionNext、al-folio、elog 为参照，借鉴与回避清单见 `dev/REFERENCES.md`。特别地：**不直接在运行时读 Notion**（NotionNext 的做法依赖非官方 API 且把站点可用性绑在 Notion 上），内容始终经 sync 物化为文件；但借鉴其"Notion 数据库 `type` 列区分 Post / Page / Config"的思路，允许在 Notion 中维护独立页面（About、Now 等）。
 
 ## ADR-013 lang / urlname 由 sync 派生，不在 Notion 加列 — 已定（方向），细节待敲定
 

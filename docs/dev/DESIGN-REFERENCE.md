@@ -1,5 +1,7 @@
 # 设计参考
 
+> **开发过程文档**：项目从 0 到 1 的工作文件，服务维护者与贡献者，随开发滚动更新。使用文档见 [docs/guide/](../guide/)。
+
 来源：Figma Make 原型 https://www.figma.com/make/vLHHT98M1TeI2OGNnQs71X/Academic-Blog-System
 （React 19 + Vite + Tailwind 4；可通过 Figma MCP `get_design_context` 读取全部源码，nodeId `0:1`）。
 

@@ -1,0 +1,41 @@
+# 快速开始：从模板到上线
+
+三条路，按需选一条；都不需要密钥，模板自带样例内容，生成即可构建。
+
+## 路线 A：GitHub Pages（最少步骤）
+
+1. 仓库页面点 **Use this template → Create a new repository**（比 fork 干净，不带模板的开发历史）。
+2. 什么都不用配：推送到 `main` 后，`Deploy to GitHub Pages` 工作流会自动启用 Pages 并发布。
+3. 在你仓库的 **Settings → Variables** 加 `SITE_URL`（站点公网地址，供 canonical / sitemap / feed 使用）。
+
+> **子路径限制**：站内链接目前按域名根路径生成。`https://<你>.github.io/<仓库名>/` 这种**子路径**地址下链接会失效——请给 Pages 配自定义域名，或把仓库命名为 `<你>.github.io`。Vercel / Netlify 天然部署在域名根，无此问题。
+
+## 路线 B：Vercel / Netlify（一键按钮）
+
+README 顶部的按钮会基于模板生成你的仓库副本并完成首次部署。两个平台都会自动执行 `pnpm build`（等价 `build:static`，含搜索索引），零配置可用。
+
+## 路线 C：本地开发
+
+需要 Node 22+ 与 pnpm（`corepack enable` 即可，版本钉在 `package.json` 的 `packageManager`）。
+
+```bash
+pnpm install
+pnpm dev            # http://localhost:4321，改文件即热更新
+pnpm build:static   # 产物在 dist/，node scripts/serve-dist.mjs dist 4331 可本地伺服
+```
+
+## 把它变成你的站
+
+改三处，每处保存后 `pnpm dev` 里即时可见：
+
+1. **`site.yaml`** —— 个人资料（姓名、职衔、机构、头像、社交链接）、开关模块、导航、主题。所有键都有中文注释，配好编辑器还有自动补全（见 [configuration.md](configuration.md)）。
+2. **`content/` 目录** —— 出版物（`publications.yaml`）、项目（`projects.yaml`）、CV（`cv.yaml`）、独立页面（`pages/*.md`）、首页排布（`home.yaml`）。每个文件是什么见 [content/README.md](../../content/README.md)，字段规范见 [CONTENT-CONTRACT.md](../CONTENT-CONTRACT.md)。
+3. **博客** —— 两种写法：直接把契约格式的 markdown 放进 `content/posts/`（注意此目录归同步管线管，开同步后勿手改）；或接上 Notion 让"点发布即上线"，见 [sync.md](sync.md)。
+
+改完 `git push`，Pages / Vercel 会自动重新部署。所有内容文件构建时经 schema 校验——拼错字段会得到指出位置的报错，而不是坏页面。
+
+## 下一步
+
+- 想换观感 → [THEMING.md](../THEMING.md)（内置 scholar / paper 两套主题，token 可逐个覆盖）
+- 想接 Notion → [sync.md](sync.md)
+- 想自托管或要"发布秒级生效" → [deployment.md](deployment.md) 的 Docker 两节
