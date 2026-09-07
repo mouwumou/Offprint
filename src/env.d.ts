@@ -1,5 +1,10 @@
 // Ambient declarations for untyped dependencies.
 
+// Inlined by astro.config `define` — see the middleware comment.
+interface ImportMetaEnv {
+  readonly RUNTIME_MODE: 'static' | 'server'
+}
+
 declare module '@citation-js/core' {
   export class Cite {
     constructor(data: unknown)

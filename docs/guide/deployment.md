@@ -19,13 +19,13 @@
 
 ## GitHub Pages（static，默认路径）
 
-生成仓库后什么都不用配：推送 `main` 即触发 `Deploy to GitHub Pages`，工作流会自动为仓库启用 Pages 并发布。要设的只有一个仓库变量 `SITE_URL`（公网地址，供 canonical / sitemap / feed）。
+生成仓库后什么都不用配：推送 `main` 即触发 `Deploy to GitHub Pages`，工作流会自动为仓库启用 Pages 并发布。站点地址由工作流从 Pages 设置取得（`https://<你>.github.io/<仓库名>/`，或你配的自定义域名）作为 `SITE_URL`；仓库变量 `SITE_URL` 只在想覆盖时才需要。
 
-> **子路径限制**：站内链接目前按域名根路径生成，`https://<你>.github.io/<仓库名>/` 这种子路径地址下链接会失效。两个解法：给 Pages 配自定义域名（Settings → Pages → Custom domain，再把 `SITE_URL` 设成它）；或把仓库命名为 `<你>.github.io`，它会发布在根路径。子路径支持在路线图上。
+**子路径**：项目页默认地址是子路径部署。构建会从 `SITE_URL` 的路径派生 Astro `base`，站内链接、feed、sitemap、搜索结果全部自动带前缀（ADR-023）。配了自定义域名后地址回到域名根，前缀自动消失。
 
 ## Vercel（static）
 
-- **一键按钮**（README 顶部）：Vercel 会基于模板生成你的仓库并自动识别 Astro，执行 `pnpm build`。
+- **一键按钮**（README 顶部）：Vercel 会基于模板生成你的仓库并自动识别 Astro，执行 `pnpm build`。部署后在 Vercel 项目的 Environment Variables 里设 `SITE_URL` 为正式域名（canonical / sitemap / feed 用），再触发一次部署。
 - **走 Actions**：仓库变量 `DEPLOY_VERCEL=true`，Secrets 里加 `VERCEL_TOKEN`、`VERCEL_ORG_ID`、`VERCEL_PROJECT_ID`；`Deploy to Vercel` 工作流用 `vercel pull / build / deploy --prebuilt` 三步部署。同步工作流提交内容后会自动触发它。
 
 ## Netlify（static）
@@ -50,8 +50,8 @@ cp .env.example .env          # 另加 REVALIDATE_SECRET（随机长串），可
 docker compose -f docker/compose.server.yaml up -d --build
 ```
 
-首次冷启动内容卷为空时，站点返回一个双语的"同步中"页（503），首次同步落地后自动恢复。之后把 Notion webhook 指向 `https://<你的域名>/api/sync` 即得秒级发布（握手流程见 [sync.md](sync.md)）。
+运行模式在构建期就固定进了产物（`pnpm build:server`），启动进程时不必再设 `RUNTIME_MODE`。首次冷启动内容卷为空时，站点返回一个双语的"同步中"页（503），首次同步落地后自动恢复。之后把 Notion webhook 指向 `https://<你的域名>/api/sync` 即得秒级发布（握手流程见 [sync.md](sync.md)）。
 
-建议把 `/api/*` 放在反向代理的额外防护之后，并用 `GET /api/health` 做存活探测——它报告当前内容版本、最近一次同步的结果与错误数。
+建议把 `/api/*` 放在反向代理的额外防护之后，并用 `GET /api/health` 做存活探测——它报告当前内容版本、最近一次同步的结果与错误数。若 `SITE_URL` 带子路径，这些端点也在子路径下（`/<base>/api/…`），`REVALIDATE_URL` 与 Notion webhook 地址要相应带上。
 
 本项目的 Docker 相关验证都在远程测试机上做过（compose 的 static 与 server 两套均实测冷启动到首篇发布）；本机没有 Docker 的开发者可以完全跳过这两节。

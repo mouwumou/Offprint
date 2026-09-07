@@ -2,6 +2,7 @@
 import config from '../config/current'
 import { container } from '../config/layout'
 import { langPrefix } from '../config/nav'
+import { contentHref } from '../content/asset-url'
 import { useTranslations } from '../i18n'
 import { resolveLocalized } from '../schema'
 import { themeVoice } from '../theme/current'
@@ -16,7 +17,7 @@ const prefix = langPrefix(config, lang)
 const name = resolveLocalized(config.profile.name, lang, config.i18n.default)
 const affiliation = resolveLocalized(config.profile.affiliation, lang, config.i18n.default)
 const links = config.profile.links.map((link) => ({
-  href: link.href,
+  href: contentHref(link.href),
   label: resolveLocalized(link.label, lang, config.i18n.default),
 }))
 const year = new Date().getFullYear()

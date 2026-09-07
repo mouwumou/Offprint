@@ -5,7 +5,7 @@ import { getProvider } from '../../../../core/content'
 import { filterSlug, fromFilterSlug } from '../../../../core/content/filter-slug'
 import { tagsForLanguage } from '../../../../core/content/posts-view'
 import { moduleCopy } from '../../../../core/config/copy'
-import { uniformAlternates } from '../../../../core/seo/alternates'
+import { termAlternates } from '../../../../core/seo/alternates'
 import BaseLayout from '../../../../core/components/BaseLayout.astro'
 
 export async function getStaticPaths() {
@@ -33,7 +33,8 @@ if (
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 
-const tags = tagsForLanguage(await getProvider().listPosts(), lang).map(({ tag }) => tag)
+const posts = await getProvider().listPosts()
+const tags = tagsForLanguage(posts, lang).map(({ tag }) => tag)
 const activeTag = fromFilterSlug(tags, tagParam)
 if (activeTag === undefined) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
@@ -44,7 +45,7 @@ const copy = moduleCopy(siteConfig, 'blog', lang)
 <BaseLayout
   lang={lang}
   title={`#${activeTag} · ${copy.title}`}
-  alternates={uniformAlternates(siteConfig, `/blog/tag/${tagParam}`)}
+  alternates={termAlternates(siteConfig, posts, 'tag', activeTag)}
 >
   <BlogIndex lang={lang} activeTag={activeTag} />
 </BaseLayout>

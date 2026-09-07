@@ -1,3 +1,4 @@
+import { basePath } from './base'
 import { useTranslations, type MessageKey } from '../i18n'
 import { getModule, getModules } from '../modules/registry'
 import { resolveLocalized, type LocalizedString } from '../schema/localized'
@@ -35,9 +36,18 @@ function moduleTarget(id: string): Target | null {
   return nav ? { path: nav.path, key: nav.labelKey, label: nav.label } : null
 }
 
-/** URL prefix for a language: '' for the default language, '/zh' style otherwise. */
+/**
+ * URL prefix for a language: '' for the default language, '/zh' style
+ * otherwise — both carrying the deployment sub-path ('/repo/zh') when the
+ * site lives under one (ADR-023). Every internal href composes from this.
+ */
 export function langPrefix(config: SiteConfig, lang: string): string {
-  return lang === config.i18n.default ? '' : `/${lang}`
+  return `${basePath()}${lang === config.i18n.default ? '' : `/${lang}`}`
+}
+
+/** A language's home URL, always slash-terminated: '/', '/zh/', '/repo/zh/'. */
+export function homePath(config: SiteConfig, lang: string): string {
+  return `${langPrefix(config, lang)}/`
 }
 
 /**
@@ -59,7 +69,7 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
         ? t(target.key)
         : (resolveLocalized(target.label, lang, config.i18n.default) ?? name)
     items.push({
-      href: name === 'home' ? prefix || '/' : `${prefix}${target.path}`,
+      href: name === 'home' ? homePath(config, lang) : `${prefix}${target.path}`,
       label: label ?? fallback,
       ...(target.exact !== undefined && { exact: target.exact }),
     })

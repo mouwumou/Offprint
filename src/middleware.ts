@@ -5,10 +5,11 @@ import { ensureContentWatch } from './core/server/watch'
 
 // Server runtime bootstrap: the first request arms the manifest watch, and
 // until the very first manifest exists HTML routes get the §5 cold-start
-// page. In static builds this middleware runs only during prerender, where
-// both branches are guarded no-ops — nothing server-only reaches dist/.
+// page. RUNTIME_MODE is inlined at build time (astro.config `define`): in a
+// static build this branch is the literal `false` and nothing server-only
+// reaches dist/; in a server build it needs no environment at start-up.
 export const onRequest = defineMiddleware(async (context, next) => {
-  if ((process.env['RUNTIME_MODE'] ?? 'static') === 'server') {
+  if (import.meta.env.RUNTIME_MODE === 'server') {
     ensureContentWatch()
     const asset = await contentAssetResponse(context.url.pathname)
     if (asset) return asset

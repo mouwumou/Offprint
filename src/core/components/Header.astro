@@ -1,7 +1,7 @@
 ---
 import config from '../config/current'
 import { container } from '../config/layout'
-import { langPrefix, resolveNav, type NavItem } from '../config/nav'
+import { homePath, langPrefix, resolveNav, type NavItem } from '../config/nav'
 import { getProvider } from '../content'
 import { pagesForLanguage } from '../content/posts-view'
 import { selfLabel, useTranslations } from '../i18n'
@@ -24,9 +24,7 @@ const switcher = config.i18n.locales.map((locale) => ({
   locale,
   label: selfLabel(locale),
   current: locale === lang,
-  href:
-    alternates.find((alternate) => alternate.lang === locale)?.path ??
-    (langPrefix(config, locale) || '/'),
+  href: alternates.find((alternate) => alternate.lang === locale)?.path ?? homePath(config, locale),
 }))
 const t = useTranslations(lang)
 const prefix = langPrefix(config, lang)
@@ -50,8 +48,9 @@ const brandSubtitle =
     : (resolveLocalized(config.header.subtitle, lang, config.i18n.default) ?? fieldShort)
 
 const current = Astro.url.pathname.replace(/\/+$/, '') || '/'
+const home = homePath(config, lang).replace(/\/+$/, '') || '/'
 const isActive = (item: NavItem): boolean =>
-  item.exact ? current === (prefix || '/') : current.startsWith(item.href)
+  item.exact ? current === home : current.startsWith(item.href)
 
 // Capacity, decided at build time: in the narrow column (~784px usable) the
 // brand block (~330px) plus a full inline nav (~570px) plus the icon group

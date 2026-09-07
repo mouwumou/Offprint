@@ -8,7 +8,7 @@ let started = false
  * P2-4). No-op outside server mode.
  */
 export function ensureContentWatch(): void {
-  if (started || (process.env['RUNTIME_MODE'] ?? 'static') !== 'server') return
+  if (started || import.meta.env.RUNTIME_MODE !== 'server') return
   started = true
   const store = getStore()
   store.watch?.((diff) => {

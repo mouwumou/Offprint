@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { basePath } from '../config/base'
 
 interface Hit {
   url: string
@@ -7,6 +8,7 @@ interface Hit {
 }
 
 interface PagefindApi {
+  options(opts: { baseUrl?: string }): Promise<void>
   search(query: string): Promise<{
     results: { data(): Promise<{ url: string; excerpt: string; meta: { title?: string } }> }[]
   }>
@@ -27,9 +29,14 @@ function loadPagefind(): Promise<PagefindApi | null> {
   // The specifier must be a variable: esbuild strips the @vite-ignore comment
   // from .tsx, and a literal path would make Vite's import analysis try to
   // resolve this build-output-only asset (breaking `pnpm dev`).
-  const runtimeOnlyPath = '/pagefind/pagefind.js'
+  const base = basePath()
+  const runtimeOnlyPath = `${base}/pagefind/pagefind.js`
   pagefindPromise ??= import(/* @vite-ignore */ runtimeOnlyPath)
-    .then((module: PagefindApi) => module)
+    .then(async (module: PagefindApi) => {
+      // Result URLs must carry the sub-path too (ADR-023).
+      await module.options({ baseUrl: `${base}/` })
+      return module
+    })
     .catch(() => null)
   return pagefindPromise
 }
@@ -65,7 +72,7 @@ export default function SearchBox({ lang, placeholder, noResults }: Props) {
             )
           } else {
             const response = await fetch(
-              `/api/search?q=${encodeURIComponent(q)}&lang=${encodeURIComponent(lang)}`,
+              `${basePath()}/api/search?q=${encodeURIComponent(q)}&lang=${encodeURIComponent(lang)}`,
             )
             const body = (await response.json()) as { results?: Hit[] }
             // API excerpts are plain text; escape them since pagefind's

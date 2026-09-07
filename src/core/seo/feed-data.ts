@@ -1,6 +1,6 @@
 import type { APIContext } from 'astro'
 import siteConfig from '../config/current'
-import { langPrefix } from '../config/nav'
+import { homePath, langPrefix } from '../config/nav'
 import { getProvider } from '../content'
 import { resolveLocalized } from '../schema'
 import type { FeedItem, FeedMeta } from './feeds'
@@ -24,7 +24,7 @@ export async function feedData(
     meta: {
       title: name,
       description: tagline,
-      siteUrl: new URL(prefix || '/', site).toString(),
+      siteUrl: new URL(homePath(siteConfig, lang), site).toString(),
       feedUrl: new URL(`${prefix}/${filename}`, site).toString(),
       lang,
     },

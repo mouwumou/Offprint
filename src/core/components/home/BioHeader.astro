@@ -1,5 +1,6 @@
 ---
 import siteConfig from '../../config/current'
+import { contentHref } from '../../content/asset-url'
 import { langPrefix } from '../../config/nav'
 import { useTranslations } from '../../i18n'
 import { resolveLocalized } from '../../schema'
@@ -29,7 +30,11 @@ if (siteConfig.modules['cv']?.enabled) {
   quicklinks.push({ label: t('nav.cv'), href: `${prefix}/cv`, external: false })
 }
 for (const link of profile.links) {
-  quicklinks.push({ label: r(link.label) ?? link.href, href: link.href, external: true })
+  quicklinks.push({
+    label: r(link.label) ?? link.href,
+    href: contentHref(link.href),
+    external: true,
+  })
 }
 ---
 

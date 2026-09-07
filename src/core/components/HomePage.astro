@@ -1,5 +1,6 @@
 ---
 import siteConfig from '../config/current'
+import { homePath } from '../config/nav'
 import { container } from '../config/layout'
 import type { Page } from '../content'
 import { getProvider } from '../content'
@@ -97,7 +98,14 @@ const sectionTitle = (title: LocalizedString | undefined, key: MessageKey): stri
   image={profile.photo}
   alternates={uniformAlternates(siteConfig, '/')}
   jsonLd={[
-    personJsonLd(siteConfig, lang, (Astro.site ?? new URL('https://example.com')).toString()),
+    personJsonLd(
+      siteConfig,
+      lang,
+      new URL(
+        homePath(siteConfig, siteConfig.i18n.default),
+        Astro.site ?? new URL('https://example.com'),
+      ).toString(),
+    ),
     ...scholarlyArticlesJsonLd(siteConfig, selected, lang),
   ]}
 >

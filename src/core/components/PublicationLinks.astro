@@ -1,6 +1,7 @@
 ---
 import { useTranslations, type MessageKey } from '../i18n'
 import type { Publication } from '../schema'
+import { contentHref } from '../content/asset-url'
 import { themeVoice } from '../theme/current'
 
 interface Props {
@@ -30,7 +31,7 @@ const mono = themeVoice.labels === 'mono-caps'
 const links: { label: string; href: string }[] = []
 for (const { field, key } of fields) {
   const href = publication[field]
-  if (href) links.push({ label: mono ? t(key) : t(key).toLowerCase(), href })
+  if (href) links.push({ label: mono ? t(key) : t(key).toLowerCase(), href: contentHref(href) })
 }
 if (publication.arxiv)
   links.push({ label: 'arXiv', href: `https://arxiv.org/abs/${publication.arxiv}` })

@@ -2,6 +2,7 @@
 import BaseLayout from '../core/components/BaseLayout.astro'
 import siteConfig from '../core/config/current'
 import { container } from '../core/config/layout'
+import { homePath } from '../core/config/nav'
 import { useTranslations } from '../core/i18n'
 import { themeVoice } from '../core/theme/current'
 
@@ -24,12 +25,14 @@ const tOther = other ? useTranslations(other) : null
       {tOther && <span class="block">{tOther('notFound.body')}</span>}
     </p>
     <p class="mt-5 font-serif">
-      <a href="/" class="text-primary hover:underline">{t('notFound.home')}</a>
+      <a href={homePath(siteConfig, lang)} class="text-primary hover:underline"
+        >{t('notFound.home')}</a
+      >
       {
         tOther && (
           <>
             <span class="text-muted-foreground"> / </span>
-            <a href={`/${other}`} class="text-primary hover:underline">
+            <a href={homePath(siteConfig, other ?? lang)} class="text-primary hover:underline">
               {tOther('notFound.home')}
             </a>
           </>

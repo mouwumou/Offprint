@@ -81,7 +81,7 @@
 - [ ] P4-4 文档站（用 core 自建）：快速开始、内容契约、elog 配置、部署、配置参考（2026-09-04：仓库内 `docs/guide/` 四篇使用文档 + `docs/README.md` 索引已就位，开发过程文件移入 `docs/dev/`；独立文档站未做）
 - [x] P4-5 LICENSE（已有）、CONTRIBUTING、CoC（Contributor Covenant 2.1）、SECURITY（含扩展信任模型）、issue/PR 模板（2026-08-26）
 - [ ] P4-6 Renovate、release workflow
-- [ ] P4-7 子路径部署支持：从 `SITE_URL` 的 pathname 派生 Astro `base`，并让 `langPrefix`、feed/sitemap/canonical/OG、sync 写入的 `/assets/…` 链接、redirects 全部带上前缀；目标是 `user.github.io/repo` 形态的 Pages 零配置可用（含模板自己的 demo）。跨切面改动，需逐个消费方推演 + 双模式 e2e 覆盖
+- [x] P4-7（2026-09-04，ADR-023，e2e/base-path.spec.ts 双模式爬取验收）子路径部署支持：从 `SITE_URL` 的 pathname 派生 Astro `base`，并让 `langPrefix`、feed/sitemap/canonical/OG、sync 写入的 `/assets/…` 链接、redirects 全部带上前缀；目标是 `user.github.io/repo` 形态的 Pages 零配置可用（含模板自己的 demo）。跨切面改动，需逐个消费方推演 + 双模式 e2e 覆盖
 
 ## 阶段 5 — 插件 API（按需）
 

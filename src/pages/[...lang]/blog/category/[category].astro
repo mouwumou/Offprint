@@ -5,7 +5,7 @@ import { getProvider } from '../../../../core/content'
 import { filterSlug, fromFilterSlug } from '../../../../core/content/filter-slug'
 import { categoriesForLanguage } from '../../../../core/content/posts-view'
 import { moduleCopy } from '../../../../core/config/copy'
-import { uniformAlternates } from '../../../../core/seo/alternates'
+import { termAlternates } from '../../../../core/seo/alternates'
 import BaseLayout from '../../../../core/components/BaseLayout.astro'
 
 export async function getStaticPaths() {
@@ -31,10 +31,8 @@ if (
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 
-const activeCategory = fromFilterSlug(
-  categoriesForLanguage(await getProvider().listPosts(), lang),
-  categoryParam,
-)
+const posts = await getProvider().listPosts()
+const activeCategory = fromFilterSlug(categoriesForLanguage(posts, lang), categoryParam)
 if (activeCategory === undefined) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
@@ -44,7 +42,7 @@ const copy = moduleCopy(siteConfig, 'blog', lang)
 <BaseLayout
   lang={lang}
   title={`${activeCategory} · ${copy.title}`}
-  alternates={uniformAlternates(siteConfig, `/blog/category/${categoryParam}`)}
+  alternates={termAlternates(siteConfig, posts, 'category', activeCategory)}
 >
   <BlogIndex lang={lang} activeCategory={activeCategory} />
 </BaseLayout>

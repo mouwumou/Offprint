@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
+import { basePath } from './base'
 import { defineConfig } from './define-config'
 import { resolveNav, type NavPage } from './nav'
+
+// Spy-mocked so the sub-path tests can set a base without an Astro build.
+vi.mock('./base', { spy: true })
 
 const minimal = { profile: { name: 'Ada Lovelace' } }
 
@@ -21,7 +25,7 @@ describe('resolveNav (ADR-015)', () => {
   it('prefixes every href for a non-default language', () => {
     const config = defineConfig(minimal)
     const nav = resolveNav(config, 'zh', [])
-    expect(nav[0]?.href).toBe('/zh')
+    expect(nav[0]?.href).toBe('/zh/')
     expect(nav.map((item) => item.href).slice(1)).toEqual([
       '/zh/blog',
       '/zh/publications',
@@ -44,7 +48,7 @@ describe('resolveNav (ADR-015)', () => {
     // `about` here is the en fallback summary — its link must stay at /about.
     const nav = resolveNav(config, 'zh', pages)
     expect(nav).toEqual([
-      { href: '/zh', label: '起点', exact: true },
+      { href: '/zh/', label: '起点', exact: true },
       { href: '/about', label: 'About' },
       { href: '/zh/blog', label: '文章' },
       { href: '/zh/talks-archive', label: 'Talks' },
@@ -79,5 +83,32 @@ describe('resolveNav language fallback (ADR-007)', () => {
       { href: '/zh/about', label: '关于' },
       { href: '/now', label: 'Now' },
     ])
+  })
+})
+
+describe('deployment sub-path (ADR-023)', () => {
+  afterEach(() => vi.restoreAllMocks())
+
+  it('prefixes every href with the base, home stays slash-terminated', () => {
+    vi.mocked(basePath).mockReturnValue('/repo')
+    const config = defineConfig(minimal)
+    expect(resolveNav(config, 'en', pages).map((item) => item.href)).toEqual([
+      '/repo/',
+      '/repo/blog',
+      '/repo/publications',
+      '/repo/projects',
+      '/repo/cv',
+      '/repo/about',
+    ])
+    expect(resolveNav(config, 'zh', [])[0]?.href).toBe('/repo/zh/')
+  })
+
+  it('leaves external links alone under a base', () => {
+    vi.mocked(basePath).mockReturnValue('/repo')
+    const config = defineConfig({
+      ...minimal,
+      nav: [{ href: 'https://lab.example', label: 'Lab' }],
+    })
+    expect(resolveNav(config, 'en', [])[0]?.href).toBe('https://lab.example')
   })
 })

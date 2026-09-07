@@ -1,5 +1,6 @@
 ---
 import siteConfig from '../../../core/config/current'
+import { contentHref } from '../../../core/content/asset-url'
 import Authors from '../../../core/components/Authors.astro'
 import CvTimeline, { type TimelineRow } from '../../../core/components/CvTimeline.astro'
 import PublicationLinks from '../../../core/components/PublicationLinks.astro'
@@ -171,7 +172,7 @@ const description = `${copy.title} — ${name}`
                 <div>
                   <h3 class="font-serif text-lg leading-snug">
                     {pub.url ? (
-                      <a href={pub.url} class="transition-colors hover:text-primary">
+                      <a href={contentHref(pub.url)} class="transition-colors hover:text-primary">
                         {r(pub.name)}
                       </a>
                     ) : (

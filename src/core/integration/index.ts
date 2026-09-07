@@ -13,6 +13,8 @@ import { resolveTheme } from '../theme/resolve'
  * regular pages migrates here in phase 4.
  */
 export function offprint(): AstroIntegration {
+  // Captured in config:setup for the dev middleware mount (ADR-023).
+  let base = ''
   return {
     name: 'offprint',
     hooks: {
@@ -33,7 +35,7 @@ export function offprint(): AstroIntegration {
       // exists under `astro dev`, so cover images 404'd there. This hook
       // never runs in a build, so nothing extra reaches either output.
       'astro:server:setup': ({ server }) => {
-        server.middlewares.use('/assets', (req, res, next) => {
+        server.middlewares.use(`${base}/assets`, (req, res, next) => {
           const path = (req.url ?? '/').split('?')[0] ?? '/'
           void contentAssetResponse(`/assets${path}`).then(async (asset) => {
             if (asset === null || asset.status !== 200) return next()
@@ -42,7 +44,8 @@ export function offprint(): AstroIntegration {
           })
         })
       },
-      'astro:config:setup': ({ injectRoute, injectScript }) => {
+      'astro:config:setup': ({ injectRoute, injectScript, config }) => {
+        base = config.base.replace(/\/+$/, '')
         // ADR-018: the resolved theme's stylesheet (font loading, theme-
         // specific styles) joins every page; tokens are injected separately
         // by BaseLayout from the manifest. Resolution failures abort the

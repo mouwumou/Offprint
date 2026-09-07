@@ -1,5 +1,6 @@
 ---
 import siteConfig from '../../../core/config/current'
+import { contentHref } from '../../../core/content/asset-url'
 import { assetUrl } from '../../../core/content/asset-url'
 import { themeVoice } from '../../../core/theme/current'
 import { container } from '../../../core/config/layout'
@@ -177,7 +178,7 @@ function projectLinks(project: (typeof projects)[number]): { label: string; href
                   <div class="flex gap-4">
                     {project.repo && (
                       <a
-                        href={project.repo}
+                        href={contentHref(project.repo)}
                         target="_blank"
                         rel="noopener noreferrer"
                         class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"
@@ -187,7 +188,7 @@ function projectLinks(project: (typeof projects)[number]): { label: string; href
                     )}
                     {project.href && (
                       <a
-                        href={project.href}
+                        href={contentHref(project.href)}
                         target="_blank"
                         rel="noopener noreferrer"
                         class="font-mono text-xs text-primary underline decoration-primary/40 underline-offset-4 hover:decoration-primary"

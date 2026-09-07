@@ -1,5 +1,6 @@
 import { readFile } from 'node:fs/promises'
 import { extname, join, normalize, resolve, sep } from 'node:path'
+import { basePath } from '../config/base'
 
 const TYPES: Record<string, string> = {
   '.png': 'image/png',
@@ -18,6 +19,11 @@ const TYPES: Record<string, string> = {
  * them). Static builds copy the directory into the output instead.
  */
 export async function contentAssetResponse(pathname: string): Promise<Response | null> {
+  // Under a sub-path deployment the links say <base>/assets/… (ADR-023);
+  // Astro's server router is lenient about the base (it also answers the
+  // un-prefixed path), so strip the prefix when present rather than require it.
+  const base = basePath()
+  if (base !== '' && pathname.startsWith(`${base}/`)) pathname = pathname.slice(base.length)
   if (!pathname.startsWith('/assets/')) return null
   const root = resolve(process.env['CONTENT_DIR'] ?? 'content', 'assets')
   // Decode so author assets with spaces/CJK names resolve; compare against

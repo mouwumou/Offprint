@@ -1,3 +1,4 @@
+import { basePath } from '../config/base'
 import { getStore } from '../content'
 import { useTranslations } from '../i18n'
 
@@ -9,7 +10,8 @@ let contentReady = false
  * the check short-circuits forever (per process).
  */
 export async function coldStartResponse(pathname: string): Promise<Response | null> {
-  if (contentReady || pathname.startsWith('/api/')) return null
+  if (contentReady || pathname.startsWith('/api/') || pathname.startsWith(`${basePath()}/api/`))
+    return null
   const store = getStore()
   const manifest = await store.manifest().catch(() => null)
   // Hand-written content ships without a manifest (CONTENT-CONTRACT §1) —

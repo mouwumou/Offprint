@@ -2,6 +2,7 @@
 import type { NewsItem } from '../../content'
 import { formatDate } from '../../i18n'
 import siteConfig from '../../config/current'
+import { contentHref } from '../../content/asset-url'
 import { resolveLocalized } from '../../schema'
 import PlainSection from './PlainSection.astro'
 
@@ -29,7 +30,7 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
           </time>
           <span>
             {item.href ? (
-              <a href={item.href} class="text-primary hover:underline">
+              <a href={contentHref(item.href)} class="text-primary hover:underline">
                 {r(item.text)}
               </a>
             ) : (

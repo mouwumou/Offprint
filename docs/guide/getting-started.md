@@ -6,9 +6,7 @@
 
 1. 仓库页面点 **Use this template → Create a new repository**（比 fork 干净，不带模板的开发历史）。
 2. 什么都不用配：推送到 `main` 后，`Deploy to GitHub Pages` 工作流会自动启用 Pages 并发布。
-3. 在你仓库的 **Settings → Variables** 加 `SITE_URL`（站点公网地址，供 canonical / sitemap / feed 使用）。
-
-> **子路径限制**：站内链接目前按域名根路径生成。`https://<你>.github.io/<仓库名>/` 这种**子路径**地址下链接会失效——请给 Pages 配自定义域名，或把仓库命名为 `<你>.github.io`。Vercel / Netlify 天然部署在域名根，无此问题。
+3. 没有第三步。站点地址（`https://<你>.github.io/<仓库名>/`，或你在 Pages 设置里配的自定义域名）由工作流自动取得并作为 `SITE_URL`；子路径会被识别为部署前缀，所有链接、feed、搜索结果自动带上（ADR-023）。想覆盖就在 **Settings → Variables** 设 `SITE_URL`。
 
 ## 路线 B：Vercel / Netlify（一键按钮）
 

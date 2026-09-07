@@ -12,6 +12,7 @@ import remarkParse from 'remark-parse'
 import remarkRehype from 'remark-rehype'
 import { unified, type Processor } from 'unified'
 import { visit } from 'unist-util-visit'
+import { basePath } from '../config/base'
 import { rehypeCitations, type CitationRef } from './citations'
 import { offprintDark, offprintLight } from './shiki-themes'
 
@@ -166,13 +167,22 @@ function collectToc() {
  * against the page URL — under /blog/x/ they 404. Serve them from the root
  * like covers (assetUrl) already do.
  */
+// Content stays deployment-agnostic: authors write `assets/x` or root-relative
+// internal links, sync writes `/assets/x` (deep routes need it absolute); the
+// deployment sub-path is applied here at render time, never baked into
+// content (ADR-023).
 function absolutizeAssetPaths() {
+  const base = basePath()
   return (tree: import('hast').Root): void => {
     visit(tree, 'element', (node) => {
       for (const key of ['src', 'href'] as const) {
         const value = node.properties?.[key]
-        if (typeof value === 'string' && value.startsWith('assets/')) {
-          node.properties[key] = `/${value}`
+        if (typeof value !== 'string') continue
+        if (value.startsWith('assets/')) {
+          node.properties[key] = `${base}/${value}`
+        } else if (base !== '' && value.startsWith('/') && !value.startsWith('//')) {
+          // Author-written internal links ('/blog/x') and sync's '/assets/x'.
+          node.properties[key] = `${base}${value}`
         }
       }
     })

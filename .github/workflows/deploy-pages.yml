@@ -3,8 +3,8 @@
 # content makes the build self-sufficient. On the template repo it publishes
 # the official demo site (and doubles as a real deploy test on every push);
 # on an instance repo the same workflow publishes the user's site.
-# Set the SITE_URL repository variable to the public origin; for a
-# project-pages URL (user.github.io/repo) also set an Astro `base` first.
+# Set the SITE_URL repository variable to the public URL; a project-pages
+# URL (user.github.io/repo) is handled — the build derives base from its path.
 name: Deploy to GitHub Pages
 
 on:
@@ -28,7 +28,8 @@ jobs:
       - uses: actions/checkout@v4
       # Turns Pages on for repos that never visited the Pages settings —
       # removes the one manual step between "Use this template" and a live site.
-      - uses: actions/configure-pages@v5
+      - id: pages
+        uses: actions/configure-pages@v5
         with:
           enablement: true
       - uses: pnpm/action-setup@v4
@@ -37,9 +38,12 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # SITE_URL falls back to the Pages URL GitHub reports (user.github.io/repo
+      # or the custom domain), so a fresh instance needs no variable at all;
+      # its path becomes the Astro base (ADR-023).
       - run: pnpm build:static
         env:
-          SITE_URL: ${{ vars.SITE_URL }}
+          SITE_URL: ${{ vars.SITE_URL || steps.pages.outputs.base_url }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

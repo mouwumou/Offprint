@@ -135,3 +135,17 @@
 **决定**：仓库根新增 **`extensions/`**，原 `src/site/` 三机制平移至此并退役：`extensions/themes/<name>/`（主题包）、`extensions/widgets/<type>.astro`（站点散件部件覆盖，属用户代码不受只读约束）、`extensions/modules/<id>/`（站点模块）。**四目录四动词**：site.yaml 配置它、content/ 写它、extensions/ 装它、src/ 别动它。两条原则：①**只读安装**——扩展包升级即整目录替换；②**配置单点**——`theme.options` 落地：主题在 theme.json 里声明式定义自己的选项（类型/默认值/枚举/说明），用户在 site.yaml `theme.options` 填值，构建期按声明校验（未知选项、类型不符即报错），`pnpm gen:schema` 把已安装主题的选项声明并入 site.yaml 的 JSON Schema（编辑器对主题选项同样有补全与红线），部件经 `currentTheme()` 读取解析后的值。
 **修订 ADR-018**：主题包可携带 `widgets/` 目录经既有部件机制提供布局（"主题不做布局"修订为"主题的布局经具名部件承载"）；查找优先级链 = **站点散件 > 启用主题的 widgets > 内置**（Hugo lookup order 同款），装了主题仍可在站点层压过任意单件而无需 fork 主题。技术前提已 spike 验证：vite 构建期 glob 可指向 src 之外的项目根内目录；主题携带部件用"glob 全部主题的 widgets + 按启用主题运行时过滤"实现。ADR-006 边界扩展：`src/core` 不得 import `extensions/**`。
 **后果**：内页模板不做任意文件覆盖（升级即碎），走"具名部件清单扩容"路线（后续任务）；整页级替换属模块职责（injectRoute）。npm 分发（阶段 4）在解析链追加 node_modules 查找即可接上。
+
+## ADR-023 子路径部署：SITE_URL 的路径即 Astro base，内容不携带前缀 — 已定
+
+**背景**：GitHub Pages 的默认地址是 `user.github.io/<仓库名>/`，模板自己的 demo 与每个"Use this template"出来的实例都落在子路径上；而站内链接一律按域名根路径生成，子路径下全断（发布前审计发现，2026-09-04）。
+**决定**：不加新配置项。`SITE_URL` 是唯一来源：`astro.config` 取其 origin 为 `site`、取其 pathname 为 `base`（`https://u.github.io/repo` → `/repo`）；Astro 把 base 烤进各构建产物的 `import.meta.env.BASE_URL`，`src/core/config/base.ts` 归一化后由 `langPrefix()` 统一注入——所有内部链接都经它组合，主页统一为斜杠结尾（`/`、`/zh/`、`/repo/zh/`，与 canonical 一致）。**内容文件永不携带前缀**（news/profile/CV 里作者手写的 `/blog/x`、sync 写入的 `/assets/x`）：渲染边界上由 `contentHref()`（YAML 字段）与 markdown 管线（rehype）各应用一次；Astro 只给 redirect 的来源加 base，目标由 config 补上。server 模式的 `/assets` 与冷启动判定接受带前缀与不带前缀两种路径（Astro 的服务端路由本身对 base 宽松，不带前缀的请求也会被应答）。
+**验收**：`e2e/base-path.spec.ts` 用 `SITE_URL=…/sub` 构建 static 与 server 两份，爬取全部路由：每个页面 200，页面引用的每个内部 URL 必须以 `/sub/` 开头且可达（含 canonical/hreflang/og:image/feed/redirect 目标），pagefind 结果链接也在 `/sub/` 下。爬虫是内容无关的，同时抓出了一个旧 bug（标签/分类页的 hreflang 指向不存在的另一语言页面，改为按"携带该词的语言"生成）。
+**后果**：`SITE_URL` 必须是绝对 URL（否则构建报错）；server 模式下 base 在构建期固定，运行时 `REVALIDATE_URL`/webhook 地址要带同样的前缀；`serve-dist.mjs` 增加第三个参数以挂载子路径。
+
+## ADR-024 运行模式在构建期固定进产物，运行时不再读 RUNTIME_MODE — 已定
+
+**背景**：`src/middleware.ts` 与 `server/watch.ts` 原在**请求期**读 `process.env.RUNTIME_MODE` 决定是否启用 server 专属分支（资源伺服、冷启动页、manifest 监听）。Docker 镜像设了这个变量，所以生产没事；但 e2e 启动 node 进程时没设，双模式一致性测试一直在跑一个"中间件全关"的 server——ADR-023 的子路径爬虫第一次真正请求 server 模式的 `/assets/*` 才暴露出来（2026-09-07）。
+**决定**：`astro.config` 用 vite `define` 把 `import.meta.env.RUNTIME_MODE` 内联为构建期字面量，中间件与 watch 只看它。static 构建里该分支是字面量 `false`（server 代码成为死代码，约束 2 更硬）；server 构建启动不依赖任何环境变量。`docker/` 里的 `RUNTIME_MODE=server` 保留但已无作用。
+**后果**：一份产物只属于一种模式，不能"同一份 build 靠环境变量切模式"（本来也不行：adapter 在构建期就定了）。核心代码读 `import.meta.env` 时必须写完整表达式 `import.meta.env.X`——访问整个 env 对象会让 Astro 把整张 env 表内联进客户端包，含构建模式键，导致岛屿 hash 在两种模式下不同、HTML 不一致。
+
