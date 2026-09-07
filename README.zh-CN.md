@@ -5,13 +5,11 @@
 [English](README.md)
 
 [![Use this template](https://img.shields.io/badge/GitHub-Use_this_template-2ea44f?logo=github)](https://github.com/mouwumou/Offprint/generate)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmouwumou%2FOffprint)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/mouwumou/Offprint)
 
 Offprint 把学术首页、博客、出版物、项目与 CV 放进同一个站点，并做了两件大多数静态站生成器不做的事：
 
 - **内容在别处编排，在这里发布。** 博客在 Notion（或任何能产出约定格式 markdown 的工具）里写，经 [elog](https://elog.1874.cool) 转换后由站点消费；站点本身不依赖任何编辑器，也不在运行时请求 Notion。
-- **一套代码，两种运行方式。** 同一套模板既能编译成纯静态站（GitHub Pages、Vercel、任意 CDN），也能以服务端渲染跑在 Docker 里，做到"在 Notion 点发布即生效"，两种模式输出完全相同的 HTML。
+- **一套代码，两种运行方式。** 同一套模板既能编译成纯静态站（GitHub Pages、任意静态托管），也能以服务端渲染跑在容器里（VPS 上的 Docker、Cloudflare Containers——任何有完整运行时与持久卷的环境），做到"在 Notion 点发布即生效"，两种模式输出完全相同的 HTML。
 
 面向学术场景的细节是默认配置而非附加项：
 
@@ -37,7 +35,7 @@ pnpm build:static   # 纯静态构建 → dist/
 
 ## 用作模板
 
-这个仓库是**公开模板**（ADR-017）：自带样例内容，构建完全自足，CI 与 demo 部署只用 `GITHUB_TOKEN`，**仓库里没有也永远不会有任何密钥**。你的站点是从它生成出去的**实例仓库**——点上面的 "Use this template"（比 fork 干净，不带开发历史），或用 Vercel / Netlify 按钮一键生成并部署。
+这个仓库是**公开模板**（ADR-017）：自带样例内容，构建完全自足，CI 与 demo 部署只用 `GITHUB_TOKEN`，**仓库里没有也永远不会有任何密钥**。你的站点是从它生成出去的**实例仓库**——点上面的 "Use this template"（比 fork 干净，不带开发历史）。
 
 实例仓库需要的全部设置（都在你自己仓库的 Settings 里，按需配）：
 
@@ -46,7 +44,7 @@ pnpm build:static   # 纯静态构建 → dist/
 | Variable | `SITE_URL` | GitHub Pages 自动取得（含 `user.github.io/repo` 子路径），其他平台按需设置 |
 | Variable | `SYNC_ENABLED=true` | 要让 Actions 每 30 分钟从 Notion 同步 |
 | Secret | `NOTION_TOKEN`、`NOTION_DB` | 同上 |
-| Variable | `DEPLOY_VERCEL=true` | 要通过 Actions 部署到 Vercel |
+| Variable | `DEPLOY_VERCEL=true` | 可选、不承诺维护的便利项：经 Actions 把静态产物发到 Vercel |
 | Secret | `VERCEL_TOKEN`、`VERCEL_ORG_ID`、`VERCEL_PROJECT_ID` | 同上 |
 
 什么都不设时，推送即得 GitHub Pages 静态站，同步与 Vercel 工作流显示 skipped。自托管（Docker，static 或 server 模式）的密钥只放服务器本地 `.env`。

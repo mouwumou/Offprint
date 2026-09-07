@@ -5,13 +5,11 @@
 [中文说明](README.zh-CN.md)
 
 [![Use this template](https://img.shields.io/badge/GitHub-Use_this_template-2ea44f?logo=github)](https://github.com/mouwumou/Offprint/generate)
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fmouwumou%2FOffprint)
-[![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/mouwumou/Offprint)
 
 Offprint does two things most static site generators do not:
 
 - **Write elsewhere, publish here.** Blog posts are written in Notion (or any tool that can emit the documented markdown contract), converted by [elog](https://elog.1874.cool), and consumed by the site. The site depends on no editor and never calls Notion at runtime.
-- **One codebase, two runtimes.** The same template compiles to a fully static site (GitHub Pages, Vercel, any CDN) or runs server-rendered in Docker, where "publish in Notion" goes live within seconds. Both modes emit identical HTML.
+- **One codebase, two runtimes.** The same template compiles to a fully static site (GitHub Pages, any static host) or runs server-rendered in a container (Docker on a VPS, Cloudflare Containers — any host with a real runtime and a persistent volume), where "publish in Notion" goes live within seconds. Both modes emit identical HTML.
 
 Academic details are defaults, not add-ons:
 
@@ -37,7 +35,7 @@ Change three things and it is your site: `site.yaml` (who you are, which modules
 
 ## Use as a template
 
-This repository is a **public template** (ADR-017): it ships sample content, builds self-sufficiently, and its CI and demo deploy use only `GITHUB_TOKEN` — **it holds no secrets and never will**. Your site is an **instance repository** generated from it: click "Use this template" above (cleaner than a fork — no development history), or use the Vercel / Netlify buttons to generate and deploy in one step.
+This repository is a **public template** (ADR-017): it ships sample content, builds self-sufficiently, and its CI and demo deploy use only `GITHUB_TOKEN` — **it holds no secrets and never will**. Your site is an **instance repository** generated from it: click "Use this template" above (cleaner than a fork — no development history).
 
 Everything an instance may need, all in your own repository's Settings, all optional:
 
@@ -46,7 +44,7 @@ Everything an instance may need, all in your own repository's Settings, all opti
 | Variable | `SITE_URL` | Detected automatically on GitHub Pages (sub-paths like `user.github.io/repo` included); set it on other platforms |
 | Variable | `SYNC_ENABLED=true` | To let Actions sync from Notion every 30 minutes |
 | Secret | `NOTION_TOKEN`, `NOTION_DB` | Same |
-| Variable | `DEPLOY_VERCEL=true` | To deploy to Vercel through Actions |
+| Variable | `DEPLOY_VERCEL=true` | Optional, unsupported convenience: static deploy to Vercel through Actions |
 | Secret | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | Same |
 
 With nothing set, a push yields a GitHub Pages static site; the sync and Vercel workflows show as skipped. Self-hosted secrets (Docker, static or server mode) live only in a local `.env` on the server.

@@ -7,7 +7,7 @@
 | [guide/getting-started.md](guide/getting-started.md) | 从模板到上线：生成仓库、本地跑起来、替换成你的信息 |
 | [guide/configuration.md](guide/configuration.md) | 配置体系：`site.yaml`、`content/` 各文件、编辑器补全 |
 | [guide/sync.md](guide/sync.md) | Notion 写作、elog 同步：从建库到"点发布即上线" |
-| [guide/deployment.md](guide/deployment.md) | 部署：GitHub Pages / Vercel / Netlify / Docker（static 与 server） |
+| [guide/deployment.md](guide/deployment.md) | 部署：GitHub Pages、Docker（static 与 server，任何容器平台）、其他静态托管 |
 | [THEMING.md](THEMING.md) | 主题：换主题、调 token、制作与分发你自己的主题 |
 | [../content/README.md](../content/README.md) | `content/` 目录里每个文件是什么、谁来写 |
 

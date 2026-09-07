@@ -1,6 +1,7 @@
-# P1-12: Vercel deployment (static output; server mode arrives with the
-# vercel adapter in phase 2). Requires secrets VERCEL_TOKEN, VERCEL_ORG_ID,
-# VERCEL_PROJECT_ID. Runs only when the token secret is configured.
+# P1-12: OPTIONAL Vercel deployment of the static build — a convenience, not
+# a supported target (ADR-025: deployment targets are full runtimes; server
+# mode is container-only). Requires secrets VERCEL_TOKEN, VERCEL_ORG_ID,
+# VERCEL_PROJECT_ID; runs only when DEPLOY_VERCEL=true.
 name: Deploy to Vercel
 
 on:

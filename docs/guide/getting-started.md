@@ -8,9 +8,9 @@
 2. 什么都不用配：推送到 `main` 后，`Deploy to GitHub Pages` 工作流会自动启用 Pages 并发布。
 3. 没有第三步。站点地址（`https://<你>.github.io/<仓库名>/`，或你在 Pages 设置里配的自定义域名）由工作流自动取得并作为 `SITE_URL`；子路径会被识别为部署前缀，所有链接、feed、搜索结果自动带上（ADR-023）。想覆盖就在 **Settings → Variables** 设 `SITE_URL`。
 
-## 路线 B：Vercel / Netlify（一键按钮）
+## 路线 B：Docker 自托管（含"点发布即生效"的 server 模式）
 
-README 顶部的按钮会基于模板生成你的仓库副本并完成首次部署。两个平台都会自动执行 `pnpm build`（等价 `build:static`，含搜索索引），零配置可用。
+同一份仓库，`docker/` 下两套 compose：静态伺服 + 定时同步，或 server 模式 + 秒级发布。步骤见 [deployment.md](deployment.md) 的 Docker 两节；镜像可以跑在任何容器平台上（VPS、Cloudflare Containers 等）。
 
 ## 路线 C：本地开发
 

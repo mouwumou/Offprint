@@ -149,3 +149,9 @@
 **决定**：`astro.config` 用 vite `define` 把 `import.meta.env.RUNTIME_MODE` 内联为构建期字面量，中间件与 watch 只看它。static 构建里该分支是字面量 `false`（server 代码成为死代码，约束 2 更硬）；server 构建启动不依赖任何环境变量。`docker/` 里的 `RUNTIME_MODE=server` 保留但已无作用。
 **后果**：一份产物只属于一种模式，不能"同一份 build 靠环境变量切模式"（本来也不行：adapter 在构建期就定了）。核心代码读 `import.meta.env` 时必须写完整表达式 `import.meta.env.X`——访问整个 env 对象会让 Astro 把整张 env 表内联进客户端包，含构建模式键，导致岛屿 hash 在两种模式下不同、HTML 不一致。
 
+## ADR-025 部署目标是完整运行时；不为 serverless 平台做专属工程 — 已定
+
+**背景**：维护者的 NotionNext 站在 Vercel 上出过问题，这是 Offprint 的起点之一。发布收尾阶段曾把 Vercel/Netlify 一键按钮的实测列为优先事项并提议平台专属配置（vercel.json、netlify.toml、平台环境变量兜底），维护者明确否定（2026-09-07）："不会为了 Vercel 做任何大规模调整，至多最终运行时做部署微调；大部分运行在 Docker、Cloudflare 这类带完整运行时的环境。"
+**决定**：一等公民是 **GitHub Pages（static 默认路径）与容器（Docker compose 双套；同一镜像可上任何有持久卷与常驻进程的平台）**。static 产物"任何静态托管都能放"是通用陈述，不给任何一家做专属文件或代码分支。**server 模式只做容器，不做 serverless 适配**：不引入 `@astrojs/vercel`/Workers 一类 adapter，不为无持久磁盘、有函数超时的运行时改造内容卷、同步子进程与进程内缓存。README 撤下 Vercel/Netlify 按钮；早前的可选 Vercel 静态部署工作流保留为便利项，注明不承诺维护。
+**后果**：ROADMAP 中"Vercel/Netlify/CF adapter"方向作废；`CONTENT_STORE=git/s3` 仍保留（它们服务于多实例容器与内容外置，不是为 serverless 存在的）。贡献者提交平台专属适配时，先对照本条。
+

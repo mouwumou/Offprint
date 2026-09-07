@@ -77,7 +77,7 @@
 - [ ] P4-0 按 `src/core` / `src/sync` 边界拆为 pnpm workspace 包
 - [ ] P4-1 `@offprint/core`、`@offprint/sync` 发布到 npm（changesets）
 - [ ] P4-2 模板仓库 `offprint-template`（干净副本 + 示例内容）
-- [x] P4-3 一键部署按钮（Vercel / Netlify 已加进 README；CF Pages 暂缓）+ GH Pages workflow（已有）+ compose（P1-15/P2-5 已有）；补根 `build` 脚本指向 `build:static`，否则平台自动检测会跳过 pagefind 索引；按钮点击链路待仓库公开后首跑验证（2026-08-26）
+- [x] P4-3 部署路径：GH Pages workflow（零变量，子路径自动）+ Docker 双套 compose 为一等公民；根 `build` 脚本指向 `build:static`（含 pagefind）。README 的 Vercel/Netlify 一键按钮于 2026-09-07 撤下：部署目标是完整运行时（ADR-025），不为 serverless 平台做专属工程；可选 Vercel 工作流保留但不承诺维护
 - [ ] P4-4 文档站（用 core 自建）：快速开始、内容契约、elog 配置、部署、配置参考（2026-09-04：仓库内 `docs/guide/` 四篇使用文档 + `docs/README.md` 索引已就位，开发过程文件移入 `docs/dev/`；独立文档站未做）
 - [x] P4-5 LICENSE（已有）、CONTRIBUTING、CoC（Contributor Covenant 2.1）、SECURITY（含扩展信任模型）、issue/PR 模板（2026-08-26）
 - [ ] P4-6 Renovate、release workflow

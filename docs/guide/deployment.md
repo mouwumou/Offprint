@@ -23,15 +23,6 @@
 
 **子路径**：项目页默认地址是子路径部署。构建会从 `SITE_URL` 的路径派生 Astro `base`，站内链接、feed、sitemap、搜索结果全部自动带前缀（ADR-023）。配了自定义域名后地址回到域名根，前缀自动消失。
 
-## Vercel（static）
-
-- **一键按钮**（README 顶部）：Vercel 会基于模板生成你的仓库并自动识别 Astro，执行 `pnpm build`。部署后在 Vercel 项目的 Environment Variables 里设 `SITE_URL` 为正式域名（canonical / sitemap / feed 用），再触发一次部署。
-- **走 Actions**：仓库变量 `DEPLOY_VERCEL=true`，Secrets 里加 `VERCEL_TOKEN`、`VERCEL_ORG_ID`、`VERCEL_PROJECT_ID`；`Deploy to Vercel` 工作流用 `vercel pull / build / deploy --prebuilt` 三步部署。同步工作流提交内容后会自动触发它。
-
-## Netlify（static）
-
-README 顶部的按钮；Netlify 自动识别 Astro 并执行 `pnpm build`，产物目录 `dist`。
-
 ## Docker：静态自托管
 
 `docker/compose.static.yaml`，两个服务：`web`（Caddy 伺服构建产物）与 `sync`（按 `SYNC_INTERVAL` 秒轮询：同步 → 构建 → 原子切换产物目录）。没有 Notion 凭据时退化为只构建仓库里已提交的内容。
@@ -52,6 +43,12 @@ docker compose -f docker/compose.server.yaml up -d --build
 
 运行模式在构建期就固定进了产物（`pnpm build:server`），启动进程时不必再设 `RUNTIME_MODE`。首次冷启动内容卷为空时，站点返回一个双语的"同步中"页（503），首次同步落地后自动恢复。之后把 Notion webhook 指向 `https://<你的域名>/api/sync` 即得秒级发布（握手流程见 [sync.md](sync.md)）。
 
+同一镜像可部署到任何有持久卷和常驻进程的容器平台（VPS、Cloudflare Containers、Fly.io 等；除 Docker 本地与远程测试机外未逐一实测）。**不支持 serverless 平台**：没有持久磁盘、函数有超时、多实例各自为政，server 模式的内容卷、同步子进程与进程内缓存都无从谈起。
+
 建议把 `/api/*` 放在反向代理的额外防护之后，并用 `GET /api/health` 做存活探测——它报告当前内容版本、最近一次同步的结果与错误数。若 `SITE_URL` 带子路径，这些端点也在子路径下（`/<base>/api/…`），`REVALIDATE_URL` 与 Notion webhook 地址要相应带上。
 
 本项目的 Docker 相关验证都在远程测试机上做过（compose 的 static 与 server 两套均实测冷启动到首篇发布）；本机没有 Docker 的开发者可以完全跳过这两节。
+
+## 其他静态托管
+
+`dist/` 是纯文件，任何静态托管都能放（Cloudflare Pages、Netlify、Vercel 等）：构建命令用 `pnpm build`（含搜索索引），产物目录 `dist`，把 `SITE_URL` 设成正式地址。本项目**不做平台专属配置**。仓库里保留了一个可选的 Vercel 部署工作流（`DEPLOY_VERCEL=true` 开启），是便利项而非支持目标，不承诺维护。
