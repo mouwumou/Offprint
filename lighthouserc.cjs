@@ -82,7 +82,12 @@ module.exports = {
         preset: 'desktop',
         // chrome-launcher on WSL otherwise creates a literal 'C:\Users\…'
         // profile dir inside the repo — pin it to the system tmpdir.
-        chromeFlags: '--headless=new --user-data-dir=/tmp/lhci-chrome-profile',
+        // --no-sandbox: GitHub's ubuntu-24.04 runners restrict unprivileged user
+        // namespaces (AppArmor), so Chromium's sandbox cannot start there; the
+        // page under test is our own build output. --disable-dev-shm-usage: the
+        // runner's /dev/shm is small. Both are inert on a developer machine.
+        chromeFlags:
+          '--headless=new --no-sandbox --disable-dev-shm-usage --user-data-dir=/tmp/lhci-chrome-profile',
         onlyCategories: ['performance', 'accessibility', 'best-practices', 'seo'],
       },
     },
