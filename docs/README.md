@@ -15,7 +15,7 @@
 
 | 文档 | 内容 |
 | --- | --- |
-| [DECISIONS.md](DECISIONS.md) | 架构决策记录（ADR-001–022）：每个"为什么这样做"的出处 |
+| [DECISIONS.md](DECISIONS.md) | 架构决策记录（ADR-001–025）：每个"为什么这样做"的出处 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 分层、双运行模式、仓库结构、包边界 |
 | [CONTENT-CONTRACT.md](CONTENT-CONTRACT.md) | 内容契约：所有集合的 front-matter / YAML schema，工具无关 |
 | [DYNAMIC-PUBLISHING.md](DYNAMIC-PUBLISHING.md) | server 模式发布链设计：`ContentStore`/`ContentProvider`、原子切换、revalidate |
