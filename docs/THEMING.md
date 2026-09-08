@@ -15,7 +15,7 @@ src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 
 ```
 <name>/
-├─ theme.json     # 必需：manifest（tokens + fonts + voice + options 声明）
+├─ theme.json     # 必需：manifest（tokens + fonts + typography + voice + options 声明）
 ├─ theme.css      # 可选：字体加载（@import fontsource 包）与主题特有样式
 └─ widgets/       # 可选：主题自带的首页部件实现（ADR-022；站点散件可逐个压过）
 ```
@@ -42,7 +42,8 @@ src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 }
 ```
 
-- **voice（腔调，可省略，缺省全 plain）**：`labels: mono-caps | plain` 控制装饰语域——mono-caps 是等宽大写宽字距的 kicker/节标签/导航（paper 的样子），plain 是普通字体且不渲染装饰性 kicker（学术常态）；`photo: grayscale-hover | plain` 控制首页大头图的灰度悬停处理。
+- **voice（腔调，可省略，缺省全 plain）**：`labels: mono-caps | plain` 控制装饰语域——mono-caps 是等宽大写宽字距的 kicker/节标签/导航（paper 的样子），plain 是普通字体且不渲染装饰性 kicker（学术常态）；`photo: grayscale-hover | plain` 控制首页大头图的灰度悬停处理；`density: airy | compact` 控制页面留白（页脚、标题上方间距等），缺省 compact。
+- **typography（排版，可省略）**：`proseSize` 是文章正文 `.prose` 的基准字号，缺省 `1.0625rem`（17px）；paper 声明 `1.1875rem`。使用者可在 site.yaml `theme.typography.proseSize` 覆盖，主题只提供缺省。
 - **token 词表**（15 个，见 `src/core/theme/contract.ts` 的 `TOKEN_NAMES`）：`background` `foreground` `card` `card-foreground` `primary` `primary-foreground` `secondary` `secondary-foreground` `muted` `muted-foreground` `accent` `accent-foreground` `border` `ring` `radius`。缺一个、多一个都是构建期错误（zod 逐键报名）。
 - 两种配色（light/dark）都必须给全——站点有用户可切换的暗色模式，主题不能只管一半。
 - 字体栈**必须含 CJK 回退**（参照 paper 的栈；中文 webfont 体积不划算，走系统字体是项目约定）。

@@ -69,7 +69,7 @@ offprint/
 
 配置里的每个自由度都有 zod 形状与缺省值，缺省值精确复刻内置设计（"可塑但不可坏"）：
 
-- `modules.<name>: boolean | { title?, description?, colophon? }`——布尔开关拓宽为设置对象；文案覆盖经 `moduleCopy()`（`src/core/config/copy.ts`）解析，i18n 字典只做主题缺省值。
+- `modules.<name>: boolean | { title?, description?, … }`——布尔开关拓宽为设置对象，各模块经 `moduleToggleWith()` 声明自己的额外项：blog `colophon?` / `related?`，publications `order?`，cv `pdf?` / `indexable?`；文案覆盖经 `moduleCopy()`（`src/core/config/copy.ts`）解析，i18n 字典只做主题缺省值。
 - `nav?: Array<{module, label?} | {page, label?} | {href, label}>`——导航即数据（`resolveNav()`，`src/core/config/nav.ts`）。缺省时自动生成：首页 + 启用模块 + `nav: true` 的独立页面；显式给出时以作者列表为准，指向关闭模块 / 不存在页面的条目跳过而非报错。
 - `header` / `footer`——`title`/`subtitle`/`colophon` 为 `false | LocalizedString`（隐藏 / 自定义 / 缺省不显示，ADR-027；此前缺省回落 profile 与 i18n），另有 `search`/`themeToggle`/`languageSwitcher`/`rss`/`enabled` 开关。
 - `home.sections`——首页是 section 序列（discriminated union）：`hero | about | prose | selected-publications | recent-posts | projects`，各自带 `title` 覆盖与少量选项；`prose` 内联渲染一个独立页面。模块关闭或数据为空的 section 渲染期跳过。

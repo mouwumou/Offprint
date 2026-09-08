@@ -37,3 +37,15 @@ pnpm build:static   # 产物在 dist/，node scripts/serve-dist.mjs dist 4331 �
 - 想换观感 → [THEMING.md](../THEMING.md)（内置 scholar / paper 两套主题，token 可逐个覆盖）
 - 想接 Notion → [sync.md](sync.md)
 - 想自托管或要"发布秒级生效" → [deployment.md](deployment.md) 的 Docker 两节
+
+## 之后：跟上模板的更新
+
+实例仓库没有模板的 git 历史，升级靠一个脚本：在实例根目录执行
+
+```bash
+bash scripts/upgrade-from-template.sh /path/to/Offprint   # 本地有模板检出即可
+pnpm install --frozen-lockfile && pnpm sync validate && pnpm build:static
+```
+
+它只覆盖**模板拥有的路径**（`src/`、`scripts/`、`docs/`、工作流、`package.json` 等），从不碰你的 `site.yaml`、`content/`、`extensions/`、README 与 CLAUDE.md。看一眼 `git status`，构建通过就提交推送；若仓库开了 Notion 同步，先 `git pull --rebase` 再推，同步工作流会自行提交内容。
+
