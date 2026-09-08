@@ -155,3 +155,10 @@
 **决定**：一等公民是 **GitHub Pages（static 默认路径）与容器（Docker compose 双套；同一镜像可上任何有持久卷与常驻进程的平台）**。static 产物"任何静态托管都能放"是通用陈述，不给任何一家做专属文件或代码分支。**server 模式只做容器，不做 serverless 适配**：不引入 `@astrojs/vercel`/Workers 一类 adapter，不为无持久磁盘、有函数超时的运行时改造内容卷、同步子进程与进程内缓存。README 撤下 Vercel/Netlify 按钮；早前的可选 Vercel 静态部署工作流随即删除（2026-09-07），连同 sync 工作流里的触发与文档提法。
 **后果**：ROADMAP 中"Vercel/Netlify/CF adapter"方向作废；`CONTENT_STORE=git/s3` 仍保留（它们服务于多实例容器与内容外置，不是为 serverless 存在的）。贡献者提交平台专属适配时，先对照本条。
 
+## ADR-026 渲染管线对内容源导出的定向容错；封面死链在同步期剔除 — 已定
+
+**背景**：第一批真实内容（NotionNext 数据库，2026-09-08）暴露出四类问题：Notion 子块导出为四空格缩进段落，被 CommonMark 当成缩进代码块，粗体与行内公式失效；单元格含换行的表格拆成多行，GFM 不识别；NotionNext 遗留的 `source.unsplash.com/random` 封面早已失效，站上成了破图并进了 og:image；`notion.so/<uuid>` 页面链接被资产匹配器当图片去下载（403）。
+**决定**：容错放在**渲染管线**（`src/core/content/markdown.ts`）而不是同步归一化——这样对任何内容源、任何已落盘的内容都立即生效：无围栏的缩进代码块按 markdown 重新解析；开了 `|` 却没闭合的表格行与后续行拼接。围栏代码块不受影响，契约文档 §8 记录该行为。封面死链只能在有网络的**同步期**判断：`cover` 为外部 URL 时做 HEAD（405 回退 GET）校验，不可达或非 image/* 则剔除并警告。`notion.so` 主机只有 `/image/`、`/signed/` 路径算资产。
+**同批配置项**（非结构性，记录在此便于追溯）：`theme.typography.proseSize`（正文字号从 base.css 硬编码的 19px 改为主题声明 + 用户覆盖，默认 17px）；`i18n.noindex`（语言级 robots noindex + 不进 sitemap/hreflang + robots.txt Disallow）；`modules.cv.pdf` / `indexable`（CV 直链 PDF、不生成 HTML 页、可 Disallow）。
+**后果**：契约仍是标准 markdown，容错是渲染侧的宽容而非新语法；引入新的内容源时先跑一遍真实内容，再决定是否补规则。
+
