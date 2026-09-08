@@ -49,7 +49,7 @@ profile:
 # ── 模块开关：false = 页面、导航、打包一起消失 ────────────────────────────────
 # 也可以写成对象来覆盖落地页文案，例如：
 #   blog: { title: { en: Field notes, zh: 田野笔记 }, colophon: false, related: false }
-#   （colophon 是文末"后记"框：false 隐藏，或给一段双语文字替换默认说明；related 是"相关文章"块）
+#   （colophon 是文末"后记"框：默认不显示，给一段双语文字才出现；related 是"相关文章"块）
 modules:
   blog: true
   pages: true
@@ -82,7 +82,7 @@ header:
 #   languageSwitcher: true
 # footer:
 #   enabled: true
-#   colophon: false             # 页脚署名行；false 只留 © 年份
+#   colophon: { en: Hand-set in Charter., zh: 手排于 Charter。 }   # 页脚署名行；默认只有 © 年份
 #   rss: true
 
 # ── 外观：内置主题 scholar（默认，学术白底）| paper（杂志纸面风，配 hero 排布）；

@@ -80,9 +80,7 @@ const showUpdated = post.updated.getTime() !== post.date.getTime()
 const kicker = post.categories[0]
 const colophonSetting = siteConfig.modules.blog.colophon
 const colophonText =
-  colophonSetting === false
-    ? null
-    : (rl(colophonSetting, lang, siteConfig.i18n.default) ?? t('post.colophonText'))
+  colophonSetting === false ? null : (rl(colophonSetting, lang, siteConfig.i18n.default) ?? null) // ADR-027: no default text
 const prefix = langPrefix(siteConfig, lang)
 
 const translations = await getProvider().getTranslations(urlname)

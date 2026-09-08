@@ -21,19 +21,27 @@ const links = config.profile.links.map((link) => ({
   label: resolveLocalized(link.label, lang, config.i18n.default),
 }))
 const year = new Date().getFullYear()
+// ADR-027: no default credit line — the template never signs the author's
+// site. A colophon appears only when site.yaml provides one.
 const colophon =
   config.footer.colophon === false
     ? null
-    : (resolveLocalized(config.footer.colophon, lang, config.i18n.default) ?? t('layout.colophon'))
+    : (resolveLocalized(config.footer.colophon, lang, config.i18n.default) ?? null)
 ---
 
 {
   config.footer.enabled && (
-    <footer class="site-footer mt-24 border-t border-border">
+    <footer
+      class:list={[
+        'site-footer border-t border-border',
+        themeVoice.density === 'airy' ? 'mt-24' : 'mt-14',
+      ]}
+    >
       <div
         class:list={[
           container,
-          'flex flex-col gap-6 py-10 sm:flex-row sm:items-end sm:justify-between',
+          'flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between',
+          themeVoice.density === 'airy' ? 'py-10' : 'py-7',
         ]}
       >
         <div>

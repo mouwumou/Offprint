@@ -162,3 +162,9 @@
 **同批配置项**（非结构性，记录在此便于追溯）：`theme.typography.proseSize`（正文字号从 base.css 硬编码的 19px 改为主题声明 + 用户覆盖，默认 17px）；`i18n.noindex`（语言级 robots noindex + 不进 sitemap/hreflang + robots.txt Disallow）；`modules.cv.pdf` / `indexable`（CV 直链 PDF、不生成 HTML 页、可 Disallow）。
 **后果**：契约仍是标准 markdown，容错是渲染侧的宽容而非新语法；引入新的内容源时先跑一遍真实内容，再决定是否补规则。
 
+## ADR-027 模板不在用户站点上署名：文末与页脚的 colophon 默认为空 — 已定
+
+**背景**：页脚默认显示"在 Notion 写作 · 经 elog 发布"，文末默认有一段介绍发布链路的"后记"。维护者的站上线后指出这两处让人不适（2026-09-09）：它们是模板在讲自己的故事，不是作者想说的话。
+**决定**：两处 colophon 的缺省值改为**空**——只有 `site.yaml` 给了文字才显示（`footer.colophon`、`modules.blog.colophon`），i18n 里不再放默认文案。页脚只剩姓名、机构（如有）、链接与 © 年份；页脚间距随主题密度（compact 更紧）。
+**后果**：模板 demo 也不再自我署名；想展示该功能的实例在配置里写自己的话。原则推广：默认值只能是中性的（空、作者信息），任何"模板视角"的文案都不做默认。
+

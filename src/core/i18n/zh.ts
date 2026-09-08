@@ -79,7 +79,6 @@ export const zh: Record<MessageKey, string> = {
   'notFound.body': '你要找的页面不存在或已被移动。',
   'notFound.home': '返回首页',
   'layout.toggleTheme': '切换配色',
-  'layout.colophon': '在 Notion 写作 · 经 elog 发布',
   'layout.rss': 'RSS',
   'post.back': '← 返回文章',
   'post.minRead': '分钟读完',
@@ -90,6 +89,4 @@ export const zh: Record<MessageKey, string> = {
   'post.related': '相关文章',
   'post.series': '系列',
   'post.colophon': '后记',
-  'post.colophonText':
-    '在 Notion 中写作，经 elog 导出为 markdown，由 KaTeX 与语法高亮渲染。本文的源文件是仓库中的一个纯 .md 文件。',
 }

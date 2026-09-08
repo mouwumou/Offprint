@@ -80,7 +80,6 @@ export const en = {
   'notFound.body': 'The page you are looking for does not exist or has moved.',
   'notFound.home': 'Back to the homepage',
   'layout.toggleTheme': 'Toggle color theme',
-  'layout.colophon': 'Written in Notion · published with elog',
   'layout.rss': 'RSS',
   'post.back': '← Writing',
   'post.minRead': 'min read',
@@ -91,8 +90,6 @@ export const en = {
   'post.related': 'Related posts',
   'post.series': 'Series',
   'post.colophon': 'Colophon',
-  'post.colophonText':
-    'Drafted in Notion, exported to markdown with elog, rendered here with KaTeX and syntax highlighting. The source of this post is a plain .md file in the repository.',
 } as const
 
 export type MessageKey = keyof typeof en
