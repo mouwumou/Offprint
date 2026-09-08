@@ -82,7 +82,22 @@ function checkFilename(path: string, expected: string): void {
   }
 }
 
-export function createProvider(store: ContentStore): ContentProvider {
+/** Within-year order of publications; years are always newest first. */
+export type PublicationOrder = 'file' | 'key' | 'title'
+
+export interface ProviderOptions {
+  publicationOrder?: PublicationOrder | undefined
+}
+
+const titleText = (title: unknown): string =>
+  typeof title === 'string'
+    ? title
+    : typeof title === 'object' && title !== null
+      ? String(Object.values(title as Record<string, unknown>)[0] ?? '')
+      : ''
+
+export function createProvider(store: ContentStore, options: ProviderOptions = {}): ContentProvider {
+  const publicationOrder = options.publicationOrder ?? 'file'
   // undefined = not loaded yet; null = store has no manifest.
   let manifestCache: Manifest | null | undefined
   let hashByPath: Map<string, string> | undefined
@@ -231,9 +246,16 @@ export function createProvider(store: ContentStore): ContentProvider {
       // An absent file is a template without a publications export, not an
       // error; the module toggle decides whether anything renders at all.
       const publications = await load('publications.yaml', parsePublications)
-      return (publications ?? [])
-        .slice()
-        .sort((a, b) => b.year - a.year || a.key.localeCompare(b.key))
+      // Array#sort is stable: sorting by year alone keeps the file order
+      // inside each year, which is the author's curation (first-author work
+      // first, say) — the default. key/title are the alphabetical options.
+      const within = (a: Publication, b: Publication): number =>
+        publicationOrder === 'key'
+          ? a.key.localeCompare(b.key)
+          : publicationOrder === 'title'
+            ? titleText(a.title).localeCompare(titleText(b.title))
+            : 0
+      return (publications ?? []).slice().sort((a, b) => b.year - a.year || within(a, b))
     },
 
     async listProjects() {

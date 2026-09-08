@@ -26,6 +26,9 @@ registerModule({
 
 registerModule({
   id: 'publications',
+  // Newest year first always; `order` decides the sequence inside a year:
+  // file (as curated in publications.yaml), key, or title.
+  configSchema: moduleToggleWith({ order: z.enum(['file', 'key', 'title']).optional() }),
   enabledByDefault: true,
   nav: { path: '/publications', labelKey: 'nav.publications' },
   copy: { titleKey: 'pub.title', descriptionKey: 'pub.description' },

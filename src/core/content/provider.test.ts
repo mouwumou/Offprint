@@ -263,3 +263,25 @@ describe('createProvider · cache & revalidate', () => {
     expect(after).not.toBe(before)
   })
 })
+
+describe('createProvider · publications order (modules.publications.order)', () => {
+  const twoIn2026 = [
+    '- key: zeta2026', '  title: Zeta', '  authors: [A]', '  year: 2026', '  venue: V', '  type: preprint',
+    '- key: alpha2026', '  title: Alpha', '  authors: [A]', '  year: 2026', '  venue: V', '  type: preprint',
+    '- key: old2025', '  title: Old', '  authors: [A]', '  year: 2025', '  venue: V', '  type: preprint',
+  ].join('\n')
+
+  it('keeps the file order inside a year by default, newest year first', async () => {
+    await writeFile(join(root, 'publications.yaml'), twoIn2026)
+    const pubs = await createProvider(new FsStore(root)).listPublications()
+    expect(pubs.map((p) => p.key)).toEqual(['zeta2026', 'alpha2026', 'old2025'])
+  })
+
+  it('sorts by key or by title inside a year when asked', async () => {
+    await writeFile(join(root, 'publications.yaml'), twoIn2026)
+    const byKey = await createProvider(new FsStore(root), { publicationOrder: 'key' }).listPublications()
+    expect(byKey.map((p) => p.key)).toEqual(['alpha2026', 'zeta2026', 'old2025'])
+    const byTitle = await createProvider(new FsStore(root), { publicationOrder: 'title' }).listPublications()
+    expect(byTitle.map((p) => p.key)).toEqual(['alpha2026', 'zeta2026', 'old2025'])
+  })
+})

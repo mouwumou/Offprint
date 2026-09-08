@@ -56,6 +56,7 @@ modules:
   publications: true
   projects: true
   cv: true
+#   publications: { order: file }                  # 同年内顺序：file（默认，按文件里的顺序）| key | title
 #   cv: { pdf: assets/cv.pdf, indexable: false }   # CV 直接给 PDF 文件，不生成 HTML 页
 
 # ── 导航：不写 = 自动生成（首页 + 开着的模块 + nav:true 的独立页面）────────────

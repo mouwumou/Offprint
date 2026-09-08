@@ -365,6 +365,10 @@
                       }
                     }
                   ]
+                },
+                "order": {
+                  "type": "string",
+                  "enum": ["file", "key", "title"]
                 }
               },
               "additionalProperties": false

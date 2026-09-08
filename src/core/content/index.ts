@@ -1,4 +1,5 @@
 import { FsStore, GitStore, type ContentStore } from '../store'
+import siteConfig from '../config/current'
 import { createProvider, type ContentProvider } from './provider'
 
 let store: ContentStore | undefined
@@ -33,7 +34,9 @@ export function getStore(): ContentStore {
  * git / s3 stores land in phase 2 (ADR-004).
  */
 export function getProvider(): ContentProvider {
-  provider ??= createProvider(getStore())
+  provider ??= createProvider(getStore(), {
+    publicationOrder: siteConfig.modules.publications.order,
+  })
   return provider
 }
 

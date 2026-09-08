@@ -27,6 +27,8 @@ export interface ModuleSetting {
   colophon?: false | z.output<typeof localizedString> | undefined
   /** blog: false hides the related-posts block under each post. */
   related?: boolean | undefined
+  /** publications: order within a year — as written in the file (default), by key, or by title. */
+  order?: 'file' | 'key' | 'title' | undefined
   /** cv: serve a PDF (assets/… or URL) instead of the HTML page. */
   pdf?: string | undefined
   /** cv: false adds a robots.txt Disallow for the PDF. */
