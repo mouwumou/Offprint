@@ -2,7 +2,7 @@ import { mkdtemp, mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promis
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { assetStem, isNotionAssetUrl, materializeImages } from './images'
+import { assetStem, dropDeadCover, isNotionAssetUrl, materializeImages } from './images'
 
 const NOTION_URL =
   'https://prod-files-secure.s3.us-west-2.amazonaws.com/abc/def/cover.png?X-Amz-Signature=sig1'
@@ -156,5 +156,35 @@ describe('image download safety (security audit)', () => {
     })
     expect(summary.downloaded).toBe(0)
     expect(summary.failed).toBe(1)
+  })
+})
+
+describe('cover and page-link handling (ADR-026)', () => {
+  it('does not treat notion.so PAGE links as assets, only /image and /signed', () => {
+    expect(isNotionAssetUrl('https://www.notion.so/27082c8a-3c52-80e2-b832-c2678345c394')).toBe(
+      false,
+    )
+    expect(
+      isNotionAssetUrl('https://www.notion.so/image/https%3A%2F%2Fs3.example%2Fa.png?id=1'),
+    ).toBe(true)
+    expect(isNotionAssetUrl('https://www.notion.so/signed/https%3A%2F%2Fs3.example%2Fa.png')).toBe(
+      true,
+    )
+  })
+
+  it('drops an unreachable external cover and keeps a live image cover', async () => {
+    const dead = "---\ntitle: x\ncover: 'https://source.unsplash.com/random'\ndate: '2026-01-01'\n"
+    const fetchImpl = (async (url: string | URL | Request) =>
+      new Response(null, {
+        status: String(url).includes('unsplash') ? 503 : 200,
+        headers: { 'content-type': 'image/png' },
+      })) as unknown as typeof fetch
+    const pruned = await dropDeadCover(dead, fetchImpl)
+    expect(pruned).not.toContain('cover:')
+    expect(pruned).toContain("date: '2026-01-01'")
+    const live = '---\ntitle: x\ncover: https://cdn.example/a.png\n'
+    expect(await dropDeadCover(live, fetchImpl)).toBe(live)
+    const local = '---\ntitle: x\ncover: assets/a.png\n'
+    expect(await dropDeadCover(local, fetchImpl)).toBe(local)
   })
 })

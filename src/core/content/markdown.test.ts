@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module'
 import { describe, expect, it } from 'vitest'
-import { renderMarkdown } from './markdown'
+import { joinBrokenTableRows, renderMarkdown } from './markdown'
 
 describe('katex version alignment', () => {
   // The page links the CSS of our direct katex dependency, while rehype-katex
@@ -171,5 +171,34 @@ describe('citations (P3-2)', () => {
     const plain = await renderMarkdown('No citations at [@all] here.')
     expect(plain.html).toContain('[@all]')
     expect(plain.html).not.toContain('id="references"')
+  })
+})
+
+describe('Notion export tolerance (ADR-026)', () => {
+  it('renders 4-space-indented paragraphs as prose, not code', async () => {
+    const md = 'Intro paragraph.\n\n    第一，**高频词不一定重要**。公式 $k_1$ 在此。\n\n    第二段。\n'
+    const { html } = await renderMarkdown(md)
+    expect(html).toContain('<strong>高频词不一定重要</strong>')
+    expect(html).toContain('katex')
+    expect(html).not.toContain('<pre>')
+  })
+
+  it('keeps fenced code blocks as code', async () => {
+    const { html } = await renderMarkdown('```\n**not bold**\n```\n')
+    expect(html).toContain('<pre')
+    expect(html).not.toContain('<strong>')
+  })
+
+  it('joins table rows that a cell line break split apart', async () => {
+    const md = '| $n_{layer}$ | 层数\nnumber of layers |\n| --- | --- |\n| $d_{model}$ | 残差流\ndimension |\n'
+    expect(joinBrokenTableRows(md)).toBe('| $n_{layer}$ | 层数 number of layers |\n| --- | --- |\n| $d_{model}$ | 残差流 dimension |\n')
+    const { html } = await renderMarkdown(md)
+    expect(html).toContain('<table>')
+    expect(html).toContain('层数 number of layers')
+  })
+
+  it('leaves pipes inside fenced code alone', () => {
+    const md = '```\n| a\n| b\n```\n'
+    expect(joinBrokenTableRows(md)).toBe(md)
   })
 })

@@ -196,6 +196,76 @@ export interface RenderOptions {
   citationsLabel?: string
 }
 
+/**
+ * Notion exports (elog) put soft line breaks INSIDE table cells, splitting a
+ * GFM row across lines so the table never parses. Outside fenced code, a line
+ * that opens a row (`|…`) but does not close it is joined with the following
+ * lines until one does.
+ */
+export function joinBrokenTableRows(markdown: string): string {
+  const out: string[] = []
+  let fence: string | null = null
+  let open: string | null = null
+  for (const line of markdown.split('\n')) {
+    const fenceMatch = /^\s*(`{3,}|~{3,})/.exec(line)
+    if (fenceMatch) {
+      if (fence === null) fence = fenceMatch[1] ?? null
+      else if (line.trim().startsWith(fence)) fence = null
+    }
+    if (fence !== null) {
+      out.push(line)
+      continue
+    }
+    const trimmed = line.trim()
+    if (open !== null) {
+      open = `${open} ${trimmed}`
+      if (trimmed.endsWith('|') || trimmed === '') {
+        out.push(open)
+        open = null
+      }
+      continue
+    }
+    if (trimmed.startsWith('|') && !trimmed.endsWith('|') && trimmed.length > 1) {
+      open = line
+      continue
+    }
+    out.push(line)
+  }
+  if (open !== null) out.push(open)
+  return out.join('\n')
+}
+
+/**
+ * remark plugin: a 4-space-indented paragraph is a CommonMark "indented code
+ * block", but in a Notion export it is a nested block (children of a
+ * paragraph/toggle) whose bold, math and links must still render. Real code
+ * always arrives fenced, so indented code nodes are re-parsed as markdown.
+ */
+function indentedCodeAsProse() {
+  const inner = unified().use(remarkParse).use(remarkGfm).use(remarkMath)
+  const reparse = (tree: import('mdast').Root | import('mdast').Parent, source: string): void => {
+    for (let index = 0; index < tree.children.length; index++) {
+      const node = tree.children[index]
+      if (node === undefined) continue
+      if (node.type === 'code' && !node.lang) {
+        const start = node.position?.start.offset
+        const head = start === undefined ? '' : source.slice(start, start + 3)
+        if (!head.startsWith('```') && !head.startsWith('~~~')) {
+          const parsed = inner.parse(node.value) as import('mdast').Root
+          reparse(parsed, node.value)
+          tree.children.splice(index, 1, ...parsed.children)
+          index += parsed.children.length - 1
+          continue
+        }
+      }
+      if ('children' in node) reparse(node as import('mdast').Parent, source)
+    }
+  }
+  return (tree: import('mdast').Root, file: { value: unknown }): void => {
+    reparse(tree, String(file.value))
+  }
+}
+
 let processor: Processor | undefined
 
 function buildProcessor(): Processor {
@@ -203,6 +273,7 @@ function buildProcessor(): Processor {
     .use(remarkParse)
     .use(remarkGfm)
     .use(remarkMath)
+    .use(indentedCodeAsProse)
     .use(remarkDirective)
     .use(directivesToHtml)
     .use(collectStats)
@@ -236,6 +307,7 @@ export async function renderMarkdown(
   markdown: string,
   options?: RenderOptions,
 ): Promise<RenderedMarkdown> {
+  markdown = joinBrokenTableRows(markdown)
   const file = await getProcessor().process(
     options?.citations !== undefined
       ? {

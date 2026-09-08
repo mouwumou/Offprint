@@ -30,6 +30,9 @@ export function isNotionAssetUrl(value: string): boolean {
   try {
     const url = new URL(value)
     if (url.protocol !== 'https:') return false
+    // www.notion.so also hosts PAGE links (/<uuid>, /<slug>-<uuid>): on that
+    // host only /image/ and /signed/ are files; file.notion.so is files only.
+    if (/^(www\.)?notion\.so$/i.test(url.hostname)) return /^\/(image|signed)\//.test(url.pathname)
     return NOTION_HOSTS.some((host) => host.test(url.hostname))
   } catch {
     return false
@@ -51,6 +54,43 @@ const TRAILING_PUNCT = /[.,;:!?]+$/
 
 /** Download safety: cap the read, the wait, and re-check redirect hops. */
 const FETCH_TIMEOUT_MS = 30_000
+const COVER_CHECK_TIMEOUT_MS = 10_000
+
+// Front-matter `cover:` on its own line, single-line scalar (quoted or not).
+const COVER_LINE = /^cover:[ \t]*(['"]?)(https?:\/\/[^'"\n]+)\1[ \t]*$/m
+
+/**
+ * External covers (NotionNext's `source.unsplash.com/random`, dead CDNs) can
+ * only be checked at sync time; a broken image beats no image nowhere, so an
+ * unreachable or non-image cover is dropped with a warning and the post
+ * falls back to its generated OG image.
+ */
+export async function dropDeadCover(head: string, fetchImpl: typeof fetch): Promise<string> {
+  const match = COVER_LINE.exec(head)
+  if (!match) return head
+  const url = match[2] ?? ''
+  // Notion-hosted covers go through the download path above; a failed
+  // download deliberately keeps the URL, so never second-guess it here.
+  if (isNotionAssetUrl(url)) return head
+  let reason: string | null = null
+  try {
+    let response = await fetchImpl(url, {
+      method: 'HEAD',
+      signal: AbortSignal.timeout(COVER_CHECK_TIMEOUT_MS),
+    })
+    if (response.status === 405 || response.status === 501) {
+      response = await fetchImpl(url, { signal: AbortSignal.timeout(COVER_CHECK_TIMEOUT_MS) })
+    }
+    const type = (response.headers.get('content-type') ?? '').split(';')[0] ?? ''
+    if (!response.ok) reason = `HTTP ${response.status}`
+    else if (!type.startsWith('image/')) reason = `not an image (${type || 'no content-type'})`
+  } catch (error) {
+    reason = String(error)
+  }
+  if (reason === null) return head
+  console.warn(`⚠ cover unreachable, dropped: ${url}\n  ${reason}`)
+  return head.replace(COVER_LINE, '').replace(/\n{3,}/g, '\n\n')
+}
 const MAX_IMAGE_BYTES = 25 * 1024 * 1024
 
 export interface ImageSummary {
@@ -141,7 +181,6 @@ export async function materializeImages(options: {
       const urls = [
         ...new Set((raw.match(URL_PATTERN) ?? []).map((u) => u.replace(TRAILING_PUNCT, ''))),
       ].filter(isNotionAssetUrl)
-      if (urls.length === 0) continue
       const mapping = new Map<string, string>()
       // Replace longest first so a URL that is a prefix of another never
       // corrupts the longer one's tail.
@@ -149,7 +188,6 @@ export async function materializeImages(options: {
         const filename = await resolve(url)
         if (filename !== null) mapping.set(url, filename)
       }
-      if (mapping.size === 0) continue
       // Front matter keeps the contract's `assets/…` form; the body gets the
       // absolute path so deep routes (/blog/x/) resolve it.
       const bodyStart = raw.indexOf('\n---', 3)
@@ -159,6 +197,8 @@ export async function materializeImages(options: {
         head = head.replaceAll(url, `assets/${filename}`)
         body = body.replaceAll(url, `/assets/${filename}`)
       }
+      head = await dropDeadCover(head, fetchImpl)
+      if (head + body === raw) continue
       await writeFile(path, head + body)
     }
   }
