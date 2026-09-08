@@ -21,8 +21,7 @@ export interface GitStoreOptions {
  * request time. Responses are ETag-cached in memory, so unchanged files cost
  * a 304 instead of a body (and barely touch the rate limit). No push
  * channel: `watch` is absent; invalidation arrives via POST /api/revalidate
- * (the sync notify step). On Vercel that cache-drop is the ISR revalidate
- * path — the next request re-fetches from GitHub.
+ * (the sync notify step); the next request re-fetches from GitHub.
  */
 export class GitStore implements ContentStore {
   private readonly cache = new Map<string, CacheEntry>()

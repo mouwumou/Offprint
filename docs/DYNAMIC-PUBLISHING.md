@@ -14,7 +14,7 @@ ADR-003 规定 static 是默认与基线。"在 Notion 点发布、不碰仓库�
   sync 容器 (cron / webhook) ──▶ elog → 校验 → manifest → content/
                                ──▶ astro build (RUNTIME_MODE=static) → dist.new/
                                ──▶ 原子切换 dist/ → Caddy/Nginx 直接伺服
-GitHub Pages / Vercel 静态：
+GitHub Pages 静态：
   GitHub Action (schedule / dispatch) ──▶ elog → 校验 → commit content/ → 平台重新构建部署
 ```
 
@@ -28,7 +28,7 @@ server 模式在此之上换取秒级发布与运行时功能，代价见 `dev/P
 
 elog 不是常驻服务，而是一次性命令：读 Notion 数据库 → 写一批 markdown → 退出。因此"动态更新"拆成三个互相独立的子问题：
 
-| 子问题 | 自托管（Docker） | Serverless（Vercel / Netlify / CF） |
+| 子问题 | 自托管（Docker） | Serverless（仅作对比分析；ADR-025 已排除为目标） |
 | --- | --- | --- |
 | **触发**：谁来跑 elog | sidecar 容器内 cron + 可选 Notion webhook | GitHub Action（schedule + `repository_dispatch`） |
 | **存放**：产物放哪 | 共享 volume `/content`（`fs` store） | 推回仓库 / 对象存储（`git` / `s3` store） |

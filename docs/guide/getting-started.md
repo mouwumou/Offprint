@@ -30,7 +30,7 @@ pnpm build:static   # 产物在 dist/，node scripts/serve-dist.mjs dist 4331 �
 2. **`content/` 目录** —— 出版物（`publications.yaml`）、项目（`projects.yaml`）、CV（`cv.yaml`）、独立页面（`pages/*.md`）、首页排布（`home.yaml`）。每个文件是什么见 [content/README.md](../../content/README.md)，字段规范见 [CONTENT-CONTRACT.md](../CONTENT-CONTRACT.md)。
 3. **博客** —— 两种写法：直接把契约格式的 markdown 放进 `content/posts/`（注意此目录归同步管线管，开同步后勿手改）；或接上 Notion 让"点发布即上线"，见 [sync.md](sync.md)。
 
-改完 `git push`，Pages / Vercel 会自动重新部署。所有内容文件构建时经 schema 校验——拼错字段会得到指出位置的报错，而不是坏页面。
+改完 `git push`，Pages 会自动重新部署。所有内容文件构建时经 schema 校验——拼错字段会得到指出位置的报错，而不是坏页面。
 
 ## 下一步
 

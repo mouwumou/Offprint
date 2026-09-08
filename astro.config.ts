@@ -17,9 +17,9 @@ const siteUrl = process.env.SITE_URL ?? 'https://example.com'
 const base = basePathFromSiteUrl(siteUrl)
 
 // site.yaml `redirects` → Astro redirects (ADR-021): meta-refresh pages on
-// static hosts, platform-native rules under Vercel/Netlify/CF adapters, real
-// 30x responses under the node adapter (P1-10). Astro prefixes the SOURCES
-// with base but not the destinations, so internal targets get it here.
+// static hosts, real 30x responses under the node adapter (P1-10). Astro
+// prefixes the SOURCES with base but not the destinations, so internal
+// targets get it here.
 const withBase = (target: string): string => (target.startsWith('/') ? `${base}${target}` : target)
 const redirects = Object.fromEntries(
   Object.entries(siteConfig.redirects).map(([from, to]) => [
