@@ -48,7 +48,8 @@ profile:
 
 # ── 模块开关：false = 页面、导航、打包一起消失 ────────────────────────────────
 # 也可以写成对象来覆盖落地页文案，例如：
-#   blog: { title: { en: Field notes, zh: 田野笔记 }, colophon: false }
+#   blog: { title: { en: Field notes, zh: 田野笔记 }, colophon: false, related: false }
+#   （colophon 是文末"后记"框：false 隐藏，或给一段双语文字替换默认说明；related 是"相关文章"块）
 modules:
   blog: true
   pages: true

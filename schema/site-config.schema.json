@@ -270,6 +270,9 @@
                       ]
                     }
                   ]
+                },
+                "related": {
+                  "type": "boolean"
                 }
               },
               "additionalProperties": false

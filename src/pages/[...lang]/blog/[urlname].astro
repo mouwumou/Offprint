@@ -67,7 +67,7 @@ if (siteConfig.modules.publications.enabled && post.cite !== false) {
 }
 
 const allPosts = await getProvider().listPosts()
-const related = relatedPosts(allPosts, post, lang)
+const related = siteConfig.modules.blog.related === false ? [] : relatedPosts(allPosts, post, lang)
 const series = seriesNav(allPosts, post, lang)
 const postHref = (entry: { urlname: string; lang: string }) =>
   `${langPrefix(siteConfig, entry.lang)}/blog/${entry.urlname}`

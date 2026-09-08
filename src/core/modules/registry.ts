@@ -25,6 +25,8 @@ export interface ModuleSetting {
   title?: z.output<typeof localizedString> | undefined
   description?: z.output<typeof localizedString> | undefined
   colophon?: false | z.output<typeof localizedString> | undefined
+  /** blog: false hides the related-posts block under each post. */
+  related?: boolean | undefined
   /** cv: serve a PDF (assets/… or URL) instead of the HTML page. */
   pdf?: string | undefined
   /** cv: false adds a robots.txt Disallow for the PDF. */
@@ -50,6 +52,8 @@ export const moduleToggleWithColophon: z.ZodType<ModuleSetting, unknown> = toggl
   ...copyShape,
   /** Post colophon box override; false hides it. */
   colophon: z.union([z.literal(false), localizedString]).optional(),
+  /** false hides the related-posts block under each post (series nav stays). */
+  related: z.boolean().optional(),
 })
 
 export interface OffprintModuleDef {

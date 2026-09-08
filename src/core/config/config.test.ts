@@ -265,3 +265,14 @@ describe('i18n.noindex', () => {
     )
   })
 })
+
+describe('modules.blog options', () => {
+  it('accepts colophon: false and related: false', async () => {
+    const { defineConfig } = await import('./define-config')
+    const config = defineConfig({
+      profile: { name: 'A' },
+      modules: { blog: { colophon: false, related: false } },
+    })
+    expect(config.modules.blog).toMatchObject({ enabled: true, colophon: false, related: false })
+  })
+})
