@@ -64,8 +64,8 @@ pnpm lhci                # Lighthouse CI（desktop preset，阈值 0.95）
 
 ADR-001–025 已定（ADR-013 为方向已定、细节待敲定：lang/urlname 由 sync 派生，Notion 不加列，LLM 翻译管线另行设计）；配置在根目录 `site.yaml`（ADR-021，i18n.default = en），首页排布在 `content/home.yaml`，改 zod 配置 schema 后须 `pnpm gen:schema` 再生编辑器补全用的 JSON Schema。
 **阶段 0–3 已完成**（2026-08-23），ADR-015 编排层与外部审计的全部高中优先级修复已落地（2026-08-24）。唯一未完项是 P1-16（在维护者的**实例仓库**迁移真实内容上线，不在本模板内）。阶段 4（开源化）已因 ADR-017 部分启动；阶段 5 的主题系统（P5-2 全部）与模块注册（P5-1a/c/d）已提前完成（ADR-018/019/022，extensions/ 目录）。
-**本仓库是公开模板，GitHub 环境永不配置密钥**（ADR-017）：CI 与 Pages demo 只用 `GITHUB_TOKEN`；sync/Vercel 工作流由实例仓库的 `SYNC_ENABLED`/`DEPLOY_VERCEL` 变量开启；同步链的密钥验证在私有测试实例或服务器本地 `.env` 做。
-elog 实测为 1.0 插件式工作流，与契约的字段差异记录在 `CONTENT-CONTRACT.md` §7.1；部署 workflow 待模板推上 GitHub 后首跑验证（模板侧验证目标：CI 绿 + demo 部署成功 + sync/Vercel 显示 skipped）。
+**本仓库是公开模板，GitHub 环境永不配置密钥**（ADR-017）：CI 与 Pages demo 只用 `GITHUB_TOKEN`；sync 工作流由实例仓库的 `SYNC_ENABLED` 变量开启；同步链的密钥验证在私有测试实例或服务器本地 `.env` 做。
+elog 实测为 1.0 插件式工作流，与契约的字段差异记录在 `CONTENT-CONTRACT.md` §7.1；部署 workflow 已于 2026-09-07 在 GitHub 首跑验证：CI 双 Node 绿、Pages demo 子路径爬取零失败、sync 显示 skipped；Vercel 工作流已删除（ADR-025）。
 
 ## 远程 Docker 测试环境
 

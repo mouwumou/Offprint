@@ -152,6 +152,6 @@
 ## ADR-025 部署目标是完整运行时；不为 serverless 平台做专属工程 — 已定
 
 **背景**：维护者的 NotionNext 站在 Vercel 上出过问题，这是 Offprint 的起点之一。发布收尾阶段曾把 Vercel/Netlify 一键按钮的实测列为优先事项并提议平台专属配置（vercel.json、netlify.toml、平台环境变量兜底），维护者明确否定（2026-09-07）："不会为了 Vercel 做任何大规模调整，至多最终运行时做部署微调；大部分运行在 Docker、Cloudflare 这类带完整运行时的环境。"
-**决定**：一等公民是 **GitHub Pages（static 默认路径）与容器（Docker compose 双套；同一镜像可上任何有持久卷与常驻进程的平台）**。static 产物"任何静态托管都能放"是通用陈述，不给任何一家做专属文件或代码分支。**server 模式只做容器，不做 serverless 适配**：不引入 `@astrojs/vercel`/Workers 一类 adapter，不为无持久磁盘、有函数超时的运行时改造内容卷、同步子进程与进程内缓存。README 撤下 Vercel/Netlify 按钮；早前的可选 Vercel 静态部署工作流保留为便利项，注明不承诺维护。
+**决定**：一等公民是 **GitHub Pages（static 默认路径）与容器（Docker compose 双套；同一镜像可上任何有持久卷与常驻进程的平台）**。static 产物"任何静态托管都能放"是通用陈述，不给任何一家做专属文件或代码分支。**server 模式只做容器，不做 serverless 适配**：不引入 `@astrojs/vercel`/Workers 一类 adapter，不为无持久磁盘、有函数超时的运行时改造内容卷、同步子进程与进程内缓存。README 撤下 Vercel/Netlify 按钮；早前的可选 Vercel 静态部署工作流随即删除（2026-09-07），连同 sync 工作流里的触发与文档提法。
 **后果**：ROADMAP 中"Vercel/Netlify/CF adapter"方向作废；`CONTENT_STORE=git/s3` 仍保留（它们服务于多实例容器与内容外置，不是为 serverless 存在的）。贡献者提交平台专属适配时，先对照本条。
 

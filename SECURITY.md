@@ -13,7 +13,7 @@
 
 本仓库是**公开模板，永不持有密钥**：CI 与 GitHub Pages demo 只用 `GITHUB_TOKEN`。你的站点是从模板生成的**实例仓库**，密钥只存在于两处：
 
-- 实例仓库的 GitHub Secrets（`NOTION_TOKEN`、`VERCEL_TOKEN` 等，仅在开启对应功能时配置）；
+- 实例仓库的 GitHub Secrets（`NOTION_TOKEN` 等，仅在开启对应功能时配置）；
 - 自托管服务器本地的 `.env`（`.env.example` 列全了所有变量）。
 
 `.gitignore` 与 `.dockerignore` 均排除 `.env*`（保留 `.env.example`）；请勿以任何形式把密钥写进仓库或镜像。

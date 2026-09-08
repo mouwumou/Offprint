@@ -51,4 +51,4 @@ docker compose -f docker/compose.server.yaml up -d --build
 
 ## 其他静态托管
 
-`dist/` 是纯文件，任何静态托管都能放（Cloudflare Pages、Netlify、Vercel 等）：构建命令用 `pnpm build`（含搜索索引），产物目录 `dist`，把 `SITE_URL` 设成正式地址。本项目**不做平台专属配置**。仓库里保留了一个可选的 Vercel 部署工作流（`DEPLOY_VERCEL=true` 开启），是便利项而非支持目标，不承诺维护。
+`dist/` 是纯文件，任何静态托管都能放（Cloudflare Pages、Netlify、Vercel 等）：构建命令用 `pnpm build`（含搜索索引），产物目录 `dist`，把 `SITE_URL` 设成正式地址。本项目**不做平台专属配置**。

@@ -32,7 +32,7 @@ pnpm dev                     # 看结果
 
 ## 在 GitHub Actions 里自动同步（static 站）
 
-实例仓库（不是模板）的 **Settings → Variables** 加 `SYNC_ENABLED=true`，**Secrets** 加 `NOTION_TOKEN`、`NOTION_DB`。之后 `Sync content` 工作流每 30 分钟跑一次（也可在 Actions 页手动触发）：拉取 → 同步 → 有变化则提交 `content/` → 触发 Pages / Vercel 部署工作流。
+实例仓库（不是模板）的 **Settings → Variables** 加 `SYNC_ENABLED=true`，**Secrets** 加 `NOTION_TOKEN`、`NOTION_DB`。之后 `Sync content` 工作流每 30 分钟跑一次（也可在 Actions 页手动触发）：拉取 → 同步 → 有变化则提交 `content/` → 触发 Pages 部署工作流。
 
 没有这个变量时，工作流显示 skipped——模板仓库自己就是这个状态。
 

@@ -44,10 +44,8 @@ Everything an instance may need, all in your own repository's Settings, all opti
 | Variable | `SITE_URL` | Detected automatically on GitHub Pages (sub-paths like `user.github.io/repo` included); set it on other platforms |
 | Variable | `SYNC_ENABLED=true` | To let Actions sync from Notion every 30 minutes |
 | Secret | `NOTION_TOKEN`, `NOTION_DB` | Same |
-| Variable | `DEPLOY_VERCEL=true` | Optional, unsupported convenience: static deploy to Vercel through Actions |
-| Secret | `VERCEL_TOKEN`, `VERCEL_ORG_ID`, `VERCEL_PROJECT_ID` | Same |
 
-With nothing set, a push yields a GitHub Pages static site; the sync and Vercel workflows show as skipped. Self-hosted secrets (Docker, static or server mode) live only in a local `.env` on the server.
+With nothing set, a push yields a GitHub Pages static site; the sync workflow shows as skipped. Self-hosted secrets (Docker, static or server mode) live only in a local `.env` on the server.
 
 ## Documentation
 

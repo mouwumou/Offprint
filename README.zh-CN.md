@@ -44,10 +44,8 @@ pnpm build:static   # 纯静态构建 → dist/
 | Variable | `SITE_URL` | GitHub Pages 自动取得（含 `user.github.io/repo` 子路径），其他平台按需设置 |
 | Variable | `SYNC_ENABLED=true` | 要让 Actions 每 30 分钟从 Notion 同步 |
 | Secret | `NOTION_TOKEN`、`NOTION_DB` | 同上 |
-| Variable | `DEPLOY_VERCEL=true` | 可选、不承诺维护的便利项：经 Actions 把静态产物发到 Vercel |
-| Secret | `VERCEL_TOKEN`、`VERCEL_ORG_ID`、`VERCEL_PROJECT_ID` | 同上 |
 
-什么都不设时，推送即得 GitHub Pages 静态站，同步与 Vercel 工作流显示 skipped。自托管（Docker，static 或 server 模式）的密钥只放服务器本地 `.env`。
+什么都不设时，推送即得 GitHub Pages 静态站，同步工作流显示 skipped。自托管（Docker，static 或 server 模式）的密钥只放服务器本地 `.env`。
 
 ## 文档
 

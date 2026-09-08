@@ -15,7 +15,7 @@
               │
 运行模式   static（构建期调用 provider）   server（请求期调用 provider）
               │                                │
-部署       GH Pages / 任意 CDN                Docker(node) / Vercel / Netlify / CF
+部署       GH Pages / 任意静态托管            Docker(node) / 任意容器平台
 ```
 
 依赖方向只能向下：页面 → provider → store；core 不依赖 sync；sync 不依赖 core 的 UI，只依赖 core 的 schema。
@@ -127,12 +127,12 @@ rehype：`rehype-slug`、`rehype-autolink-headings`、`rehype-katex`（服务端
 
 ## 7. 部署
 
-仓库角色（ADR-017）：本仓库是公开**模板**，零外部密钥——CI 与 Pages demo 部署只用 `GITHUB_TOKEN`；用户站点是 "Use this template" 生成的**实例仓库**，Secrets/Variables 配在实例里（`SYNC_ENABLED` / `DEPLOY_VERCEL` 为显式开关，模板中未设则对应工作流 skipped）；自托管密钥只在服务器本地 `.env`。
+仓库角色（ADR-017）：本仓库是公开**模板**，零外部密钥——CI 与 Pages demo 部署只用 `GITHUB_TOKEN`；用户站点是 "Use this template" 生成的**实例仓库**，Secrets/Variables 配在实例里（`SYNC_ENABLED` 为显式开关，模板中未设则同步工作流 skipped）；自托管密钥只在服务器本地 `.env`。
 
 | 目标 | 模式 | 方式 |
 | --- | --- | --- |
 | GitHub Pages | static | `deploy-pages.yml`：build → upload artifact |
-| Vercel / Netlify / CF | static 或 server | 对应 adapter；一键部署按钮指向模板仓库 |
+| 其他静态托管（Cloudflare Pages 等） | static | 放 `dist/` 即可；不做平台专属配置，server 模式只做容器（ADR-025） |
 | Docker 自托管（默认） | static | `docker/compose.static.yaml`：Caddy 伺服 `dist/` + sync 容器（elog → build → 原子切换），见 `DYNAMIC-PUBLISHING.md` §0 |
 | Docker 自托管（可选） | server | `docker/compose.server.yaml`：site + sync + 共享 volume，见 `DYNAMIC-PUBLISHING.md` §5 |
 
