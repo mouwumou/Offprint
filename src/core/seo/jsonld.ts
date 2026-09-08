@@ -8,10 +8,14 @@ export function personJsonLd(config: SiteConfig, lang: string, siteUrl: string):
   const profile = config.profile
   const r = (value: Parameters<typeof resolveLocalized>[0]) =>
     resolveLocalized(value, lang, config.i18n.default)
+  // Deduplicated: the dedicated orcid/scholar fields and a visible link in
+  // profile.links may legitimately name the same URL.
   const sameAs = [
-    ...profile.links.map((link) => link.href),
-    ...(profile.orcid ? [`https://orcid.org/${profile.orcid}`] : []),
-    ...(profile.scholar ? [`https://scholar.google.com/citations?user=${profile.scholar}`] : []),
+    ...new Set([
+      ...profile.links.map((link) => link.href),
+      ...(profile.orcid ? [`https://orcid.org/${profile.orcid}`] : []),
+      ...(profile.scholar ? [`https://scholar.google.com/citations?user=${profile.scholar}`] : []),
+    ]),
   ]
   return {
     '@context': 'https://schema.org',
