@@ -500,6 +500,13 @@
                       }
                     }
                   ]
+                },
+                "pdf": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "indexable": {
+                  "type": "boolean"
                 }
               },
               "additionalProperties": false
@@ -772,6 +779,17 @@
             "radius"
           ]
         },
+        "typography": {
+          "type": "object",
+          "properties": {
+            "proseSize": {
+              "default": "1.0625rem",
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
         "options": {
           "type": "object",
           "description": "当前主题声明的选项（构建时按启用主题精确校验）",
@@ -793,6 +811,14 @@
         "locales": {
           "default": ["en", "zh"],
           "minItems": 1,
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2
+          }
+        },
+        "noindex": {
+          "default": [],
           "type": "array",
           "items": {
             "type": "string",

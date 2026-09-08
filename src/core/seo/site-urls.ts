@@ -22,10 +22,20 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
   // The static build emits directory URLs, so its sitemap ends every loc in
   // a slash — mirror that exactly (dual-mode parity for sitemaps).
   const slash = (path: string): string => (path.endsWith('/') ? path : `${path}/`)
+  // i18n.noindex locales are neither listed nor advertised as alternates.
+  const hidden = siteConfig.i18n.noindex
+  const isHidden = (path: string): boolean =>
+    hidden.some((locale) => {
+      const prefix = langPrefix(siteConfig, locale)
+      return path === prefix || path === `${prefix}/` || path.startsWith(`${prefix}/`)
+    })
   const push = (path: string, alternates: Alternate[]): void => {
+    if (isHidden(path)) return
     urls.push({
       path: slash(path),
-      alternates: alternates.map((alternate) => ({ ...alternate, path: slash(alternate.path) })),
+      alternates: alternates
+        .filter((alternate) => !hidden.includes(alternate.lang))
+        .map((alternate) => ({ ...alternate, path: slash(alternate.path) })),
     })
   }
   const uniform = (path: string): void => {
@@ -37,7 +47,7 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
 
   uniform('/')
   if (siteConfig.modules.projects.enabled) uniform('/projects')
-  if (siteConfig.modules.cv.enabled) uniform('/cv')
+  if (siteConfig.modules.cv.enabled && siteConfig.modules.cv.pdf === undefined) uniform('/cv')
   if (siteConfig.modules.publications.enabled) {
     uniform('/publications')
     for (const pub of await provider.listPublications()) {

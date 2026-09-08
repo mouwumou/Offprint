@@ -1,4 +1,5 @@
-import { moduleToggleWithColophon, registerModule } from './registry'
+import { z } from 'zod'
+import { moduleToggleWith, moduleToggleWithColophon, registerModule } from './registry'
 
 // The five built-in modules, registered on first import (config/schema.ts
 // imports this file for its side effect). Their routes remain file-based
@@ -49,6 +50,12 @@ registerModule({
 
 registerModule({
   id: 'cv',
+  // cv: { pdf: assets/cv.pdf } links the nav straight to the file and drops
+  // the HTML page; indexable: false keeps crawlers off it via robots.txt.
+  configSchema: moduleToggleWith({
+    pdf: z.string().min(1).optional(),
+    indexable: z.boolean().optional(),
+  }),
   enabledByDefault: true,
   nav: { path: '/cv', labelKey: 'nav.cv' },
   copy: { titleKey: 'cv.title' },

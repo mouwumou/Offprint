@@ -25,6 +25,10 @@ export interface ModuleSetting {
   title?: z.output<typeof localizedString> | undefined
   description?: z.output<typeof localizedString> | undefined
   colophon?: false | z.output<typeof localizedString> | undefined
+  /** cv: serve a PDF (assets/… or URL) instead of the HTML page. */
+  pdf?: string | undefined
+  /** cv: false adds a robots.txt Disallow for the PDF. */
+  indexable?: boolean | undefined
 }
 
 const toggle = (shape: z.ZodRawShape): z.ZodType<ModuleSetting, unknown> =>
@@ -36,6 +40,10 @@ const toggle = (shape: z.ZodRawShape): z.ZodType<ModuleSetting, unknown> =>
 
 /** boolean | { title?, description? } — the default config for a module. */
 export const moduleToggle: z.ZodType<ModuleSetting, unknown> = toggle(copyShape)
+
+/** boolean | { title?, description?, …shape } — for modules with their own options. */
+export const moduleToggleWith = (shape: z.ZodRawShape): z.ZodType<ModuleSetting, unknown> =>
+  toggle({ ...copyShape, ...shape })
 
 /** The blog's toggle additionally accepts the post-colophon override. */
 export const moduleToggleWithColophon: z.ZodType<ModuleSetting, unknown> = toggle({

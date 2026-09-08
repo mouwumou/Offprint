@@ -38,6 +38,12 @@ export const cssValue = z
   .min(1)
   .refine((v) => !/[<>;{}]/.test(v), 'CSS value must not contain < > ; { }')
 
+/** Prose size lives beside fonts (not in the color/radius token table). */
+export const typographySchema = z.strictObject({
+  /** Base font size of article bodies (`.prose`); 17px reads well for Latin and CJK alike. */
+  proseSize: cssValue.default('1.0625rem'),
+})
+
 // z.record over an enum key is exhaustive in zod 4: a missing token is an
 // error naming the key, an unknown token is rejected — exactly the contract.
 const tokenTable = z.record(z.enum(TOKEN_NAMES), cssValue)
@@ -78,6 +84,8 @@ export const themeManifestSchema = z.strictObject({
   name: z.string().min(1),
   voice: themeVoiceSchema,
   options: z.record(z.string(), themeOptionDeclSchema).prefault({}),
+  /** Body typography of rendered markdown; users override via site.yaml theme.typography. */
+  typography: typographySchema.prefault({}),
   /** Full token tables for both color schemes. */
   tokens: z.strictObject({ light: tokenTable, dark: tokenTable }),
   /** Complete font-family stacks (including CJK and system fallbacks). */

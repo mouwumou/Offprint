@@ -55,16 +55,21 @@ const canonical = canonicalOverride ?? new URL(Astro.url.pathname, site).toStrin
 const absoluteImage = image ? new URL(image, site).toString() : undefined
 const ogLocale = lang === 'zh' ? 'zh_CN' : lang === 'en' ? 'en_US' : lang
 const payloads = jsonLd === undefined ? [] : Array.isArray(jsonLd) ? jsonLd : [jsonLd]
-const defaultLangAlternate = alternates.find((a) => a.lang === config.i18n.default)
+// i18n.noindex: those locales are hidden from engines — robots noindex here,
+// and never advertised as hreflang alternates of the visible ones.
+const hiddenLocales = config.i18n.noindex
+const pageNoindex = noindex || hiddenLocales.includes(lang)
+const visibleAlternates = alternates.filter((a) => !hiddenLocales.includes(a.lang))
+const defaultLangAlternate = visibleAlternates.find((a) => a.lang === config.i18n.default)
 ---
 
 <title>{fullTitle}</title>
 {description && <meta name="description" content={description} />}
-{noindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
+{pageNoindex ? <meta name="robots" content="noindex" /> : <link rel="canonical" href={canonical} />}
 
 {
-  alternates.length > 1 &&
-    alternates.map((alternate) => (
+  visibleAlternates.length > 1 &&
+    visibleAlternates.map((alternate) => (
       <link
         rel="alternate"
         hreflang={alternate.lang}
@@ -73,7 +78,7 @@ const defaultLangAlternate = alternates.find((a) => a.lang === config.i18n.defau
     ))
 }
 {
-  alternates.length > 1 && defaultLangAlternate && (
+  visibleAlternates.length > 1 && defaultLangAlternate && (
     <link
       rel="alternate"
       hreflang="x-default"

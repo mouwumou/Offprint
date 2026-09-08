@@ -55,6 +55,7 @@ modules:
   publications: true
   projects: true
   cv: true
+#   cv: { pdf: assets/cv.pdf, indexable: false }   # CV 直接给 PDF 文件，不生成 HTML 页
 
 # ── 导航：不写 = 自动生成（首页 + 开着的模块 + nav:true 的独立页面）────────────
 # 写了就完全按这个列表来。三种条目：
@@ -89,12 +90,14 @@ header:
 #   name: paper
 #   accent: '#1756a9'           # 只换主色
 #   tokens: { radius: 0px }     # 逐个覆盖设计变量
+#   typography: { proseSize: 1rem }   # 正文字号（默认 1.0625rem = 17px）
 #   options: {}                 # 该主题声明的选项（编辑器有补全）
 
 # ── 语言：默认语言在根路径，其余带 /zh 一类前缀 ───────────────────────────────
 i18n:
   default: en
   locales: [en, zh]
+#   noindex: [zh]               # 这些语言不进搜索引擎（robots noindex + 不进 sitemap + Disallow）
 
 # ── 评论（giscus）：四个参数配齐才会开启 ──────────────────────────────────────
 # comments:

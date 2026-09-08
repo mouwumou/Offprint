@@ -16,7 +16,7 @@ describe('defineConfig', () => {
       news: { enabled: true },
     })
     expect(config.theme.name).toBe('scholar')
-    expect(config.i18n).toEqual({ default: 'en', locales: ['en', 'zh'] })
+    expect(config.i18n).toEqual({ default: 'en', locales: ['en', 'zh'], noindex: [] })
     expect(config.runtime).toEqual({ mode: 'static', store: 'fs' })
     expect(config.profile.nameVariants).toEqual([])
   })
@@ -251,5 +251,17 @@ describe('site-local module manifests (ADR-021)', () => {
     } finally {
       await rm('extensions/modules', { recursive: true, force: true })
     }
+  })
+})
+
+describe('i18n.noindex', () => {
+  it('accepts listed locales and rejects unknown ones', async () => {
+    const { defineConfig } = await import('./define-config')
+    expect(
+      defineConfig({ profile: { name: 'A' }, i18n: { noindex: ['zh'] } }).i18n.noindex,
+    ).toEqual(['zh'])
+    expect(() => defineConfig({ profile: { name: 'A' }, i18n: { noindex: ['fr'] } })).toThrow(
+      /noindex/,
+    )
   })
 })

@@ -57,6 +57,13 @@ export default defineConfig({
         defaultLocale: 'en',
         locales: { en: 'en', zh: 'zh-CN' },
       },
+      // i18n.noindex locales never enter the sitemap (server mode: site-urls.ts).
+      filter: (page) => {
+        const pathname = new URL(page).pathname
+        return !siteConfig.i18n.noindex.some(
+          (locale) => pathname === `${base}/${locale}` || pathname.startsWith(`${base}/${locale}/`),
+        )
+      },
     }),
   ],
   vite: {

@@ -3,7 +3,7 @@ import '../modules/builtin'
 import { buildModulesSchema, getModules } from '../modules/registry'
 import { localizedString } from '../schema/localized'
 import { redirectsSchema } from '../schema/redirects'
-import { cssValue, TOKEN_NAMES } from '../theme/contract'
+import { cssValue, TOKEN_NAMES, typographySchema } from '../theme/contract'
 
 // All config sections are strict objects: an unknown key is almost always a
 // typo and must fail the build, not be silently ignored (constraint: schema
@@ -193,6 +193,8 @@ export const themeSchema = z.strictObject({
     .optional(),
   /** Per-token overrides on top of the theme, applied to both schemes. */
   tokens: z.record(z.enum(TOKEN_NAMES), cssValue).optional(),
+  /** Article body typography (proseSize); overrides the theme's declaration. */
+  typography: typographySchema.partial().optional(),
   /** Values for the options the ACTIVE theme declares in its theme.json;
    * validated against that declaration at build (ADR-022). */
   options: z.record(z.string(), z.union([z.boolean(), z.string(), z.number()])).optional(),
@@ -205,10 +207,17 @@ export const i18nSchema = z
     /** Default language lives at the root path; the others get a URL prefix. */
     default: z.string().min(2).default('en'),
     locales: z.array(z.string().min(2)).nonempty().default(['en', 'zh']),
+    /** Locales kept out of search engines: robots noindex on their pages, no
+     * hreflang/sitemap entries, robots.txt Disallow. Pages stay reachable. */
+    noindex: z.array(z.string().min(2)).default([]),
   })
   .refine((value) => value.locales.includes(value.default), {
     message: 'i18n.default must be one of i18n.locales',
     path: ['default'],
+  })
+  .refine((value) => value.noindex.every((locale) => value.locales.includes(locale)), {
+    message: 'i18n.noindex entries must be listed in i18n.locales',
+    path: ['noindex'],
   })
 
 // ── runtime (ADR-003 / ADR-004) ──────────────────────────────────────────────

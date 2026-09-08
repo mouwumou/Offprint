@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { basePath } from './base'
 import { defineConfig } from './define-config'
-import { resolveNav, type NavPage } from './nav'
+import { cvHref, resolveNav, type NavPage } from './nav'
 
 // Spy-mocked so the sub-path tests can set a base without an Astro build.
 vi.mock('./base', { spy: true })
@@ -87,7 +87,9 @@ describe('resolveNav language fallback (ADR-007)', () => {
 })
 
 describe('deployment sub-path (ADR-023)', () => {
-  afterEach(() => vi.restoreAllMocks())
+  // mockReset (not restoreAllMocks): vitest 4 only restores vi.spyOn spies,
+  // so a spy-mocked module export would leak into the describes below.
+  afterEach(() => vi.mocked(basePath).mockReset())
 
   it('prefixes every href with the base, home stays slash-terminated', () => {
     vi.mocked(basePath).mockReturnValue('/repo')
@@ -110,5 +112,16 @@ describe('deployment sub-path (ADR-023)', () => {
       nav: [{ href: 'https://lab.example', label: 'Lab' }],
     })
     expect(resolveNav(config, 'en', [])[0]?.href).toBe('https://lab.example')
+  })
+})
+
+describe('modules.cv.pdf', () => {
+  it('points the CV nav item and cvHref at the file, without a language prefix', () => {
+    const config = defineConfig({ ...minimal, modules: { cv: { pdf: 'assets/cv.pdf' } } })
+    expect(resolveNav(config, 'zh', []).find((item) => item.label === '简历')?.href).toBe(
+      '/assets/cv.pdf',
+    )
+    expect(cvHref(config, 'zh')).toBe('/assets/cv.pdf')
+    expect(cvHref(defineConfig(minimal), 'zh')).toBe('/zh/cv')
   })
 })

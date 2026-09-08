@@ -51,7 +51,8 @@ const tokenBlock = (table: Record<string, string>): string =>
   Object.entries({ ...table, ...overrides })
     .map(([name, value]) => `--${name}:${value};`)
     .join('')
-const fontBlock = `--font-sans-stack:${manifest.fonts.sans};--font-serif-stack:${manifest.fonts.serif};--font-mono-stack:${manifest.fonts.mono};`
+const proseSize = config.theme.typography?.proseSize ?? manifest.typography.proseSize
+const fontBlock = `--font-sans-stack:${manifest.fonts.sans};--font-serif-stack:${manifest.fonts.serif};--font-mono-stack:${manifest.fonts.mono};--prose-size:${proseSize};`
 const themeCss = `:root{${tokenBlock(manifest.tokens.light)}${fontBlock}}.dark{${tokenBlock(manifest.tokens.dark)}}`
 ---
 

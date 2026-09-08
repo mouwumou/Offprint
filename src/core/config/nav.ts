@@ -1,4 +1,5 @@
 import { basePath } from './base'
+import { contentHref } from '../content/asset-url'
 import { useTranslations, type MessageKey } from '../i18n'
 import { getModule, getModules } from '../modules/registry'
 import { resolveLocalized, type LocalizedString } from '../schema/localized'
@@ -28,12 +29,23 @@ interface Target {
   key?: MessageKey | undefined
   label?: LocalizedString | undefined
   exact?: boolean
+  /** path is already a complete href (no language prefix): the CV PDF. */
+  absolute?: boolean
 }
 
-function moduleTarget(id: string): Target | null {
+function moduleTarget(config: SiteConfig, id: string): Target | null {
   if (id === 'home') return HOME_TARGET
   const nav = getModule(id)?.nav
-  return nav ? { path: nav.path, key: nav.labelKey, label: nav.label } : null
+  if (!nav) return null
+  const pdf = id === 'cv' ? config.modules['cv']?.pdf : undefined
+  if (pdf !== undefined) return { path: contentHref(pdf), key: nav.labelKey, absolute: true }
+  return { path: nav.path, key: nav.labelKey, label: nav.label }
+}
+
+/** The CV link: the PDF when modules.cv.pdf is set, else the HTML page. */
+export function cvHref(config: SiteConfig, lang: string): string {
+  const pdf = config.modules['cv']?.pdf
+  return pdf !== undefined ? contentHref(pdf) : `${langPrefix(config, lang)}/cv`
 }
 
 /**
@@ -62,14 +74,19 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
   const items: NavItem[] = []
 
   const pushModule = (name: string, label?: string): void => {
-    const target = moduleTarget(name)
+    const target = moduleTarget(config, name)
     if (target === null) return
     const fallback =
       target.key !== undefined
         ? t(target.key)
         : (resolveLocalized(target.label, lang, config.i18n.default) ?? name)
     items.push({
-      href: name === 'home' ? homePath(config, lang) : `${prefix}${target.path}`,
+      href:
+        name === 'home'
+          ? homePath(config, lang)
+          : target.absolute
+            ? target.path
+            : `${prefix}${target.path}`,
       label: label ?? fallback,
       ...(target.exact !== undefined && { exact: target.exact }),
     })

@@ -1,7 +1,7 @@
 ---
 import siteConfig from '../../config/current'
 import { contentHref } from '../../content/asset-url'
-import { langPrefix } from '../../config/nav'
+import { cvHref } from '../../config/nav'
 import { useTranslations } from '../../i18n'
 import { resolveLocalized } from '../../schema'
 
@@ -14,7 +14,6 @@ interface Props {
 
 const { lang } = Astro.props
 const t = useTranslations(lang)
-const prefix = langPrefix(siteConfig, lang)
 const profile = siteConfig.profile
 const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   resolveLocalized(value, lang, siteConfig.i18n.default)
@@ -27,7 +26,7 @@ if (profile.email) {
   quicklinks.push({ label: t('bio.email'), href: `mailto:${profile.email}`, external: false })
 }
 if (siteConfig.modules['cv']?.enabled) {
-  quicklinks.push({ label: t('nav.cv'), href: `${prefix}/cv`, external: false })
+  quicklinks.push({ label: t('nav.cv'), href: cvHref(siteConfig, lang), external: false })
 }
 for (const link of profile.links) {
   quicklinks.push({

@@ -45,5 +45,8 @@
     "sans": "'Inter Variable', 'Inter Variable fallback', ui-sans-serif, system-ui, 'PingFang SC', 'Hiragino Sans GB', 'Noto Sans CJK SC', 'Noto Sans SC', 'Microsoft YaHei', sans-serif",
     "serif": "'Newsreader Variable', 'Newsreader Variable fallback', ui-serif, Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'Noto Serif SC', SimSun, serif",
     "mono": "'JetBrains Mono Variable', 'JetBrains Mono Variable fallback', ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'PingFang SC', 'Noto Sans CJK SC', 'Microsoft YaHei', monospace"
+  },
+  "typography": {
+    "proseSize": "1.1875rem"
   }
 }

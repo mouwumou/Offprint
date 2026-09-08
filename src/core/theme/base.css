@@ -92,7 +92,7 @@
    --------------------------------------------------------------------------- */
 .prose {
   font-family: var(--font-serif);
-  font-size: 1.1875rem;
+  font-size: var(--prose-size, 1.0625rem);
   line-height: 1.72;
   color: var(--foreground);
   font-weight: 380;
