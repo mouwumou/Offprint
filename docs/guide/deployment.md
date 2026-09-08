@@ -52,3 +52,12 @@ docker compose -f docker/compose.server.yaml up -d --build
 ## 其他静态托管
 
 `dist/` 是纯文件，任何静态托管都能放（Cloudflare Pages、Netlify、Vercel 等）：构建命令用 `pnpm build`（含搜索索引），产物目录 `dist`，把 `SITE_URL` 设成正式地址。本项目**不做平台专属配置**。
+
+## 部署后验证
+
+```bash
+pnpm check:live https://你的站点地址/     # 与 SITE_URL 完全一致，含子路径
+```
+
+它从线上 sitemap 出发抓取每一页，检查页面引用的每个内部链接都在部署前缀之内且可达，并确认 robots.txt、feed 与搜索索引存在。内容无关，任何实例都能跑；模板自己的 demo 就是这样验收的。
+
