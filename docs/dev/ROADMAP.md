@@ -36,7 +36,7 @@
 - [x] P1-9 模块开关生效（关掉的模块无路由/导航/打包）（实测全关配置：仅产出 2 个首页，无导航/feed/CTA/section；完整路由注入 integration 留阶段 4）
 - [x] P1-10 `redirects.yaml` → 各平台重定向产物（GH Pages 用 meta refresh 页、Vercel/Netlify/CF 原生、node 中间件）（经 Astro 内建 redirects 配置实现：静态出 meta-refresh 页，node adapter 出真 301，平台 adapter 接入时自动译为原生规则；真实清单待维护者 P1-16 前提供）
 - [x] P1-11 CI：双模式构建 + 单测 + e2e + 内容校验（ci.yml，Node 22/24 矩阵；实际运行待仓库推到 GitHub 后验证）
-- [x] P1-12 GH Pages 与 Vercel 两条部署 workflow（deploy-pages.yml / deploy-vercel.yml；需配置 SITE_URL 变量与 Vercel secrets，运行待推仓库后验证）
+- [x] P1-12 GH Pages 与 Vercel 两条部署 workflow（deploy-pages.yml / deploy-vercel.yml；需配置 SITE_URL 变量与 Vercel secrets，运行待推仓库后验证）（deploy-vercel.yml 于 2026-09-07 删除，ADR-025）
 - [x] P1-13 `src/sync` 基础：elog 配置生成、staging、逐篇校验、manifest、原子切换（DYNAMIC-PUBLISHING §4，不含 notify）
 - [x] P1-14 sync 的 GitHub Action 形态：schedule/dispatch → elog → commit `content/` → 触发构建（sync.yml，30 分钟 cron + dispatch；需配置 NOTION_TOKEN/NOTION_DB secrets）
 - [x] P1-15 自托管静态：`docker/compose.static.yaml`（web 静态伺服 + sync 容器 elog→build→原子切换 dist/）（2026-08-23 dockertest 实测：首次发布原子切换成功、Caddy 200；无凭据时退化为仅构建已提交内容）
@@ -74,9 +74,9 @@
 
 ## 阶段 4 — 开源化（2 周）
 
-- [ ] P4-0 按 `src/core` / `src/sync` 边界拆为 pnpm workspace 包
-- [ ] P4-1 `@offprint/core`、`@offprint/sync` 发布到 npm（changesets）
-- [ ] P4-2 模板仓库 `offprint-template`（干净副本 + 示例内容）
+- [ ] ~~P4-0~~ **取消**（2026-09-07：ADR-022 的 `extensions/` 已承担主题/部件/模块的分发，拆 npm 包成本高收益低；等出现第三方需求再议）原任务：按 `src/core` / `src/sync` 边界拆为 pnpm workspace 包
+- [ ] ~~P4-1~~ **取消**（同 P4-0）原任务：`@offprint/core`、`@offprint/sync` 发布到 npm（changesets）
+- [ ] ~~P4-2~~ **取消**（被 ADR-017 取代：本仓库即模板）原任务：模板仓库 `offprint-template`（干净副本 + 示例内容）
 - [x] P4-3 部署路径：GH Pages workflow（零变量，子路径自动）+ Docker 双套 compose 为一等公民；根 `build` 脚本指向 `build:static`（含 pagefind）。README 的 Vercel/Netlify 一键按钮于 2026-09-07 撤下：部署目标是完整运行时（ADR-025），不为 serverless 平台做专属工程；可选 Vercel 工作流保留但不承诺维护
 - [ ] P4-4 文档站（用 core 自建）：快速开始、内容契约、elog 配置、部署、配置参考（2026-09-04：仓库内 `docs/guide/` 四篇使用文档 + `docs/README.md` 索引已就位，开发过程文件移入 `docs/dev/`；独立文档站未做）
 - [x] P4-5 LICENSE（已有）、CONTRIBUTING、CoC（Contributor Covenant 2.1）、SECURITY（含扩展信任模型）、issue/PR 模板（2026-08-26）
@@ -104,4 +104,4 @@ P5-1 与 P5-2 因 ADR-018/019 于 2026-08-24 提前启动，并行推进，任�
 - [ ] P5-1e 安装模块的路由通道（injectRoute）+ 示例模块（manifest 发现已上线：extensions/modules/<id>/module.yaml 自动注册，ADR-021/022）
 - [ ] P5-1 `OffprintModule` 对外稳定化，第三方模块示例（npm 分发形态，待阶段 4 拆包）
 - [ ] P5-1b 可选 loader：BibTeX 导入、手写 markdown 目录、Obsidian
-- [ ] P5-3 `create-offprint` CLI（脚手架只生成文本文件，不做交互式配置写入 — ADR-020）
+- [ ] P5-3（降级为可选："Use this template" 已满足需求）`create-offprint` CLI（脚手架只生成文本文件，不做交互式配置写入 — ADR-020）
