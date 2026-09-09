@@ -1,0 +1,51 @@
+# yaml-language-server: $schema=../schema/profile.schema.json
+#
+# 你是谁（ADR-028）。这是内容，不是配置：站点各处（首页头部、页脚、CV 页、
+# 分享图、feed、结构化数据）都从这里取作者信息。只有 name 必填，其余不填就不显示。
+# 每个字段显示在哪：
+#   name         <title> 后缀、站名、页脚、feed 作者、结构化数据       （必填）
+#   nameVariants 出版物作者行里把你加粗（各种署名写法）
+#   role         CV 页标题下、paper 主题首页大头区、结构化数据 jobTitle   （scholar 首页不显示）
+#   field        开了站名时的头部副标题、paper 大头区、分享图
+#   affiliation  页脚、paper 大头区、结构化数据                          （scholar 首页不显示）
+#   location     CV 页、paper 大头区
+#   email        首页快捷链接、CV 页、paper 大头区
+#   photo        首页头像 / paper 大头图 / og:image
+#   tagline      paper 大头区、feed 描述、首页分享描述
+#   bio          首页头部段落、about 块
+#   interests    about 块标签、结构化数据 knowsAbout
+#   orcid/scholar 结构化数据 sameAs（页面上的链接放 links）
+#   links        首页快捷链接、页脚、paper 大头区
+name: Mara Ellison Voss
+# 出版物作者行里加粗你自己时用到的各种署名写法：
+nameVariants: [M. E. Voss, Mara E. Voss, Mara Ellison Voss]
+role: { en: Postdoctoral Researcher, zh: 博士后研究员 }
+field: { en: Computational Neuroscience & Machine Learning, zh: 计算神经科学与机器学习 }
+affiliation:
+  en: Institute for Theoretical Neuroscience, ETH Zürich
+  zh: 苏黎世联邦理工学院理论神经科学研究所
+location: { en: 'Zürich, Switzerland', zh: 瑞士苏黎世 }
+email: m.voss@example.edu
+# 头像：content/assets 下的路径（assets/…）或绝对 URL
+photo: https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=900&h=1100&fit=crop&auto=format
+tagline:
+  en: I build models of how populations of neurons encode uncertainty — and I write, in public, about the messy parts of doing that work.
+  zh: 我为神经元群体如何编码不确定性建立模型，并公开写下这项工作中那些不那么光鲜的部分。
+bio:
+  - en: 'I study the geometry of neural population codes: how distributed activity across thousands of neurons represents belief, uncertainty, and time. My work sits between dynamical-systems theory and modern representation learning, and I care about models that are both predictive and interpretable.'
+    zh: 我研究神经群体编码的几何：数千个神经元的分布式活动如何表征信念、不确定性与时间。我的工作介于动力系统理论与现代表示学习之间，我在意的是既有预测力又可解释的模型。
+  - en: Before Zürich I completed my PhD at the Gatsby Computational Neuroscience Unit, where I worked on latent variable models for large-scale electrophysiology. I still write most of my analysis code in the open.
+    zh: 来苏黎世之前，我在 Gatsby 计算神经科学中心完成博士学位，研究大规模电生理数据的隐变量模型。我的分析代码大多仍然公开编写。
+interests:
+  - { en: Neural population geometry, zh: 神经群体几何 }
+  - { en: Latent variable models, zh: 隐变量模型 }
+  - { en: Uncertainty representation, zh: 不确定性表征 }
+  - { en: Interpretable deep learning, zh: 可解释深度学习 }
+  - { en: Open scientific tooling, zh: 开放科研工具 }
+orcid: 0000-0002-1825-0097
+scholar: sample123
+links:
+  - { label: Google Scholar, href: 'https://scholar.google.com', kind: scholar }
+  - { label: GitHub, href: 'https://github.com', kind: github }
+  - { label: ORCID, href: 'https://orcid.org', kind: orcid }
+  - { label: Bluesky, href: 'https://bsky.app', kind: bluesky }

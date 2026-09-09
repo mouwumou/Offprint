@@ -4,11 +4,12 @@ export {
   buildSiteConfigSchema,
   commentsSchema,
   i18nSchema,
-  profileLinkSchema,
-  profileSchema,
   runtimeSchema,
   themeSchema,
 } from './schema'
 export type { ModuleName, SiteConfig, SiteConfigInput } from './schema'
+// The author profile is content (ADR-028); re-exported here for callers that used to find it in the config.
+export { parseProfile, profileLinkSchema, profileSchema } from '../schema/profile'
+export type { Profile, ProfileInput } from '../schema/profile'
 export { defineModule, registerModule, getModules, getModule } from '../modules/registry'
 export type { OffprintModuleDef, ModuleSetting } from '../modules/registry'

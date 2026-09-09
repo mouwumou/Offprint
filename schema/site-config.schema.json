@@ -3,205 +3,6 @@
   "title": "Offprint site.yaml",
   "type": "object",
   "properties": {
-    "profile": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "type": "string"
-              }
-            }
-          ]
-        },
-        "nameVariants": {
-          "default": [],
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "role": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "type": "string"
-              }
-            }
-          ]
-        },
-        "field": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "type": "string"
-              }
-            }
-          ]
-        },
-        "affiliation": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "type": "string"
-              }
-            }
-          ]
-        },
-        "location": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "type": "string"
-              }
-            }
-          ]
-        },
-        "email": {
-          "type": "string",
-          "format": "email",
-          "pattern": "^(?!\\.)(?!.*\\.\\.)([A-Za-z0-9_'+\\-\\.]*)[A-Za-z0-9_+-]@([A-Za-z0-9][A-Za-z0-9\\-]*\\.)+[A-Za-z]{2,}$"
-        },
-        "photo": {
-          "type": "string"
-        },
-        "tagline": {
-          "anyOf": [
-            {
-              "type": "string"
-            },
-            {
-              "type": "object",
-              "propertyNames": {
-                "type": "string"
-              },
-              "additionalProperties": {
-                "type": "string"
-              }
-            }
-          ]
-        },
-        "bio": {
-          "default": [],
-          "type": "array",
-          "items": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string"
-                },
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
-            ]
-          }
-        },
-        "interests": {
-          "default": [],
-          "type": "array",
-          "items": {
-            "anyOf": [
-              {
-                "type": "string"
-              },
-              {
-                "type": "object",
-                "propertyNames": {
-                  "type": "string"
-                },
-                "additionalProperties": {
-                  "type": "string"
-                }
-              }
-            ]
-          }
-        },
-        "orcid": {
-          "type": "string",
-          "pattern": "^\\d{4}-\\d{4}-\\d{4}-\\d{3}[\\dX]$"
-        },
-        "scholar": {
-          "type": "string"
-        },
-        "links": {
-          "default": [],
-          "type": "array",
-          "items": {
-            "type": "object",
-            "properties": {
-              "label": {
-                "anyOf": [
-                  {
-                    "type": "string"
-                  },
-                  {
-                    "type": "object",
-                    "propertyNames": {
-                      "type": "string"
-                    },
-                    "additionalProperties": {
-                      "type": "string"
-                    }
-                  }
-                ]
-              },
-              "href": {
-                "type": "string",
-                "format": "uri"
-              },
-              "kind": {
-                "type": "string"
-              }
-            },
-            "required": ["label", "href"],
-            "additionalProperties": false
-          }
-        }
-      },
-      "required": ["name"],
-      "additionalProperties": false
-    },
     "modules": {
       "default": {},
       "type": "object",
@@ -838,6 +639,17 @@
       },
       "additionalProperties": false
     },
+    "seo": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "person": {
+          "default": true,
+          "type": "boolean"
+        }
+      },
+      "additionalProperties": false
+    },
     "runtime": {
       "default": {},
       "type": "object",
@@ -960,6 +772,5 @@
       }
     }
   },
-  "required": ["profile"],
   "additionalProperties": false
 }

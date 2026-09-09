@@ -34,9 +34,10 @@ const navPages = config.modules.pages.enabled
   ? pagesForLanguage(await getProvider().listPages(), lang)
   : []
 const nav = resolveNav(config, lang, navPages)
-// Brand block (ADR-015): configurable, defaulting to the profile.
-const name = resolveLocalized(config.profile.name, lang, config.i18n.default)
-const field = resolveLocalized(config.profile.field, lang, config.i18n.default)
+// Brand block (ADR-015): configurable, defaulting to the profile (content/profile.yaml, ADR-028).
+const profile = await getProvider().getProfile()
+const name = resolveLocalized(profile.name, lang, config.i18n.default)
+const field = resolveLocalized(profile.field, lang, config.i18n.default)
 const fieldShort = field?.split(/\s*[&＆]\s*/)[0]
 const brandTitle =
   config.header.title === false

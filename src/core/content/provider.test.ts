@@ -285,3 +285,22 @@ describe('createProvider · publications order (modules.publications.order)', ()
     expect(byTitle.map((p) => p.key)).toEqual(['alpha2026', 'zeta2026', 'old2025'])
   })
 })
+
+describe('createProvider · profile (ADR-028)', () => {
+  it('fails loudly when content/profile.yaml is missing', async () => {
+    await expect(createProvider(new FsStore(root)).getProfile()).rejects.toThrow(/profile\.yaml is missing/)
+  })
+
+  it('parses profile.yaml and applies defaults', async () => {
+    await writeFile(join(root, 'profile.yaml'), 'name: Ada Lovelace\nnameVariants: [A. Lovelace]\n')
+    const profile = await createProvider(new FsStore(root)).getProfile()
+    expect(profile.name).toBe('Ada Lovelace')
+    expect(profile.nameVariants).toEqual(['A. Lovelace'])
+    expect(profile.links).toEqual([])
+  })
+
+  it('names the file in validation errors', async () => {
+    await writeFile(join(root, 'profile.yaml'), 'name: Q\nemail: nope\n')
+    await expect(createProvider(new FsStore(root)).getProfile()).rejects.toThrow(/profile\.yaml/)
+  })
+})

@@ -38,6 +38,12 @@ export function loadSiteConfig(root: string = process.cwd()): SiteConfig {
       `${SITE_FILE} must not contain "home" — the homepage composition lives in ${HOME_FILE} (ADR-021)`,
     )
   }
+  if ('profile' in site) {
+    throw new Error(
+      `${SITE_FILE} must not contain "profile" — who you are is content and lives in content/profile.yaml (ADR-028). ` +
+        'Move the block there unchanged (drop the two-space indent); every field keeps its name.',
+    )
+  }
 
   const homePath = resolve(root, HOME_FILE)
   const home = existsSync(homePath) ? readYaml(homePath) : undefined

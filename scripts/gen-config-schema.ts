@@ -6,6 +6,7 @@
 import { mkdirSync, writeFileSync } from 'node:fs'
 import { z } from 'zod'
 import { buildSiteConfigSchema, homeSchema } from '../src/core/config/schema'
+import { profileSchema } from '../src/core/schema/profile'
 import { listThemes, resolveTheme } from '../src/core/theme/resolve'
 
 /** Editor completion for theme.options: the union of every installed
@@ -57,3 +58,4 @@ emit(
   'Offprint site.yaml',
 )
 emit('schema/home.schema.json', homeSchema, 'Offprint content/home.yaml')
+emit('schema/profile.schema.json', profileSchema, 'Offprint content/profile.yaml')

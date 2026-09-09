@@ -18,8 +18,9 @@ export async function feedData(
   const site = context.site ?? new URL('https://example.com')
   const prefix = langPrefix(siteConfig, lang)
   const posts = await getProvider().listPosts({ lang })
-  const name = resolveLocalized(siteConfig.profile.name, lang, siteConfig.i18n.default) ?? ''
-  const tagline = resolveLocalized(siteConfig.profile.tagline, lang, siteConfig.i18n.default) ?? ''
+  const profile = await getProvider().getProfile()
+  const name = resolveLocalized(profile.name, lang, siteConfig.i18n.default) ?? ''
+  const tagline = resolveLocalized(profile.tagline, lang, siteConfig.i18n.default) ?? ''
   return {
     meta: {
       title: name,

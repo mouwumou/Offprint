@@ -1,5 +1,6 @@
 ---
 import siteConfig from '../../config/current'
+import { getProvider } from '../../content'
 import { contentHref } from '../../content/asset-url'
 import { cvHref, langPrefix } from '../../config/nav'
 import { useTranslations } from '../../i18n'
@@ -13,7 +14,7 @@ interface Props {
 const { lang } = Astro.props
 const t = useTranslations(lang)
 const prefix = langPrefix(siteConfig, lang)
-const profile = siteConfig.profile
+const profile = await getProvider().getProfile()
 const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   resolveLocalized(value, lang, siteConfig.i18n.default)
 

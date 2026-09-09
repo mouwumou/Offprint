@@ -3,7 +3,7 @@ import { createRequire } from 'node:module'
 import { Resvg } from '@resvg/resvg-js'
 import satori from 'satori'
 import siteConfig from '../config/current'
-import { resolveLocalized } from '../schema'
+import { resolveLocalized, type Profile } from '../schema'
 
 // OG card generation (P3-4): satori (layout → SVG) + resvg (SVG → PNG),
 // entirely server-side. Static builds prerender the endpoint into PNG files;
@@ -76,10 +76,9 @@ const el = (
   children: unknown,
 ): Record<string, unknown> => ({ type, props: { style, children } })
 
-export async function renderOgImage(card: OgCard): Promise<Buffer> {
-  const name =
-    resolveLocalized(siteConfig.profile.name, card.lang, siteConfig.i18n.default) ?? 'Offprint'
-  const field = resolveLocalized(siteConfig.profile.field, card.lang, siteConfig.i18n.default)
+export async function renderOgImage(card: OgCard, profile: Profile): Promise<Buffer> {
+  const name = resolveLocalized(profile.name, card.lang, siteConfig.i18n.default) ?? 'Offprint'
+  const field = resolveLocalized(profile.field, card.lang, siteConfig.i18n.default)
   const titleSize = card.title.length > 70 ? 52 : card.title.length > 40 ? 60 : 72
 
   const tree = el(

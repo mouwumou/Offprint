@@ -31,7 +31,7 @@ pnpm dev            # http://localhost:4321 with the sample content
 pnpm build:static   # fully static build → dist/
 ```
 
-Change three things and it is your site: `site.yaml` (who you are, which modules, which theme), the `content/` directory (publications, projects, CV, standalone pages, home-page layout), and the blog (drop markdown into `content/posts/`, or connect Notion). Step-by-step in [docs/guide/getting-started.md](docs/guide/getting-started.md).
+Change three things and it is your site: `content/profile.yaml` (who you are), `site.yaml` (which modules, which theme), the rest of `content/` (publications, projects, CV, standalone pages, home-page layout), and the blog (drop markdown into `content/posts/`, or connect Notion). Step-by-step in [docs/guide/getting-started.md](docs/guide/getting-started.md).
 
 ## Use as a template
 

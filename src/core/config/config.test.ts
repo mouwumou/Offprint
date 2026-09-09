@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest'
 import { resolveLocalized } from '../schema/localized'
 import { defineConfig } from './define-config'
 
-const minimal = { profile: { name: 'Ada Lovelace' } }
+const minimal = {}
 
 describe('defineConfig', () => {
   it('accepts a minimal config and applies all defaults', () => {
@@ -18,19 +18,7 @@ describe('defineConfig', () => {
     expect(config.theme.name).toBe('scholar')
     expect(config.i18n).toEqual({ default: 'en', locales: ['en', 'zh'], noindex: [] })
     expect(config.runtime).toEqual({ mode: 'static', store: 'fs' })
-    expect(config.profile.nameVariants).toEqual([])
-  })
-
-  it('accepts localized values as plain strings or {en,zh} records', () => {
-    const config = defineConfig({
-      profile: {
-        name: { en: 'Ada Lovelace', zh: '阿达·洛芙莱斯' },
-        affiliation: 'Analytical Engine Lab',
-        links: [{ label: { en: 'Notes', zh: '笔记' }, href: 'https://example.com' }],
-      },
-    })
-    expect(config.profile.name).toEqual({ en: 'Ada Lovelace', zh: '阿达·洛芙莱斯' })
-    expect(config.profile.affiliation).toBe('Analytical Engine Lab')
+    expect(config.seo).toEqual({ person: true })
   })
 
   it('lets modules be switched off', () => {
@@ -51,17 +39,11 @@ describe('defineConfig', () => {
 
   it('rejects unknown keys anywhere (typo protection)', () => {
     expect(() => defineConfig({ ...minimal, modles: {} } as never)).toThrow(/Invalid site\.config/)
-    expect(() => defineConfig({ profile: { name: 'Q', afiliation: 'x' } } as never)).toThrow(
-      /Invalid site\.config/,
-    )
+    // profile moved to content/profile.yaml (ADR-028): a leftover block is now a typo-class error.
+    expect(() => defineConfig({ profile: { name: 'Q' } } as never)).toThrow(/Invalid site\.config/)
   })
 
   it('rejects malformed field values with the offending path in the message', () => {
-    expect(() => defineConfig({ profile: { name: 'Q', email: 'not-an-email' } })).toThrow(/email/)
-    expect(() => defineConfig({ profile: { name: 'Q', orcid: '1234' } })).toThrow(/ORCID/)
-    expect(() =>
-      defineConfig({ profile: { name: 'Q', links: [{ label: 'x', href: 'not a url' }] } }),
-    ).toThrow(/links/)
     expect(() => defineConfig({ ...minimal, theme: { accent: 'red' } })).toThrow(/hex color/)
     expect(() => defineConfig({ ...minimal, runtime: { mode: 'edge' } } as never)).toThrow(/mode/)
   })
@@ -257,12 +239,8 @@ describe('site-local module manifests (ADR-021)', () => {
 describe('i18n.noindex', () => {
   it('accepts listed locales and rejects unknown ones', async () => {
     const { defineConfig } = await import('./define-config')
-    expect(
-      defineConfig({ profile: { name: 'A' }, i18n: { noindex: ['zh'] } }).i18n.noindex,
-    ).toEqual(['zh'])
-    expect(() => defineConfig({ profile: { name: 'A' }, i18n: { noindex: ['fr'] } })).toThrow(
-      /noindex/,
-    )
+    expect(defineConfig({ i18n: { noindex: ['zh'] } }).i18n.noindex).toEqual(['zh'])
+    expect(() => defineConfig({ i18n: { noindex: ['fr'] } })).toThrow(/noindex/)
   })
 })
 
@@ -270,7 +248,6 @@ describe('modules.blog options', () => {
   it('accepts colophon: false and related: false', async () => {
     const { defineConfig } = await import('./define-config')
     const config = defineConfig({
-      profile: { name: 'A' },
       modules: { blog: { colophon: false, related: false } },
     })
     expect(config.modules.blog).toMatchObject({ enabled: true, colophon: false, related: false })
@@ -281,7 +258,6 @@ describe('modules.blog.search / modules.cv.indexable', () => {
   it('parses the search switch and the CV indexability flag', async () => {
     const { defineConfig } = await import('./define-config')
     const config = defineConfig({
-      profile: { name: 'A' },
       modules: { blog: { search: false }, cv: { indexable: false } },
     })
     expect(config.modules.blog).toMatchObject({ enabled: true, search: false })

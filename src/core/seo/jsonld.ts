@@ -1,11 +1,15 @@
 import type { SiteConfig } from '../config/schema'
 import type { Post } from '../content'
 import type { Stats } from '../content/markdown'
-import { resolveLocalized, type Publication } from '../schema'
+import { resolveLocalized, type Profile, type Publication } from '../schema'
 
 /** schema.org Person for the homepage (constraint 7). */
-export function personJsonLd(config: SiteConfig, lang: string, siteUrl: string): object {
-  const profile = config.profile
+export function personJsonLd(
+  profile: Profile,
+  config: SiteConfig,
+  lang: string,
+  siteUrl: string,
+): object {
   const r = (value: Parameters<typeof resolveLocalized>[0]) =>
     resolveLocalized(value, lang, config.i18n.default)
   // Deduplicated: the dedicated orcid/scholar fields and a visible link in
@@ -61,13 +65,14 @@ export function scholarlyArticlesJsonLd(
 
 /** schema.org BlogPosting for post pages (constraint 7). */
 export function blogPostingJsonLd(
+  profile: Profile,
   config: SiteConfig,
   post: Post,
   _stats: Stats,
   url: string,
   siteUrl: string,
 ): object {
-  const name = resolveLocalized(config.profile.name, post.lang, config.i18n.default)
+  const name = resolveLocalized(profile.name, post.lang, config.i18n.default)
   return {
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',

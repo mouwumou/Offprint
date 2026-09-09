@@ -39,12 +39,10 @@ export const GET: APIRoute = async ({ params }) => {
   const version = await getProvider().version()
   let hit = cache.get(key)
   if (hit === undefined || hit.version !== version) {
-    const png = await renderOgImage({
-      title: post.title,
-      kicker: post.categories[0],
-      date: formatDate(post.date, lang),
-      lang,
-    })
+    const png = await renderOgImage(
+      { title: post.title, kicker: post.categories[0], date: formatDate(post.date, lang), lang },
+      await getProvider().getProfile(),
+    )
     hit = { version, png }
     cache.set(key, hit)
   }

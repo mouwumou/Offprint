@@ -47,8 +47,8 @@ const impl = {
 }
 const t = useTranslations(lang)
 const fallback = siteConfig.i18n.default
-const profile = siteConfig.profile
 const provider = getProvider()
+const profile = await provider.getProfile()
 const modules = siteConfig.modules
 const sections = siteConfig.home.sections
 
@@ -98,14 +98,19 @@ const sectionTitle = (title: LocalizedString | undefined, key: MessageKey): stri
   image={profile.photo}
   alternates={uniformAlternates(siteConfig, '/')}
   jsonLd={[
-    personJsonLd(
-      siteConfig,
-      lang,
-      new URL(
-        homePath(siteConfig, siteConfig.i18n.default),
-        Astro.site ?? new URL('https://example.com'),
-      ).toString(),
-    ),
+    ...(siteConfig.seo.person
+      ? [
+          personJsonLd(
+            profile,
+            siteConfig,
+            lang,
+            new URL(
+              homePath(siteConfig, siteConfig.i18n.default),
+              Astro.site ?? new URL('https://example.com'),
+            ).toString(),
+          ),
+        ]
+      : []),
     ...scholarlyArticlesJsonLd(siteConfig, selected, lang),
   ]}
 >

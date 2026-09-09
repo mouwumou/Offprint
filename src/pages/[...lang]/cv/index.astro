@@ -98,8 +98,16 @@ const publications =
 // publications collection.
 const inlinePublications = cv.publicationsFromSite ? [] : cv.publications
 
-const name = r(siteConfig.profile.name)
-const role = r(siteConfig.profile.role)
+// content/profile.yaml is the single source; cv.yaml `basics` may override
+// per field (JSON Resume compatibility, ADR-028).
+const profile = await provider.getProfile()
+const name = r(cv.basics?.name) ?? r(profile.name)
+const role = r(cv.basics?.label) ?? r(profile.role)
+const email = cv.basics?.email ?? profile.email
+const cityLine = cv.basics?.location
+  ? [r(cv.basics.location.city), cv.basics.location.countryCode].filter(Boolean).join(', ')
+  : ''
+const location = cityLine !== '' ? cityLine : r(profile.location)
 const description = `${copy.title} — ${name}`
 ---
 
@@ -126,17 +134,19 @@ const description = `${copy.title} — ${name}`
         >
           {copy.title}
         </h1>
-        <p class="mt-3 font-serif text-lg text-muted-foreground">{name} · {role}</p>
+        <p class="mt-3 font-serif text-lg text-muted-foreground">
+          {[name, role].filter(Boolean).join(' · ')}
+        </p>
       </div>
       <div class="flex flex-col gap-1 font-mono text-xs text-muted-foreground sm:items-end">
         {
-          cv.basics?.email && (
-            <a href={`mailto:${cv.basics.email}`} class="text-primary hover:underline">
-              {cv.basics.email}
+          email && (
+            <a href={`mailto:${email}`} class="text-primary hover:underline">
+              {email}
             </a>
           )
         }
-        <span>{r(siteConfig.profile.location)}</span>
+        {location && <span>{location}</span>}
         <button
           type="button"
           onclick="window.print()"

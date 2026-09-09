@@ -168,3 +168,9 @@
 **决定**：两处 colophon 的缺省值改为**空**——只有 `site.yaml` 给了文字才显示（`footer.colophon`、`modules.blog.colophon`），i18n 里不再放默认文案。页脚只剩姓名、机构（如有）、链接与 © 年份；页脚间距随主题密度（compact 更紧）。
 **后果**：模板 demo 也不再自我署名；想展示该功能的实例在配置里写自己的话。原则推广：默认值只能是中性的（空、作者信息），任何"模板视角"的文案都不做默认。
 
+## ADR-028 作者信息是内容：profile 从 site.yaml 移到 content/profile.yaml，经 ContentProvider 提供 — 已定
+
+**背景**：ADR-021 定的分工是"site.yaml = 站点长什么样，content/ = 页面里显示什么"，但"你是谁"（姓名、职衔、bio、链接）一直住在 site.yaml，违反了自己的原则；维护者上线后发现填了一堆字段却在自己的主题里看不到效果（`role` 在 scholar 首页不显示），并提出"积木式"：site.yaml 只管结构，作者信息也应是可替换、可关的内容（2026-09-09）。
+**决定**：新增 `content/profile.yaml`（schema 在 `src/core/schema/profile.ts`，编辑器补全 `schema/profile.schema.json`），site.yaml 的 `profile` 段删除；仍留着的实例会得到指向迁移的报错。profile 走 **ContentProvider.getProfile()**——头部、页脚、`<title>`、feed、分享图、JSON-LD、首页部件、CV 页、文章页全部改从 provider 取，这比原来更符合约束 1，server 模式下改 profile 也即时生效。`cv.yaml` 的 `basics` 改为可选覆盖，profile 是唯一来源。呈现逐个可关（首页 `bio-header` 段、`footer.enabled`、`header.title`、新增 `seo.person`），但文件必须存在且至少有 `name`——站名与署名不能没有。每个字段"显示在哪"写进 CONTENT-CONTRACT §6 与样例文件注释。
+**后果**：site.yaml 从此不含任何内容，只有 modules、nav、layout、header、footer、theme、i18n、seo、comments、redirects；模块落地页文案（`blog.title` 等）视为标签留在 site.yaml。实例迁移是机械的：把 `profile:` 段整体挪到 `content/profile.yaml` 并去掉两格缩进。
+

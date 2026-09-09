@@ -48,6 +48,7 @@ export type {
   PageSummary,
   Post,
   PostSummary,
+  Profile,
   Publication,
   Resume,
 } from './provider'

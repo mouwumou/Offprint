@@ -32,7 +32,7 @@ offprint/
 ├─ content/                  # 维护者内容（sync 写入；模板用户替换）
 │  ├─ posts/<urlname>.<lang>.md
 │  ├─ pages/<slug>.<lang>.md # Notion type=Page 的独立页面（About、Now…）
-│  ├─ publications.yaml  projects.yaml  cv.yaml  talks.yaml  news.yaml
+│  ├─ profile.yaml  publications.yaml  projects.yaml  cv.yaml  talks.yaml  news.yaml
 │  ├─ assets/
 │  └─ manifest.json
 ├─ src/

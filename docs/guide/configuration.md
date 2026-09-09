@@ -5,7 +5,7 @@ Offprint 的配置只经**文本文件**（ADR-020/021），没有交互式向�
 | 层 | 文件 | 管什么 |
 | --- | --- | --- |
 | 站点 | 根目录 `site.yaml` | 站点**长什么样**：个人资料、模块开关、导航、头尾、主题、语言、评论、跳转 |
-| 内容 | `content/` | 页面里**显示什么**：出版物、项目、CV、独立页面、近况；首页**怎么排**在 `content/home.yaml` |
+| 内容 | `content/` | **你是谁**在 `content/profile.yaml`；页面里**显示什么**：出版物、项目、CV、独立页面、近况；首页**怎么排**在 `content/home.yaml` |
 | 扩展 | `extensions/` | **装进来**的第三方主题与部件（只读安装，可调项全部回到 `site.yaml` 配） |
 
 密钥不属于配置，只走 `.env`（见 [deployment.md](deployment.md)）。
@@ -27,7 +27,7 @@ title: { en: Hello, zh: 你好 }     # 分别指定
 
 文件本身每一节都有中文注释与示例，这里只说各节回答什么问题；键的完整清单以文件与 schema 补全为准，不在此处重复。
 
-- **`profile`** —— 你是谁。姓名（含出版物作者行加粗用的 `nameVariants`）、职衔、机构、邮箱、头像、tagline、bio 段落、研究兴趣、ORCID / Scholar、社交链接。首页、页脚、JSON-LD 与 Highwire meta 都从这一节取。
+- **`seo`** —— `person: false` 不在首页输出 schema.org Person（作者信息本身在 `content/profile.yaml`，见 [CONTENT-CONTRACT §6](../CONTENT-CONTRACT.md)）。
 - **`modules`** —— 站点有哪些部分。`blog` / `pages` / `publications` / `projects` / `cv` 五个开关；`false` 意味着路由、导航、打包一起消失（约束 5）。写成对象可覆盖落地页文案。`blog: { colophon: {…}, related: false, search: false }`：`colophon` 给一段双语文字才会在文末出现"后记"框（默认没有）；`related: false` 隐藏"相关文章"块；`search: false` 整个去掉站内搜索（不生成搜索页、不建索引、头部按钮消失；`header.search: false` 只是藏按钮）。`publications: { order: file }` 决定同一年内的顺序：`file`（按 `publications.yaml` 里写的顺序，默认——一作论文排前就靠它）、`key`、`title`；年份始终从新到旧。`cv: { indexable: false }` 让 HTML 简历页不进搜索引擎（robots noindex、不进 sitemap 与 hreflang、robots.txt Disallow）；`cv: { pdf: assets/cv.pdf, indexable: false }` 则让导航直接指向 PDF 文件、不生成 HTML 页，并 Disallow 该文件。
 - **`nav`** —— 导航栏。不写则自动生成（首页 + 开着的模块 + `nav: true` 的独立页面）；写了就完全按列表来，条目可以是模块、独立页面或任意链接。
 - **`layout.width`** —— 全站栏宽，`narrow`（学术窄栏，默认）或 `wide`（配 paper 主题）。全站统一，含导航与页脚。
@@ -41,6 +41,7 @@ title: { en: Hello, zh: 你好 }     # 分别指定
 
 | 文件 / 目录 | 内容 | 谁写 |
 | --- | --- | --- |
+| `profile.yaml` | 你是谁：姓名、职衔、机构、头像、bio、链接；站点各处都从这里取，字段与显示位置见 [CONTENT-CONTRACT §6](../CONTENT-CONTRACT.md) | 你 |
 | `home.yaml` | 首页从上到下的块与顺序；删掉即用内置默认 | 你 |
 | `publications.yaml` | 出版物列表（Cite 弹窗、Highwire meta 由此生成） | 你 |
 | `projects.yaml` | 项目列表 | 你 |

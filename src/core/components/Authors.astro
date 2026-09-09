@@ -1,5 +1,5 @@
 ---
-import config from '../config/current'
+import { getProvider } from '../content'
 import { markAuthors } from '../content/authors'
 
 interface Props {
@@ -7,7 +7,7 @@ interface Props {
 }
 
 const { authors } = Astro.props
-const marked = markAuthors(authors, config.profile.nameVariants)
+const marked = markAuthors(authors, (await getProvider().getProfile()).nameVariants)
 ---
 
 <p class="mt-1 text-sm text-muted-foreground">

@@ -9,38 +9,7 @@ import { cssValue, TOKEN_NAMES, typographySchema } from '../theme/contract'
 // typo and must fail the build, not be silently ignored (constraint: schema
 // is the validation).
 
-// ── profile (CONTENT-CONTRACT §6) ────────────────────────────────────────────
-
-export const profileLinkSchema = z.strictObject({
-  label: localizedString,
-  href: z.url(),
-  /** Known kinds (scholar | orcid | github | …) get icons; open set. */
-  kind: z.string().optional(),
-})
-
-export const profileSchema = z.strictObject({
-  name: localizedString,
-  /** Byline spellings across languages, used to highlight the author in publication lists. */
-  nameVariants: z.array(z.string()).default([]),
-  role: localizedString.optional(),
-  field: localizedString.optional(),
-  affiliation: localizedString.optional(),
-  location: localizedString.optional(),
-  email: z.email().optional(),
-  /** Path under content/assets or an absolute URL. */
-  photo: z.string().optional(),
-  tagline: localizedString.optional(),
-  bio: z.array(localizedString).default([]),
-  interests: z.array(localizedString).default([]),
-  /** Dedicated fields (not just links[]) so SEO can emit JSON-LD sameAs and Highwire meta. */
-  orcid: z
-    .string()
-    .regex(/^\d{4}-\d{4}-\d{4}-\d{3}[\dX]$/, 'expected an ORCID iD like 0000-0002-1825-0097')
-    .optional(),
-  /** Google Scholar user id. */
-  scholar: z.string().optional(),
-  links: z.array(profileLinkSchema).default([]),
-})
+// ── profile: moved to content/profile.yaml (ADR-028) — see src/core/schema/profile.ts
 
 // ── modules (ADR-019: composed from the module registry at call time) ────────
 
@@ -255,6 +224,13 @@ export const commentsSchema = z
     { message: 'comments.enabled requires repo, repoId, category, and categoryId' },
   )
 
+// ── seo ──────────────────────────────────────────────────────────────────────
+
+export const seoSchema = z.strictObject({
+  /** Emit the schema.org Person block (from content/profile.yaml) on the home page. */
+  person: z.boolean().default(true),
+})
+
 // ── site config ──────────────────────────────────────────────────────────────
 
 /**
@@ -264,7 +240,6 @@ export const commentsSchema = z
  */
 export function buildSiteConfigSchema() {
   return z.strictObject({
-    profile: profileSchema,
     modules: buildModulesSchema().prefault({}),
     /** Absent → theme default: home, enabled modules, then nav:true pages. */
     nav: z.array(buildNavEntrySchema()).optional(),
@@ -274,6 +249,7 @@ export function buildSiteConfigSchema() {
     footer: footerSchema.prefault({}),
     theme: themeSchema.prefault({}),
     i18n: i18nSchema.prefault({}),
+    seo: seoSchema.prefault({}),
     runtime: runtimeSchema.prefault({}),
     comments: commentsSchema.prefault({}),
     /** Old URL → new URL (P1-10); formerly the standalone redirects.yaml. */

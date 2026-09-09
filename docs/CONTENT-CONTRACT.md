@@ -95,9 +95,27 @@ BibTeX 文件导入作为可选 loader 留给模板用户（阶段 5）。
 
 文件缺失 = 首页不渲染 news 块。v1 无归档页（维护者决定）。
 
-## 6. profile（`site.yaml`）
+## 6. profile（`content/profile.yaml`，ADR-028）
 
-`name`（`{en,zh}` 允许）、`nameVariants`（所有语言的署名写法，用于作者高亮）、`role`、`field`、`affiliation`、`location`、`email`、`photo`、`tagline`、`bio[]`、`interests[]`、`links[]`（`label`、`href`、`kind: scholar|orcid|github|…`）。`orcid` 与 `scholar` 单独字段以便输出 JSON-LD `sameAs` 与 Highwire meta。
+你是谁。这是内容，不是配置：只有 `name` 必填，其余不填就不显示；各处渲染都经 `ContentProvider.getProfile()` 取。`cv.yaml` 的 `basics` 与之重叠的字段（姓名、头衔、邮箱、地点）以本文件为准，`basics` 仅作按 CV 覆盖。
+
+| 字段 | 类型 | 显示在哪 |
+| --- | --- | --- |
+| `name` | LocalizedString（必填） | `<title>` 后缀、站名、页脚、feed 作者、结构化数据 |
+| `nameVariants` | string[] | 出版物作者行里加粗你自己（各语言的署名写法） |
+| `role` | LocalizedString | CV 页标题下、paper 主题首页大头区、结构化数据 `jobTitle`（scholar 首页不显示） |
+| `field` | LocalizedString | 开了站名时的头部副标题、paper 大头区、分享图 |
+| `affiliation` | LocalizedString | 页脚、paper 大头区、结构化数据 `affiliation`（scholar 首页不显示） |
+| `location` | LocalizedString | CV 页、paper 大头区 |
+| `email` | email | 首页快捷链接、CV 页、paper 大头区、结构化数据 |
+| `photo` | `assets/…` 或 URL | 首页头像、paper 大头图、`og:image` |
+| `tagline` | LocalizedString | paper 大头区、feed 描述、首页分享描述 |
+| `bio` | LocalizedString[] | 首页头部段落、about 块 |
+| `interests` | LocalizedString[] | about 块标签、结构化数据 `knowsAbout` |
+| `orcid` / `scholar` | string | 结构化数据 `sameAs`（页面上的可见链接放 `links`） |
+| `links` | `{ label, href, kind? }[]` | 首页快捷链接、页脚、paper 大头区、结构化数据 `sameAs` |
+
+呈现可以逐个关：首页头部从 `content/home.yaml` 的 sections 里删掉 `bio-header`，页脚 `footer.enabled: false`，站名 `header.title: false`，结构化数据 `seo.person: false`。文件本身不能没有——站名与署名都需要 `name`。
 
 ## 6a. pages（独立页面）
 

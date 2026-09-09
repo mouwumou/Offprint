@@ -1,5 +1,6 @@
 ---
 import config from '../config/current'
+import { getProvider } from '../content'
 import { resolveLocalized } from '../schema'
 import type { Alternate } from './alternates'
 
@@ -49,7 +50,8 @@ const jsonLdSafe = (payload: object): string =>
   )
 
 const site = Astro.site ?? new URL('https://example.com')
-const siteName = resolveLocalized(config.profile.name, lang, config.i18n.default) ?? 'Offprint'
+const profile = await getProvider().getProfile()
+const siteName = resolveLocalized(profile.name, lang, config.i18n.default) ?? 'Offprint'
 const fullTitle = title === siteName ? siteName : `${title} · ${siteName}`
 const canonical = canonicalOverride ?? new URL(Astro.url.pathname, site).toString()
 const absoluteImage = image ? new URL(image, site).toString() : undefined

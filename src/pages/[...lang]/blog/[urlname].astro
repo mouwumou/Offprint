@@ -67,6 +67,7 @@ if (siteConfig.modules.publications.enabled && post.cite !== false) {
 }
 
 const allPosts = await getProvider().listPosts()
+const profile = await getProvider().getProfile()
 const related = siteConfig.modules.blog.related === false ? [] : relatedPosts(allPosts, post, lang)
 const series = seriesNav(allPosts, post, lang)
 const postHref = (entry: { urlname: string; lang: string }) =>
@@ -97,9 +98,9 @@ const citePost = post.cite
       pubSchema.parse({
         key: post.urlname,
         title: post.title,
-        authors: [resolveLocalized(siteConfig.profile.name, lang, siteConfig.i18n.default) ?? ''],
+        authors: [resolveLocalized(profile.name, lang, siteConfig.i18n.default) ?? ''],
         year: post.date.getUTCFullYear(),
-        venue: resolveLocalized(siteConfig.profile.name, lang, siteConfig.i18n.default) ?? 'Blog',
+        venue: resolveLocalized(profile.name, lang, siteConfig.i18n.default) ?? 'Blog',
         type: 'preprint',
         website: postUrl,
         ...(post.doi ? { doi: post.doi } : {}),
@@ -114,6 +115,7 @@ const citeLabels = {
   close: t('cite.close'),
 }
 const jsonLd = blogPostingJsonLd(
+  profile,
   siteConfig,
   post,
   rendered,

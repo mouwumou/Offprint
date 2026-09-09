@@ -1,14 +1,20 @@
+import { readFileSync } from 'node:fs'
 import { expect, test } from '@playwright/test'
+import YAML from 'yaml'
 import { loadSiteConfig } from '../src/core/config/load'
 import { resolveLocalized } from '../src/core/schema/localized'
+import { parseProfile } from '../src/core/schema/profile'
 
 const siteConfig = loadSiteConfig()
+// The author's name is content (content/profile.yaml, ADR-028), read the
+// same way the site does — no sample-content strings in the test.
+const profile = parseProfile(YAML.parse(readFileSync('content/profile.yaml', 'utf8')))
 
-// Content-agnostic smoke: expectations come from site.yaml, the same
-// source of truth the pages render from — no sample-content strings.
+// Content-agnostic smoke: expectations come from site.yaml and profile.yaml,
+// the same sources of truth the pages render from.
 const defaultLang = siteConfig.i18n.default
 const otherLang = siteConfig.i18n.locales.find((locale) => locale !== defaultLang)
-const name = (lang: string) => resolveLocalized(siteConfig.profile.name, lang, defaultLang) ?? ''
+const name = (lang: string) => resolveLocalized(profile.name, lang, defaultLang) ?? ''
 
 test('homepage renders the profile hero with site chrome', async ({ page }) => {
   await page.goto('/')

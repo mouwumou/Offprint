@@ -1,50 +1,14 @@
 # yaml-language-server: $schema=schema/site-config.schema.json
 #
 # ──────────────────────────────────────────────────────────────────────────────
-# Offprint 站点配置（ADR-021）。这一个文件 = 站点长什么样。
-# 页面里显示什么在 content/ 目录；首页的排布在 content/home.yaml；
+# Offprint 站点配置（ADR-021）。这一个文件 = 站点长什么样，不含任何内容。
+# 你是谁在 content/profile.yaml（ADR-028）；页面里显示什么在 content/ 目录；首页的排布在 content/home.yaml；
 # 装进来的扩展（主题/部件/模块）在 extensions/。密钥只放 .env，永不进仓库。
 #
 # 所有键都会在构建时校验：拼错键、类型不对会直接报错并指出位置。
 # 双语字段两种写法都行：  title: Hello   或   title: { en: Hello, zh: 你好 }
 # 不需要的行注释掉即可。
 # ──────────────────────────────────────────────────────────────────────────────
-
-# ── 个人资料：首页、页脚、SEO（JSON-LD / Highwire meta）都从这里取 ──────────────
-profile:
-  name: Mara Ellison Voss
-  # 出版物作者行里加粗你自己时用到的各种署名写法：
-  nameVariants: [M. E. Voss, Mara E. Voss, Mara Ellison Voss]
-  role: { en: Postdoctoral Researcher, zh: 博士后研究员 }
-  field: { en: Computational Neuroscience & Machine Learning, zh: 计算神经科学与机器学习 }
-  affiliation:
-    en: Institute for Theoretical Neuroscience, ETH Zürich
-    zh: 苏黎世联邦理工学院理论神经科学研究所
-  location: { en: 'Zürich, Switzerland', zh: 瑞士苏黎世 }
-  email: m.voss@example.edu
-  # 头像：content/assets 下的路径（assets/…）或绝对 URL
-  photo: https://images.unsplash.com/photo-1506863530036-1efeddceb993?w=900&h=1100&fit=crop&auto=format
-  tagline:
-    en: I build models of how populations of neurons encode uncertainty — and I write, in public, about the messy parts of doing that work.
-    zh: 我为神经元群体如何编码不确定性建立模型，并公开写下这项工作中那些不那么光鲜的部分。
-  bio:
-    - en: 'I study the geometry of neural population codes: how distributed activity across thousands of neurons represents belief, uncertainty, and time. My work sits between dynamical-systems theory and modern representation learning, and I care about models that are both predictive and interpretable.'
-      zh: 我研究神经群体编码的几何：数千个神经元的分布式活动如何表征信念、不确定性与时间。我的工作介于动力系统理论与现代表示学习之间，我在意的是既有预测力又可解释的模型。
-    - en: Before Zürich I completed my PhD at the Gatsby Computational Neuroscience Unit, where I worked on latent variable models for large-scale electrophysiology. I still write most of my analysis code in the open.
-      zh: 来苏黎世之前，我在 Gatsby 计算神经科学中心完成博士学位，研究大规模电生理数据的隐变量模型。我的分析代码大多仍然公开编写。
-  interests:
-    - { en: Neural population geometry, zh: 神经群体几何 }
-    - { en: Latent variable models, zh: 隐变量模型 }
-    - { en: Uncertainty representation, zh: 不确定性表征 }
-    - { en: Interpretable deep learning, zh: 可解释深度学习 }
-    - { en: Open scientific tooling, zh: 开放科研工具 }
-  orcid: 0000-0002-1825-0097
-  scholar: sample123
-  links:
-    - { label: Google Scholar, href: 'https://scholar.google.com', kind: scholar }
-    - { label: GitHub, href: 'https://github.com', kind: github }
-    - { label: ORCID, href: 'https://orcid.org', kind: orcid }
-    - { label: Bluesky, href: 'https://bsky.app', kind: bluesky }
 
 # ── 模块开关：false = 页面、导航、打包一起消失 ────────────────────────────────
 # 也可以写成对象来覆盖落地页文案，例如：
@@ -95,6 +59,10 @@ header:
 #   tokens: { radius: 0px }     # 逐个覆盖设计变量
 #   typography: { proseSize: 1rem }   # 正文字号（默认 1.0625rem = 17px）
 #   options: {}                 # 该主题声明的选项（编辑器有补全）
+
+# ── SEO ───────────────────────────────────────────────────────────────────────
+# seo:
+#   person: false               # 不在首页输出 schema.org Person 结构化数据
 
 # ── 语言：默认语言在根路径，其余带 /zh 一类前缀 ───────────────────────────────
 i18n:

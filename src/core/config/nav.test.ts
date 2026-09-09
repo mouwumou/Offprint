@@ -6,7 +6,7 @@ import { cvHref, resolveNav, type NavPage } from './nav'
 // Spy-mocked so the sub-path tests can set a base without an Astro build.
 vi.mock('./base', { spy: true })
 
-const minimal = { profile: { name: 'Ada Lovelace' } }
+const minimal = {}
 
 const pages: NavPage[] = [
   { slug: 'about', title: 'About', lang: 'en', nav: true },

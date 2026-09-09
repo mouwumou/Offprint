@@ -26,7 +26,7 @@ pnpm build:static   # 产物在 dist/，node scripts/serve-dist.mjs dist 4331 �
 
 改三处，每处保存后 `pnpm dev` 里即时可见：
 
-1. **`site.yaml`** —— 个人资料（姓名、职衔、机构、头像、社交链接）、开关模块、导航、主题。所有键都有中文注释，配好编辑器还有自动补全（见 [configuration.md](configuration.md)）。
+1. **`content/profile.yaml`** —— 你是谁：姓名、职衔、机构、头像、bio、链接（只有姓名必填）。**`site.yaml`** —— 开关模块、导航、主题、语言。所有键都有中文注释，配好编辑器还有自动补全（见 [configuration.md](configuration.md)）。
 2. **`content/` 目录** —— 出版物（`publications.yaml`）、项目（`projects.yaml`）、CV（`cv.yaml`）、独立页面（`pages/*.md`）、首页排布（`home.yaml`）。每个文件是什么见 [content/README.md](../../content/README.md)，字段规范见 [CONTENT-CONTRACT.md](../CONTENT-CONTRACT.md)。
 3. **博客** —— 两种写法：直接把契约格式的 markdown 放进 `content/posts/`（注意此目录归同步管线管，开同步后勿手改）；或接上 Notion 让"点发布即上线"，见 [sync.md](sync.md)。
 

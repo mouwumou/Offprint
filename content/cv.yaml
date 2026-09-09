@@ -1,13 +1,7 @@
 # Sample CV (template data, ADR-010) — JSON Resume schema in YAML, with the
 # contract's extensions: localized {en,zh} text, teaching[], and
 # publicationsFromSite (renders content/publications.yaml).
-basics:
-  name: Mara Ellison Voss
-  label: { en: Postdoctoral Researcher, zh: 博士后研究员 }
-  email: m.voss@example.edu
-  location:
-    city: { en: Zürich, zh: 苏黎世 }
-    countryCode: CH
+# basics（姓名、头衔、邮箱、地点）来自 content/profile.yaml；这里只在需要按 CV 覆盖时才写。
 
 publicationsFromSite: true
 

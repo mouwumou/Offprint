@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto'
 import matter from 'gray-matter'
 import YAML from 'yaml'
 import { z } from 'zod'
+import { parseProfile, type Profile } from '../schema/profile'
 import {
   newsFileSchema,
   pageFrontmatterSchema,
@@ -22,7 +23,7 @@ export type PostSummary = PostFrontmatter
 export type Post = PostFrontmatter & { body: string }
 export type PageSummary = PageFrontmatter
 export type Page = PageFrontmatter & { body: string }
-export type { NewsItem, Project, Publication, Resume } from '../schema'
+export type { NewsItem, Profile, Project, Publication, Resume } from '../schema'
 
 /**
  * The semantic content layer (DYNAMIC-PUBLISHING §3.2): parsed + validated +
@@ -42,6 +43,8 @@ export interface ContentProvider {
   /** Homepage news entries, newest first. Absent file = empty list. */
   listNews(): Promise<NewsItem[]>
   getCV(): Promise<Resume | null>
+  /** content/profile.yaml — who the author is; required (at least `name`). */
+  getProfile(): Promise<Profile>
   /** Drop cached entries (manifest keys); no argument drops everything. */
   revalidate(keys?: string[]): Promise<void>
   /** Current content version (manifest hash), used for ETag / 304. */
@@ -272,6 +275,16 @@ export function createProvider(store: ContentStore, options: ProviderOptions = {
         return result.data
       })
       return (news ?? []).slice().sort((a, b) => b.date.getTime() - a.date.getTime())
+    },
+
+    async getProfile() {
+      const profile = await load('profile.yaml', (raw, path) => parseProfile(YAML.parse(raw), path))
+      if (profile === null) {
+        throw new Error(
+          'content/profile.yaml is missing — it holds who you are (at least `name`; CONTENT-CONTRACT §6, ADR-028)',
+        )
+      }
+      return profile
     },
 
     async getCV() {

@@ -31,7 +31,7 @@ pnpm dev            # http://localhost:4321，示例内容开箱可见
 pnpm build:static   # 纯静态构建 → dist/
 ```
 
-改三处就是你的站：`site.yaml`（你是谁、开哪些模块、什么主题）、`content/` 目录（出版物、项目、CV、独立页面、首页排布）、博客（放 markdown 进 `content/posts/`，或接上 Notion）。完整步骤见 [docs/guide/getting-started.md](docs/guide/getting-started.md)。
+改三处就是你的站：`content/profile.yaml`（你是谁）、`site.yaml`（开哪些模块、什么主题）、`content/` 其余文件（出版物、项目、CV、独立页面、首页排布）、博客（放 markdown 进 `content/posts/`，或接上 Notion）。完整步骤见 [docs/guide/getting-started.md](docs/guide/getting-started.md)。
 
 ## 用作模板
 
