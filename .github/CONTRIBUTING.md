@@ -8,13 +8,13 @@
 pnpm install
 pnpm dev                 # Astro 开发服务器
 pnpm test                # vitest 单测
-pnpm e2e                 # playwright：冒烟 + 双模式 HTML 一致性
+pnpm e2e                 # playwright：冒烟、双模式 HTML 一致性、子路径部署、无障碍（axe）、手机视口；生成物在 .offprint/
 pnpm lint && pnpm typecheck
 pnpm build:static        # 两种构建都必须成功
 pnpm build:server
 ```
 
-需要 Node 22+ 与 pnpm（版本见 `package.json` 的 `packageManager` 字段）。不需要任何密钥——模板自带样例内容，构建完全自足。
+需要 Node 22+ 与 pnpm（版本见 `package.json` 的 `packageManager` 字段）。不需要任何密钥——模板自带样例内容，构建完全自足。测试与审计的一切生成物（e2e 构建、Playwright 结果、Lighthouse 报告）都在 `.offprint/`（gitignored），新增的生成物也放那里，根目录只保留真正的 `dist/`（ADR-029）。
 
 ## 开始之前
 

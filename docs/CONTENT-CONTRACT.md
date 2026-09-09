@@ -28,7 +28,7 @@ content/
 | `urlname` | slug | ✅ | `/[lang/]blog/:urlname`，文件名为 `<urlname>.<lang>.md`；`^[a-z0-9-]+$`；译本共用同一 urlname |
 | `date` | ISO date | ✅ | 首次发布 |
 | `updated` | ISO date | ✅ | 最后编辑；缺省时 sync 以 `date` 填充并告警 |
-| `description` | string | | 列表与 meta description |
+| `description` | string | | 列表摘要与 meta description；缺省时 meta description 取正文前 160 字（去掉公式、列表符号、表格竖线），列表里的摘要不兜底 |
 | `categories` | string \| string[] | | 第一个作为 kicker |
 | `tags` | string[] | | |
 | `cover` | url | | 需为图床或 `assets/` 路径 |
@@ -185,6 +185,8 @@ elog 会自动补齐的字段（无需数据库列）：
 
 - **四空格缩进的段落**（Notion 子块的导出形态）按普通 markdown 重新解析，而不是当缩进代码块：粗体、行内公式、链接照常渲染。真正的代码请用 ``` 围栏，围栏块不受影响。
 - **表格单元格内的换行**把一行拆成多行时，同步产物里的该行会在渲染前重新拼接（以空格连接），表格照常解析。
+
+- **没有 `description` 的文章**：meta description 从正文摘取前 160 字（`plainText()`：去代码、公式、图片、列表与表格标点、脚注标记），页面上的摘要行仍只在显式填写时出现。
 
 同步期还会检查外链封面：`cover` 指向的外部 URL 若不可达或不是图片（如 NotionNext 遗留的 `source.unsplash.com/random`），会被剔除并给出警告，文章回落到自动生成的 OG 图；`notion.so/<uuid>` 这类**页面**链接不再被当作图片资产去下载。
 

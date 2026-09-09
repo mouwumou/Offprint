@@ -57,7 +57,8 @@ offprint/
 ├─ docker/                   # web.Dockerfile compose.static.yaml (site.Dockerfile compose.server.yaml 阶段 2)
 ├─ docs/
 ├─ .github/workflows/        # ci.yml sync.yml deploy-pages.yml
-└─ scripts/                  # build-static.sh（sync → build → 原子切换，自托管用）
+├─ e2e/                      # Playwright 与 Lighthouse 配置 + 各 spec（冒烟、双模式一致性、子路径、axe、手机视口）；构建产物进 .offprint/
+└─ scripts/                  # build-static.sh（sync → build → 原子切换）、serve-dist.mjs、check-live.mjs（线上验证）、upgrade-from-template.sh（实例升级）、gen-config-schema.ts
 ```
 
 边界由 eslint-plugin-import 的 `import/no-restricted-paths`（zones 按解析后的真实文件路径判定，比 `no-restricted-imports` 的导入字符串匹配可靠）守住：`src/core/**` 不得引用 `src/sync/**`、`extensions/**`、`src/pages/**`；`src/sync/**` 只能引用 `src/core/schema/**`。阶段 4 拆包时按目录平移。

@@ -174,3 +174,9 @@
 **决定**：新增 `content/profile.yaml`（schema 在 `src/core/schema/profile.ts`，编辑器补全 `schema/profile.schema.json`），site.yaml 的 `profile` 段删除；仍留着的实例会得到指向迁移的报错。profile 走 **ContentProvider.getProfile()**——头部、页脚、`<title>`、feed、分享图、JSON-LD、首页部件、CV 页、文章页全部改从 provider 取，这比原来更符合约束 1，server 模式下改 profile 也即时生效。`cv.yaml` 的 `basics` 改为可选覆盖，profile 是唯一来源。呈现逐个可关（首页 `bio-header` 段、`footer.enabled`、`header.title`、新增 `seo.person`），但文件必须存在且至少有 `name`——站名与署名不能没有。每个字段"显示在哪"写进 CONTENT-CONTRACT §6 与样例文件注释。
 **后果**：site.yaml 从此不含任何内容，只有 modules、nav、layout、header、footer、theme、i18n、seo、comments、redirects；模块落地页文案（`blog.title` 等）视为标签留在 site.yaml。实例迁移是机械的：把 `profile:` 段整体挪到 `content/profile.yaml` 并去掉两格缩进。
 
+## ADR-029 仓库布局约定：生成物进 `.offprint/`，社区文件进 `.github/`，e2e 工具配置进 `e2e/`，用户手写文件不做格式门禁 — 已定
+
+**背景**：根目录曾同时堆着 7 个 `dist*` 目录、`test-results/`、`.lighthouseci/`、同步留下的 elog 临时配置、6 个 md 与 6 个工具配置，维护者要求整理（2026-09-09）。同期实例 CI 因 `site.yaml` 未按 prettier 格式化而长期红灯。
+**决定**：①一切生成物（e2e 的静态/服务端/子路径构建、Playwright 结果、Lighthouse 报告、同步临时配置、发布中间产物）统一放 **`.offprint/`**（gitignored、dockerignore、eslint 忽略），根目录只保留真正的 `dist/`；`.lighthouseci/` 是 lhci 自身的工作目录，无法迁移，保持忽略。②CONTRIBUTING、CODE_OF_CONDUCT、SECURITY 放 **`.github/`**（GitHub 原生识别），中文 README 放 `docs/`；根目录 md 只剩 README、CLAUDE、LICENSE。③Playwright 与 Lighthouse 配置与 spec 同住 **`e2e/`**，npm 脚本传 `--config`；prettier 配置并入 package.json，`.prettierignore` 保留。④**用户手写的文件不做格式门禁**：`site.yaml`、`content/`、`*.md` 均豁免 `format:check`——格式检查是给代码的，不是给作者的。`schema/` 维持原位（被三个 YAML 头部引用且需入库）。
+**后果**：新增生成物一律进 `.offprint/`；`upgrade-from-template.sh` 的排除列表、`.dockerignore`、eslint ignores 以此为准；实例升级后旧位置的配置文件由 `--delete` 清掉。
+
