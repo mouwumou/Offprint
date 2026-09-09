@@ -63,7 +63,10 @@ for (const page of pages) {
     if (!(code >= 200 && code < 400)) failures.add(`BROKEN ${url.pathname} → ${raw} (${code})`)
   }
 }
-for (const extra of ['/robots.txt', '/rss.xml', '/pagefind/pagefind.js']) {
+// The search index only exists when the site has a search page
+// (modules.blog.search / blog off build neither).
+const hasSearch = (await fetch(`${origin}${BASE}/search/`)).status === 200
+for (const extra of ['/robots.txt', '/rss.xml', ...(hasSearch ? ['/pagefind/pagefind.js'] : [])]) {
   const code = (await fetch(`${origin}${BASE}${extra}`)).status
   if (code !== 200) failures.add(`MISSING ${BASE}${extra} (${code})`)
 }
