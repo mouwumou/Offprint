@@ -48,8 +48,8 @@ profile:
 
 # ── 模块开关：false = 页面、导航、打包一起消失 ────────────────────────────────
 # 也可以写成对象来覆盖落地页文案，例如：
-#   blog: { title: { en: Field notes, zh: 田野笔记 }, colophon: false, related: false }
-#   （colophon 是文末"后记"框：默认不显示，给一段双语文字才出现；related 是"相关文章"块）
+#   blog: { title: { en: Field notes, zh: 田野笔记 }, colophon: false, related: false, search: false }
+#   （colophon 是文末"后记"框：默认不显示，给一段双语文字才出现；related 是"相关文章"块；search: false 整个去掉站内搜索）
 modules:
   blog: true
   pages: true
@@ -57,7 +57,8 @@ modules:
   projects: true
   cv: true
 #   publications: { order: file }                  # 同年内顺序：file（默认，按文件里的顺序）| key | title
-#   cv: { pdf: assets/cv.pdf, indexable: false }   # CV 直接给 PDF 文件，不生成 HTML 页
+#   cv: { indexable: false }                       # 简历页不进搜索引擎（noindex + 不进 sitemap + Disallow）
+#   cv: { pdf: assets/cv.pdf, indexable: false }   # 或：CV 直接给 PDF 文件，不生成 HTML 页
 
 # ── 导航：不写 = 自动生成（首页 + 开着的模块 + nav:true 的独立页面）────────────
 # 写了就完全按这个列表来。三种条目：

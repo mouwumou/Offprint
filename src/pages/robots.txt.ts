@@ -12,8 +12,15 @@ export const GET: APIRoute = ({ site }) => {
   const sitemap = new URL(`${base}/sitemap-index.xml`, site ?? 'https://example.com')
   const disallow = siteConfig.i18n.noindex.map((locale) => `Disallow: ${base}/${locale}/`)
   const cv = siteConfig.modules.cv
-  if (cv.pdf !== undefined && cv.indexable === false)
-    disallow.push(`Disallow: ${contentHref(cv.pdf)}`)
+  if (cv.indexable === false) {
+    if (cv.pdf !== undefined) disallow.push(`Disallow: ${contentHref(cv.pdf)}`)
+    else if (cv.enabled) {
+      for (const locale of siteConfig.i18n.locales) {
+        const prefix = locale === siteConfig.i18n.default ? '' : `/${locale}`
+        disallow.push(`Disallow: ${base}${prefix}/cv/`)
+      }
+    }
+  }
   const rules = ['User-agent: *', 'Allow: /', ...disallow].join('\n')
   return new Response(`${rules}\n\nSitemap: ${sitemap.toString()}\n`, {
     headers: { 'Content-Type': 'text/plain; charset=utf-8' },
