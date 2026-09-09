@@ -43,7 +43,7 @@ pnpm build:static   # 产物在 dist/，node scripts/serve-dist.mjs dist 4331 �
 实例仓库没有模板的 git 历史，升级靠一个脚本：在实例根目录执行
 
 ```bash
-bash scripts/upgrade-from-template.sh /path/to/Offprint   # 本地有模板检出即可
+bash scripts/upgrade-from-template.sh /path/to/Offprint   # 模板的 main 分支检出
 pnpm install --frozen-lockfile && pnpm sync validate && pnpm build:static
 ```
 

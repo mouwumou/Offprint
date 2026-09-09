@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Upgrade an INSTANCE repository from a local checkout of the Offprint template.
+# Upgrade an INSTANCE repository from a local checkout of the Offprint template
+# (its main branch — the clean release snapshot, ADR-030).
 # Run from the instance root:  bash scripts/upgrade-from-template.sh /path/to/Offprint
 # Copies template-owned paths; instance-owned paths (site.yaml, content/,
 # extensions/, README.md, CLAUDE.md, .env*) are never touched. Excludes are
@@ -11,7 +12,7 @@ rsync -a --delete \
   --exclude '/.git/' --exclude '/node_modules/' --exclude '/dist/' --exclude '/.offprint/' --exclude '/.astro/' \
   --exclude '/.env' --exclude '/.env.*' --exclude '/.lighthouseci/' --exclude '/test-results/' --exclude '/playwright-report/' \
   --exclude '/site.yaml' --exclude '/content/' --exclude '/extensions/' \
-  --exclude '/README.md' --exclude '/docs/README.zh-CN.md' --exclude '/CLAUDE.md' \
+  --exclude '/README.md' --exclude '/docs/README.zh-CN.md' --exclude '/CLAUDE.md' --exclude '/docs/dev/' \
   --exclude '/.github/CONTRIBUTING.md' --exclude '/.github/CODE_OF_CONDUCT.md' --exclude '/.github/SECURITY.md' \
   "$template/" ./
 sha=$(git -C "$template" rev-parse --short HEAD)

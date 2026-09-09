@@ -1,6 +1,6 @@
 # 架构
 
-> 本文是实现的权威参考；`dev/PLANNING.md` 解释"为什么"。框架：Astro 5（ADR-005）；单包起步（ADR-006）；中英双语（ADR-007）。
+> 本文是实现的权威参考；[dev/PLANNING.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/PLANNING.md) 解释"为什么"。框架：Astro 5（ADR-005）；单包起步（ADR-006）；中英双语（ADR-007）。
 
 ## 1. 分层
 
@@ -24,7 +24,7 @@
 
 ```
 offprint/
-├─ CLAUDE.md  README.md  LICENSE(MIT)
+├─ README.md  LICENSE(MIT)      # CLAUDE.md 与 docs/dev/ 只在 dev 分支（ADR-030）
 ├─ .github/                  # 工作流、issue/PR 模板、CONTRIBUTING / CODE_OF_CONDUCT / SECURITY
 ├─ .offprint/                # 生成物（e2e 与 Lighthouse 构建、报告、同步临时配置），gitignored
 ├─ package.json  astro.config.ts  site.yaml  tsconfig.json

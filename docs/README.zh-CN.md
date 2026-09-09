@@ -53,7 +53,7 @@ pnpm build:static   # 纯静态构建 → dist/
 
 ## 状态
 
-核心功能全部完成并经双模式一致性 e2e、子路径部署 e2e、无障碍（axe）与 Lighthouse 门槛验收；正在做开源发布的收尾。任务清单见 [docs/dev/ROADMAP.md](dev/ROADMAP.md)。
+核心功能全部完成并经双模式一致性 e2e、子路径部署 e2e、无障碍（axe）与 Lighthouse 门槛验收；正在做开源发布的收尾。开发在 `dev` 分支进行，`main` 是不含开发文档的发布快照（ADR-030）。任务清单见 [dev 分支上的 ROADMAP](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/ROADMAP.md)。
 
 ## 贡献与安全
 

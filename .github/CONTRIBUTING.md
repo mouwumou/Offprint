@@ -19,7 +19,7 @@ pnpm build:server
 ## 开始之前
 
 - 读 [docs/DECISIONS.md](../docs/DECISIONS.md)：已定的架构决策（ADR）不在 PR 里推翻；想改先开 issue 讨论。
-- 读 [CLAUDE.md](../CLAUDE.md) 的"不可违反的约束"一节——它们同样约束人类贡献者，其中最常被踩的三条：
+- 开发在 **`dev` 分支**进行，`main` 是不含开发文档的发布快照（ADR-030）——PR 请基于 dev。读 dev 分支上 [CLAUDE.md](https://github.com/mouwumou/Offprint/blob/dev/CLAUDE.md) 的"不可违反的约束"一节——它们同样约束人类贡献者，其中最常被踩的三条：
   1. 页面只依赖 `ContentProvider`，不得直接读文件系统或 `getCollection`；
   2. static 是基线：任何改动后两种构建都要成功，server 专属代码不得进入 static 产物；
   3. 新增 UI 文案必须进 `src/core/i18n/`，不得硬编码（双语是一等公民）。

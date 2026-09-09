@@ -53,7 +53,7 @@ Start at [docs/README.md](docs/README.md). The guides are currently written in C
 
 ## Status
 
-All core features are complete and gated by dual-mode HTML parity e2e, a sub-path deployment e2e, accessibility (axe) and Lighthouse thresholds; the open-source release is being finalised. Task list in [docs/dev/ROADMAP.md](docs/dev/ROADMAP.md).
+All core features are complete and gated by dual-mode HTML parity e2e, a sub-path deployment e2e, accessibility (axe) and Lighthouse thresholds; the open-source release is being finalised. Development happens on the `dev` branch; `main` is a clean release snapshot without the working documents (ADR-030). Task list: [ROADMAP on dev](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/ROADMAP.md).
 
 ## Contributing & security
 
