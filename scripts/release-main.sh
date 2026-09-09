@@ -17,7 +17,7 @@ git ls-tree -r --name-only "$SRC" | sort > "$tmp/src"
 git checkout -q main
 git checkout -q "$SRC" -- .                                   # add/update every file from dev
 comm -23 "$tmp/main" "$tmp/src" | xargs -r git rm -q --         # files that dev deleted
-for p in "${EXCLUDE[@]}"; do git rm -r -q --ignore-unmatch -- "$p"; done
+for p in "${EXCLUDE[@]}"; do git rm -r -q -f --ignore-unmatch -- "$p"; done   # -f: the checkout above staged them
 rm -rf "$tmp"
 if git diff --cached --quiet; then
   echo "main already matches $SRC (minus ${EXCLUDE[*]})"
