@@ -93,6 +93,8 @@
 .prose {
   font-family: var(--font-serif);
   font-size: var(--prose-size, 1.0625rem);
+  /* Bare URLs as link text and other unbroken runs must wrap, not overflow. */
+  overflow-wrap: anywhere;
   line-height: 1.72;
   color: var(--foreground);
   font-weight: 380;
@@ -176,6 +178,8 @@
   font-size: 0.85em;
 }
 .prose img {
+  max-width: 100%;
+  height: auto;
   border-radius: var(--radius);
   border: 1px solid var(--border);
   margin-inline: auto;
@@ -185,7 +189,13 @@
   border-top: 1px solid var(--border);
   margin-block: 2.5em;
 }
+/* Wide tables scroll inside the column instead of stretching the page (the
+   mobile viewport e2e guards this); real content produced 2-column tables
+   with long cells. */
 .prose table {
+  display: block;
+  max-width: 100%;
+  overflow-x: auto;
   width: 100%;
   border-collapse: collapse;
   font-family: var(--font-sans);

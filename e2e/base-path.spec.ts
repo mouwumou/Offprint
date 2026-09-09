@@ -1,5 +1,5 @@
 import { execSync, spawn, type ChildProcess } from 'node:child_process'
-import { readFileSync } from 'node:fs'
+import { existsSync, readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { BASE_SERVER, BASE_STATIC } from './lib/paths'
@@ -125,6 +125,8 @@ test.describe('deployment sub-path (ADR-023)', () => {
   })
 
   test('search results (pagefind) link under the base', async ({ page }) => {
+    // modules.blog.search: false builds no search page — nothing to test then.
+    test.skip(!existsSync(join(STATIC_DIR, 'search', 'index.html')), 'site search is disabled')
     const post = discoverRoutes(STATIC_DIR).find(
       (route) => /\/blog\/[^/]+\/$/.test(route) && !/\/blog\/(tag|category)\//.test(route),
     )
