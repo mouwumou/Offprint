@@ -276,3 +276,15 @@ describe('modules.blog options', () => {
     expect(config.modules.blog).toMatchObject({ enabled: true, colophon: false, related: false })
   })
 })
+
+describe('modules.blog.search / modules.cv.indexable', () => {
+  it('parses the search switch and the CV indexability flag', async () => {
+    const { defineConfig } = await import('./define-config')
+    const config = defineConfig({
+      profile: { name: 'A' },
+      modules: { blog: { search: false }, cv: { indexable: false } },
+    })
+    expect(config.modules.blog).toMatchObject({ enabled: true, search: false })
+    expect(config.modules.cv).toMatchObject({ enabled: true, indexable: false })
+  })
+})
