@@ -101,8 +101,9 @@ const inlinePublications = cv.publicationsFromSite ? [] : cv.publications
 // content/profile.yaml is the single source; cv.yaml `basics` may override
 // per field (JSON Resume compatibility, ADR-028).
 const profile = await provider.getProfile()
-const name = r(cv.basics?.name) ?? r(profile.name)
-const role = r(cv.basics?.label) ?? r(profile.role)
+// resolveLocalized yields '' for an absent value, so fall back on truthiness.
+const name = r(cv.basics?.name) || r(profile.name)
+const role = r(cv.basics?.label) || r(profile.role)
 const email = cv.basics?.email ?? profile.email
 const cityLine = cv.basics?.location
   ? [r(cv.basics.location.city), cv.basics.location.countryCode].filter(Boolean).join(', ')

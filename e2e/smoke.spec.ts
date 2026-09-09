@@ -30,3 +30,10 @@ test('non-default language home is localized', async ({ page }) => {
   await expect(page.locator('html')).toHaveAttribute('lang', otherLang ?? '')
   await expect(page.locator('h1')).toHaveText(name(otherLang ?? defaultLang))
 })
+
+test('CV page carries the author name from content/profile.yaml', async ({ page }) => {
+  const cv = siteConfig.modules.cv
+  test.skip(!cv.enabled || cv.pdf !== undefined, 'no HTML CV page on this site')
+  await page.goto('/cv/')
+  await expect(page.locator('main')).toContainText(name(defaultLang))
+})
