@@ -6,6 +6,7 @@ coverage/
 pnpm-lock.yaml
 content/
 
-# hand-maintained prose, not code — do not churn
+# hand-maintained prose and configuration, not code — do not churn
 *.md
+site.yaml
 
