@@ -59,5 +59,5 @@ docker compose -f docker/compose.server.yaml up -d --build
 pnpm check:live https://你的站点地址/     # 与 SITE_URL 完全一致，含子路径
 ```
 
-它从线上 sitemap 出发抓取每一页，检查页面引用的每个内部链接都在部署前缀之内且可达，并确认 robots.txt、feed 与搜索索引存在。内容无关，任何实例都能跑；模板自己的 demo 就是这样验收的。
+它从线上 sitemap 出发抓取每一页，检查页面引用的每个内部链接都在部署前缀之内且可达，并确认 robots.txt 与 feed 存在（开了站内搜索时还查搜索索引）。内容无关，任何实例都能跑；模板自己的 demo 就是这样验收的。
 

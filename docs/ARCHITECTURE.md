@@ -76,7 +76,7 @@ offprint/
 
 三级定制阶梯：
 
-1. **配置**：`site.yaml` 字段与 `content/home.yaml` 的首页排布（ADR-021），够用则到此为止。
+1. **配置与内容**：`site.yaml` 字段（结构与开关，ADR-021）、`content/profile.yaml` 的作者信息（ADR-028）与 `content/home.yaml` 的首页排布，够用则到此为止。
 2. **部件覆盖**：`extensions/widgets/<section-type>.astro` 替换同名内置首页部件；启用主题包自带的 `widgets/` 居中间优先级（查找链：站点散件 > 主题 > 内置，ADR-022）。收集点在 pages 层（`src/pages/[...path].astro` 的 `import.meta.glob`，编译期字面量收集全部主题的部件、渲染期按启用主题过滤）；覆盖组件收到与内置部件完全相同的 props（内置实现在 `src/core/components/home/`，即 props 契约）。
 3. **主题**：`theme.name` 解析目录式主题（ADR-018/022，规范见 `docs/THEMING.md`）：`extensions/themes/<name>/` 优先于内置 `src/core/themes/<name>/`；token 与字体栈来自 theme.json（BaseLayout 注入），字体加载与主题特有样式来自 theme.css（integration 注入）；主题声明的选项在 site.yaml `theme.options` 填值（构建期校验 + 编辑器补全）。
 

@@ -125,6 +125,7 @@ export interface ContentProvider {
   listPublications(): Promise<Publication[]>
   listProjects(): Promise<Project[]>          // 2026-08-23 补：projects 模块（P1-5）
   getCV(): Promise<Resume | null>             // 2026-08-23 改：文件缺失返回 null（P1-6）
+  getProfile(): Promise<Profile>              // 2026-09-09 增：content/profile.yaml，缺失即报错（ADR-028）
   /** 失效缓存；不传参数则全部失效 */
   revalidate(keys?: string[]): Promise<void>
   /** 当前内容版本（manifest hash），用于 ETag / 304 */

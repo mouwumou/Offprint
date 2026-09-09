@@ -94,3 +94,8 @@ pnpm lhci                                 # 四类 Lighthouse ≥ 0.95（性能/
 以下字段**现在写了会被 schema 拒绝**（ADR-016：schema 只收已实现的）：
 
 - `shiki`：代码高亮双主题自定义（现为全站统一的 offprint 双主题）。
+
+## 附：部件里的数据从哪来
+
+部件（内置的、主题携带的、`extensions/widgets/` 里覆盖的）一律经 `getProvider()` 取内容：文章、出版物、项目、CV，以及**作者信息** `getProvider().getProfile()`（`content/profile.yaml`，ADR-028）。`siteConfig` 里只有结构与开关，没有内容——不要在部件里假设它带 `profile`。
+

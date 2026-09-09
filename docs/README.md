@@ -5,7 +5,7 @@
 | 文档 | 内容 |
 | --- | --- |
 | [guide/getting-started.md](guide/getting-started.md) | 从模板到上线：生成仓库、本地跑起来、替换成你的信息 |
-| [guide/configuration.md](guide/configuration.md) | 配置体系：`site.yaml`、`content/` 各文件、编辑器补全 |
+| [guide/configuration.md](guide/configuration.md) | 配置体系：`site.yaml`（结构与开关）、`content/profile.yaml`（你是谁）与其余内容文件、编辑器补全 |
 | [guide/sync.md](guide/sync.md) | Notion 写作、elog 同步：从建库到"点发布即上线" |
 | [guide/deployment.md](guide/deployment.md) | 部署：GitHub Pages、Docker（static 与 server，任何容器平台）、其他静态托管 |
 | [THEMING.md](THEMING.md) | 主题：换主题、调 token、制作与分发你自己的主题 |
@@ -15,7 +15,7 @@
 
 | 文档 | 内容 |
 | --- | --- |
-| [DECISIONS.md](DECISIONS.md) | 架构决策记录（ADR-001–025）：每个"为什么这样做"的出处 |
+| [DECISIONS.md](DECISIONS.md) | 架构决策记录（ADR-001–028）：每个"为什么这样做"的出处 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 分层、双运行模式、仓库结构、包边界 |
 | [CONTENT-CONTRACT.md](CONTENT-CONTRACT.md) | 内容契约：所有集合的 front-matter / YAML schema，工具无关 |
 | [DYNAMIC-PUBLISHING.md](DYNAMIC-PUBLISHING.md) | server 模式发布链设计：`ContentStore`/`ContentProvider`、原子切换、revalidate |

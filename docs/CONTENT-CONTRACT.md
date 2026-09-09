@@ -5,12 +5,13 @@
 
 ## 1. 目录约定（`content/`）与归属（ADR-014）
 
-**博客环**（sync 独占写入）：`posts/`。**站点环**（作者仓库本地编辑，sync 永不触碰）：`pages/`、`publications.yaml`、`projects.yaml`、`cv.yaml`、`talks.yaml`、`news.yaml`、`assets/` 中的站点资源。Notion `type=Page` 仅在 `SYNC_PAGES=true` 时写入 `pages/`（默认关闭）。
+**博客环**（sync 独占写入）：`posts/`。**站点环**（作者仓库本地编辑，sync 永不触碰）：`profile.yaml`、`pages/`、`publications.yaml`、`projects.yaml`、`cv.yaml`、`talks.yaml`、`news.yaml`、`assets/` 中的站点资源。Notion `type=Page` 仅在 `SYNC_PAGES=true` 时写入 `pages/`（默认关闭）。
 
 ```
 content/
 ├─ posts/<urlname>.<lang>.md   # 博客；同一 urlname 的不同语言是同一篇文章的译本
 ├─ pages/<slug>.<lang>.md      # 独立页面（About、Now…），Notion 中 type=Page
+├─ profile.yaml                # 你是谁：姓名、职衔、bio、链接（§6，ADR-028）
 ├─ publications.yaml           # 出版物（Notion 数据库导出，ADR-008）
 ├─ projects.yaml
 ├─ cv.yaml                     # JSON Resume schema（YAML 写法）
@@ -81,7 +82,7 @@ BibTeX 文件导入作为可选 loader 留给模板用户（阶段 5）。
 
 ## 5. cv（JSON Resume）
 
-遵循 https://jsonresume.org/schema，YAML 书写。扩展字段：`publicationsFromSite: true`（CV 的出版物段直接复用 §3）；所有文本字段允许 `{en, zh}`、`teaching[]`、`awards[]` 已在标准中。
+遵循 https://jsonresume.org/schema，YAML 书写。`basics`（姓名、头衔、邮箱、地点）可省略——以 `content/profile.yaml` 为准，写了则按 CV 逐字段覆盖（ADR-028）。扩展字段：`publicationsFromSite: true`（CV 的出版物段直接复用 §3）；所有文本字段允许 `{en, zh}`、`teaching[]`、`awards[]` 已在标准中。
 
 ## 5b. news（`content/news.yaml`，可选）
 

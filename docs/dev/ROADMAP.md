@@ -105,3 +105,4 @@ P5-1 与 P5-2 因 ADR-018/019 于 2026-08-24 提前启动，并行推进，任�
 - [ ] P5-1 `OffprintModule` 对外稳定化，第三方模块示例（npm 分发形态，待阶段 4 拆包）
 - [ ] P5-1b 可选 loader：BibTeX 导入、手写 markdown 目录、Obsidian
 - [ ] P5-3（降级为可选："Use this template" 已满足需求）`create-offprint` CLI（脚手架只生成文本文件，不做交互式配置写入 — ADR-020）
+- [x] ADR-028 作者信息从 site.yaml 移入 `content/profile.yaml`，经 provider 提供；site.yaml 不再含内容（2026-09-09）
