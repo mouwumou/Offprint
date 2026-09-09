@@ -30,7 +30,8 @@
     "sync": "tsx src/sync/cli.ts",
     "lhci": "lhci autorun --config=e2e/lighthouserc.cjs",
     "check:live": "node scripts/check-live.mjs",
-    "gen:schema": "tsx scripts/gen-config-schema.ts"
+    "gen:schema": "tsx scripts/gen-config-schema.ts",
+    "release:main": "bash scripts/release-main.sh"
   },
   "pnpm": {
     "onlyBuiltDependencies": [

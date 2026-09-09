@@ -20,7 +20,7 @@
 
 **背景**：自用需要"发布即生效 + SEO"，公开模板需要纯静态；三类部署目标都要支持。
 **决定**：`RUNTIME_MODE=static | server`，**static 是默认与基线，server 是可选运行时**（2026-08-22 与维护者确认）。页面只依赖 `ContentProvider`；static 模式构建期调用 provider 喂 loader，server 模式请求期调用。CI 双模式构建 + HTML 快照比对。
-**理由**：两种模式输出相同 HTML；static 加"同步后自动重建"已覆盖"Notion 点发布即上线"的核心体验，且无常驻进程、无端点、错误在构建期暴露、可部署到 GH Pages。server 用一个常驻进程的全部成本（运维、安全面、可复现性、首字节）换取秒级发布与运行时功能（草稿预览、评论、按访客切换），详见 `dev/PLANNING.md` §3.3 对比表。
+**理由**：两种模式输出相同 HTML；static 加"同步后自动重建"已覆盖"Notion 点发布即上线"的核心体验，且无常驻进程、无端点、错误在构建期暴露、可部署到 GH Pages。server 用一个常驻进程的全部成本（运维、安全面、可复现性、首字节）换取秒级发布与运行时功能（草稿预览、评论、按访客切换），详见 [dev/PLANNING.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/PLANNING.md) §3.3 对比表。
 **后果**：阶段 1 只交付 static（含自托管自动重建）；阶段 2 交付 server 作为产品能力；维护者自己的站先跑 static。必须维护 provider 抽象层；禁止页面直接使用框架的集合 API；server 关闭后站点须退化为 static 且行为一致。
 
 ## ADR-004 动态模式不引入数据库 — 已定
@@ -31,7 +31,7 @@
 
 ## ADR-005 前端框架 — 已定（Astro）
 
-**背景**：`dev/PLANNING.md` §2 的对比分析。
+**背景**：[dev/PLANNING.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/PLANNING.md) §2 的对比分析。
 **决定**：Astro 5+，React islands 复用原型交互组件，Tailwind 4（2026-08-22 确认）。
 **后果**：adapter 矩阵 `@astrojs/node`（Docker）/ `vercel` / `netlify` / `cloudflare`；static 模式直出 `dist/`。P0-11（Next.js spike）取消。
 
@@ -66,11 +66,11 @@
 
 ## ADR-011 设计稿定稿状态 — 已定
 
-**决定**（2026-08-22 确认）：token（颜色、字体、圆角）按 `dev/DESIGN-REFERENCE.md` 锁定；布局允许在移植中按 Astro 结构微调，不改视觉语言。
+**决定**（2026-08-22 确认）：token（颜色、字体、圆角）按 [dev/DESIGN-REFERENCE.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/DESIGN-REFERENCE.md) 锁定；布局允许在移植中按 Astro 结构微调，不改视觉语言。
 
 ## ADR-012 参考项目 — 已定
 
-**决定**：以 NotionNext、al-folio、elog 为参照，借鉴与回避清单见 `dev/REFERENCES.md`。特别地：**不直接在运行时读 Notion**（NotionNext 的做法依赖非官方 API 且把站点可用性绑在 Notion 上），内容始终经 sync 物化为文件；但借鉴其"Notion 数据库 `type` 列区分 Post / Page / Config"的思路，允许在 Notion 中维护独立页面（About、Now 等）。
+**决定**：以 NotionNext、al-folio、elog 为参照，借鉴与回避清单见 [dev/REFERENCES.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/REFERENCES.md)。特别地：**不直接在运行时读 Notion**（NotionNext 的做法依赖非官方 API 且把站点可用性绑在 Notion 上），内容始终经 sync 物化为文件；但借鉴其"Notion 数据库 `type` 列区分 Post / Page / Config"的思路，允许在 Notion 中维护独立页面（About、Now 等）。
 
 ## ADR-013 lang / urlname 由 sync 派生，不在 Notion 加列 — 已定（方向），细节待敲定
 
@@ -179,4 +179,10 @@
 **背景**：根目录曾同时堆着 7 个 `dist*` 目录、`test-results/`、`.lighthouseci/`、同步留下的 elog 临时配置、6 个 md 与 6 个工具配置，维护者要求整理（2026-09-09）。同期实例 CI 因 `site.yaml` 未按 prettier 格式化而长期红灯。
 **决定**：①一切生成物（e2e 的静态/服务端/子路径构建、Playwright 结果、Lighthouse 报告、同步临时配置、发布中间产物）统一放 **`.offprint/`**（gitignored、dockerignore、eslint 忽略），根目录只保留真正的 `dist/`；`.lighthouseci/` 是 lhci 自身的工作目录，无法迁移，保持忽略。②CONTRIBUTING、CODE_OF_CONDUCT、SECURITY 放 **`.github/`**（GitHub 原生识别），中文 README 放 `docs/`；根目录 md 只剩 README、CLAUDE、LICENSE。③Playwright 与 Lighthouse 配置与 spec 同住 **`e2e/`**，npm 脚本传 `--config`；prettier 配置并入 package.json，`.prettierignore` 保留。④**用户手写的文件不做格式门禁**：`site.yaml`、`content/`、`*.md` 均豁免 `format:check`——格式检查是给代码的，不是给作者的。`schema/` 维持原位（被三个 YAML 头部引用且需入库）。
 **后果**：新增生成物一律进 `.offprint/`；`upgrade-from-template.sh` 的排除列表、`.dockerignore`、eslint ignores 以此为准；实例升级后旧位置的配置文件由 `--delete` 清掉。
+
+## ADR-030 分支模型：dev 是工作分支，main 是不含开发文档的发布快照 — 已定
+
+**背景**：模板公开后，根目录的 `CLAUDE.md` 与 `docs/dev/`（规划、路线图、参考项目、设计原型来源）是给维护者与 AI 协作用的工作文件，对用模板的人是噪音；维护者要求 main 做成干净目录、开发另起分支（2026-09-09）。
+**决定**：`dev` 为唯一的工作分支，一切提交在此；`main` 只接受 `scripts/release-main.sh`（`pnpm release:main`）产出的**快照提交**——把 dev 的文件树整体铺到 main，删除 dev 已删的文件，再剔除 `CLAUDE.md` 与 `docs/dev/`。不用 merge：合并会在这些被剔除的文件上反复冲突，快照则让 main 历史线性、每次差异极小。CI 在两个分支都跑，Pages demo 与 "Use this template" 只来自 main。设计文档（ADR、ARCHITECTURE、CONTENT-CONTRACT、DYNAMIC-PUBLISHING）留在 main；其中引用开发文档的地方改为指向 dev 分支的绝对链接，两个分支上都能点。
+**后果**：main 上永远不手工提交，也不接 PR（PR 基于 dev）；实例升级脚本以 main 检出为源并排除 `docs/dev/`；`CLAUDE.md` 只在 dev，模板用户若用 Claude Code，得到的是自己实例里的说明而不是模板内部的开发约束。
 

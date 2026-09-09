@@ -1,7 +1,7 @@
 # 动态发布链设计
 
 > 状态：设计草案 v0.2（2026-08-22）
-> 前置：`dev/PLANNING.md` §3.3、`ARCHITECTURE.md`、ADR-003。§0 是阶段 1 就要交付的 static 自动重建路径；§1 起是阶段 2 的 server 模式。不涉及页面与样式。
+> 前置：[dev/PLANNING.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/PLANNING.md) §3.3、`ARCHITECTURE.md`、ADR-003。§0 是阶段 1 就要交付的 static 自动重建路径；§1 起是阶段 2 的 server 模式。不涉及页面与样式。
 
 ---
 
@@ -20,7 +20,7 @@ GitHub Pages 静态：
 
 发布延迟 = 构建时长（1–3 分钟）。线上无常驻进程、无端点、无缓存一致性问题；内容错误在构建期暴露。自托管的 `docker/compose.static.yaml` 为 `web`（静态文件服务器）+ `sync`（elog + build）。
 
-server 模式在此之上换取秒级发布与运行时功能，代价见 `dev/PLANNING.md` §3.3 对比表；切换时内容目录与模板不变。
+server 模式在此之上换取秒级发布与运行时功能，代价见 [dev/PLANNING.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/PLANNING.md) §3.3 对比表；切换时内容目录与模板不变。
 
 ---
 
