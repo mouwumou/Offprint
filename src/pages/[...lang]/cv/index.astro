@@ -107,7 +107,8 @@ const description = `${copy.title} — ${name}`
   lang={lang}
   title={copy.title}
   description={description}
-  alternates={uniformAlternates(siteConfig, '/cv')}
+  noindex={siteConfig.modules.cv.indexable === false}
+  alternates={siteConfig.modules.cv.indexable === false ? [] : uniformAlternates(siteConfig, '/cv')}
 >
   <div class:list={[container, themeVoice.density === 'airy' ? 'pt-16 lg:pt-24' : 'pt-8 lg:pt-10']}>
     <header

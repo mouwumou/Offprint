@@ -111,15 +111,17 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
         ))
       }
       {
-        config.header.search && config.modules.blog.enabled && (
-          <a
-            href={`${prefix}/search`}
-            aria-label={t('search.title')}
-            class="grid size-9 place-items-center rounded-md border border-border font-mono text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
-          >
-            ⌕
-          </a>
-        )
+        config.header.search &&
+          config.modules.blog.enabled &&
+          config.modules.blog.search !== false && (
+            <a
+              href={`${prefix}/search`}
+              aria-label={t('search.title')}
+              class="grid size-9 place-items-center rounded-md border border-border font-mono text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
+            >
+              ⌕
+            </a>
+          )
       }
       {
         config.header.languageSwitcher && config.i18n.locales.length > 1 && (

@@ -273,6 +273,9 @@
                 },
                 "related": {
                   "type": "boolean"
+                },
+                "search": {
+                  "type": "boolean"
                 }
               },
               "additionalProperties": false

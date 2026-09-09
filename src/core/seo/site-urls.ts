@@ -47,7 +47,8 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
 
   uniform('/')
   if (siteConfig.modules.projects.enabled) uniform('/projects')
-  if (siteConfig.modules.cv.enabled && siteConfig.modules.cv.pdf === undefined) uniform('/cv')
+  const cv = siteConfig.modules.cv
+  if (cv.enabled && cv.pdf === undefined && cv.indexable !== false) uniform('/cv')
   if (siteConfig.modules.publications.enabled) {
     uniform('/publications')
     for (const pub of await provider.listPublications()) {
@@ -57,7 +58,7 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
 
   if (siteConfig.modules.blog.enabled) {
     uniform('/blog')
-    uniform('/search')
+    if (siteConfig.modules.blog.search !== false) uniform('/search')
     const posts = await provider.listPosts()
     // Tags/categories exist per language (ADR-007 list rule); alternates
     // interlink only the languages that actually carry the term.

@@ -60,9 +60,14 @@ export default defineConfig({
       // i18n.noindex locales never enter the sitemap (server mode: site-urls.ts).
       filter: (page) => {
         const pathname = new URL(page).pathname
-        return !siteConfig.i18n.noindex.some(
+        const hiddenLocale = siteConfig.i18n.noindex.some(
           (locale) => pathname === `${base}/${locale}` || pathname.startsWith(`${base}/${locale}/`),
         )
+        // modules.cv.indexable: false keeps the HTML CV (any locale) out too.
+        const cvHidden =
+          siteConfig.modules.cv.indexable === false &&
+          /^(\/[a-z]{2,}(-[A-Za-z]+)?)?\/cv\/?$/.test(pathname.slice(base.length))
+        return !hiddenLocale && !cvHidden
       },
     }),
   ],
