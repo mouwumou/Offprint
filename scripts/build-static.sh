@@ -20,8 +20,8 @@ RELEASE="$SITE_DIR/releases/$STAMP"
 mkdir -p "$SITE_DIR/releases"
 
 echo "[build-static] building static site"
-ASTRO_OUT_DIR="dist-release" pnpm build:static
-mv dist-release "$RELEASE"
+ASTRO_OUT_DIR=".offprint/release" pnpm build:static
+mv .offprint/release "$RELEASE"
 
 echo "[build-static] switching $SITE_DIR/current -> releases/$STAMP"
 ln -sfn "releases/$STAMP" "$SITE_DIR/current.new"

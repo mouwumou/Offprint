@@ -1,9 +1,8 @@
-dist*/
+dist/
+.offprint/
 .astro/
 node_modules/
 coverage/
-playwright-report/
-test-results/
 pnpm-lock.yaml
 content/
 

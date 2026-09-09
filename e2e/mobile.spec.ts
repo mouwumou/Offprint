@@ -2,6 +2,7 @@ import { expect, test } from '@playwright/test'
 import { loadSiteConfig } from '../src/core/config/load'
 import { selfLabel } from '../src/core/i18n'
 import { discoverRoutes, sampleRoutes } from './lib/routes'
+import { E2E_DIST } from './lib/paths'
 
 const siteConfig = loadSiteConfig()
 
@@ -10,7 +11,7 @@ test.use({ viewport: { width: 375, height: 812 } })
 
 test('no horizontal overflow at 375px on any page type', async ({ page }) => {
   test.setTimeout(120_000)
-  const routes = sampleRoutes(discoverRoutes('dist-e2e'), siteConfig.i18n.locales)
+  const routes = sampleRoutes(discoverRoutes(E2E_DIST), siteConfig.i18n.locales)
   for (const route of routes) {
     await page.goto(route)
     const scrollWidth = await page.evaluate(() => document.documentElement.scrollWidth)

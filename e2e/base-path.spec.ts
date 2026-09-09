@@ -2,6 +2,7 @@ import { execSync, spawn, type ChildProcess } from 'node:child_process'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
+import { BASE_SERVER, BASE_STATIC } from './lib/paths'
 import { discoverRedirects, discoverRoutes } from './lib/routes'
 
 // ADR-023: a site deployed under a sub-path (user.github.io/repo) must carry
@@ -15,8 +16,8 @@ const STATIC_PORT = 4601
 const SERVER_PORT = 4602
 const STATIC_ORIGIN = `http://127.0.0.1:${STATIC_PORT}`
 const SERVER_ORIGIN = `http://127.0.0.1:${SERVER_PORT}`
-const STATIC_DIR = 'dist-base-static'
-const SERVER_DIR = 'dist-base-server'
+const STATIC_DIR = BASE_STATIC
+const SERVER_DIR = BASE_SERVER
 
 let staticServer: ChildProcess
 let nodeServer: ChildProcess

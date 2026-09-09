@@ -22,13 +22,13 @@
     "build:server": "cross-env RUNTIME_MODE=server astro build",
     "preview": "astro preview",
     "test": "vitest run",
-    "e2e": "playwright test",
+    "e2e": "playwright test --config e2e/playwright.config.ts",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "astro check",
     "sync": "tsx src/sync/cli.ts",
-    "lhci": "lhci autorun --config=lighthouserc.cjs",
+    "lhci": "lhci autorun --config=e2e/lighthouserc.cjs",
     "check:live": "node scripts/check-live.mjs",
     "gen:schema": "tsx scripts/gen-config-schema.ts"
   },
@@ -116,5 +116,21 @@
     "typescript": "^6.0.3",
     "typescript-eslint": "^8.67.0",
     "vitest": "^4.1.11"
+  },
+  "prettier": {
+    "semi": false,
+    "singleQuote": true,
+    "printWidth": 100,
+    "plugins": [
+      "prettier-plugin-astro"
+    ],
+    "overrides": [
+      {
+        "files": "*.astro",
+        "options": {
+          "parser": "astro"
+        }
+      }
+    ]
   }
 }

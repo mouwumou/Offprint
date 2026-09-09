@@ -2,7 +2,7 @@
 
 > Offprint (抽印本) — an open-source, pluggable, easy-to-deploy academic personal website: homepage, blog, publications, projects and CV in one site.
 
-[中文说明](README.zh-CN.md)
+[中文说明](docs/README.zh-CN.md)
 
 [![Use this template](https://img.shields.io/badge/GitHub-Use_this_template-2ea44f?logo=github)](https://github.com/mouwumou/Offprint/generate)
 
@@ -57,7 +57,7 @@ All core features are complete and gated by dual-mode HTML parity e2e, a sub-pat
 
 ## Contributing & security
 
-Issues and pull requests are welcome, in English or Chinese — see [CONTRIBUTING.md](CONTRIBUTING.md) for the workflow and the code constraints. Report vulnerabilities privately as described in [SECURITY.md](SECURITY.md), not in a public issue.
+Issues and pull requests are welcome, in English or Chinese — see [CONTRIBUTING.md](.github/CONTRIBUTING.md) for the workflow and the code constraints. Report vulnerabilities privately as described in [SECURITY.md](.github/SECURITY.md), not in a public issue.
 
 ## License
 

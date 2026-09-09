@@ -2,6 +2,7 @@ import AxeBuilder from '@axe-core/playwright'
 import { expect, test } from '@playwright/test'
 import { loadSiteConfig } from '../src/core/config/load'
 import { discoverRoutes, sampleRoutes } from './lib/routes'
+import { E2E_DIST } from './lib/paths'
 
 const siteConfig = loadSiteConfig()
 
@@ -11,7 +12,7 @@ const siteConfig = loadSiteConfig()
 // fail the suite.
 test('axe: no serious or critical violations on any page type', async ({ page }) => {
   test.setTimeout(180_000)
-  const routes = sampleRoutes(discoverRoutes('dist-e2e'), siteConfig.i18n.locales)
+  const routes = sampleRoutes(discoverRoutes(E2E_DIST), siteConfig.i18n.locales)
   expect(routes.length).toBeGreaterThan(0)
 
   for (const route of routes) {

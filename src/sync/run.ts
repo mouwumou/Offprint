@@ -73,7 +73,9 @@ async function syncPass(
   // its cache file stays out of the repo. pnpm exec refuses to run outside
   // the workspace, hence the explicit .bin path.
   const repoRoot = process.cwd()
-  const configPath = join(repoRoot, '.offprint-elog.config.ts')
+  const scratch = join(repoRoot, '.offprint')
+  await mkdir(scratch, { recursive: true })
+  const configPath = join(scratch, 'elog.config.ts')
   await writeFile(configPath, elogConfigSource('raw'))
   try {
     const elogBin = join(repoRoot, 'node_modules', '.bin', 'elog')

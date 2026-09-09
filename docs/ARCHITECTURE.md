@@ -25,6 +25,8 @@
 ```
 offprint/
 ├─ CLAUDE.md  README.md  LICENSE(MIT)
+├─ .github/                  # 工作流、issue/PR 模板、CONTRIBUTING / CODE_OF_CONDUCT / SECURITY
+├─ .offprint/                # 生成物（e2e 与 Lighthouse 构建、报告、同步临时配置），gitignored
 ├─ package.json  astro.config.ts  site.yaml  tsconfig.json
 ├─ schema/                   # site.yaml / home.yaml 的编辑器补全 schema（pnpm gen:schema 再生）
 ├─ .env.example

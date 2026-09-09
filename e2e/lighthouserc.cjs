@@ -1,5 +1,5 @@
 // Lighthouse CI thresholds (ARCHITECTURE §6: ≥ 95). Runs against the static
-// build output; `pnpm lhci` locally (after an e2e run builds dist-e2e) or the
+// build output; `pnpm lhci` locally (after an e2e run builds .offprint/e2e/dist) or the
 // CI job. The URL list is discovered from the build (ADR-017: deep tests are
 // content-agnostic) — the root, each top-level index, and one collection
 // entry per top-level section.
@@ -8,7 +8,9 @@ const { readdirSync, readFileSync, statSync, existsSync } = require('node:fs')
 const { join } = require('node:path')
 const { homedir } = require('node:os')
 
-const DIST = 'dist-e2e'
+const path = require('node:path')
+// Absolute so lhci's cwd never matters; the e2e run builds this directory.
+const DIST = path.resolve(__dirname, '..', '.offprint/e2e/dist')
 
 // Point chrome-launcher at Playwright's Linux Chromium. Under WSL it would
 // otherwise launch the WINDOWS Chrome, whose DevTools port lives on the
@@ -99,6 +101,9 @@ module.exports = {
         'categories:seo': ['error', { minScore: 0.95 }],
       },
     },
-    upload: { target: 'filesystem', outputDir: '.lighthouseci/reports' },
+    upload: {
+      target: 'filesystem',
+      outputDir: path.resolve(__dirname, '..', '.offprint/lighthouse/reports'),
+    },
   },
 }

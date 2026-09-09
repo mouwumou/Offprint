@@ -33,6 +33,6 @@ jobs:
       - run: pnpm exec playwright install --with-deps chromium
       # Includes the dual-mode HTML parity suite (ADR-003) and the axe audit.
       - run: pnpm e2e
-      # Lighthouse thresholds >= 0.95 (P3-9); dist-e2e was built by the e2e run.
+      # Lighthouse thresholds >= 0.95 (P3-9); .offprint/e2e/dist was built by the e2e run.
       - run: pnpm lhci
         if: matrix.node == 22

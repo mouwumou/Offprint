@@ -2,7 +2,7 @@
 
 > 抽印本 — 一个开源、可插拔、易部署的学术个人网站系统。
 
-[English](README.md)
+[English](../README.md)
 
 [![Use this template](https://img.shields.io/badge/GitHub-Use_this_template-2ea44f?logo=github)](https://github.com/mouwumou/Offprint/generate)
 
@@ -31,7 +31,7 @@ pnpm dev            # http://localhost:4321，示例内容开箱可见
 pnpm build:static   # 纯静态构建 → dist/
 ```
 
-改三处就是你的站：`content/profile.yaml`（你是谁）、`site.yaml`（开哪些模块、什么主题）、`content/` 其余文件（出版物、项目、CV、独立页面、首页排布）、博客（放 markdown 进 `content/posts/`，或接上 Notion）。完整步骤见 [docs/guide/getting-started.md](docs/guide/getting-started.md)。
+改三处就是你的站：`content/profile.yaml`（你是谁）、`site.yaml`（开哪些模块、什么主题）、`content/` 其余文件（出版物、项目、CV、独立页面、首页排布）、博客（放 markdown 进 `content/posts/`，或接上 Notion）。完整步骤见 [docs/guide/getting-started.md](guide/getting-started.md)。
 
 ## 用作模板
 
@@ -49,15 +49,15 @@ pnpm build:static   # 纯静态构建 → dist/
 
 ## 文档
 
-从 [docs/README.md](docs/README.md) 进入。使用文档：[快速开始](docs/guide/getting-started.md) · [配置体系](docs/guide/configuration.md) · [Notion 同步](docs/guide/sync.md) · [部署](docs/guide/deployment.md) · [主题](docs/THEMING.md) · [内容契约](docs/CONTENT-CONTRACT.md)。设计文档（架构、ADR、发布链）与开发过程文档也在同一索引里。
+从 [docs/README.md](README.md) 进入。使用文档：[快速开始](guide/getting-started.md) · [配置体系](guide/configuration.md) · [Notion 同步](guide/sync.md) · [部署](guide/deployment.md) · [主题](THEMING.md) · [内容契约](CONTENT-CONTRACT.md)。设计文档（架构、ADR、发布链）与开发过程文档也在同一索引里。
 
 ## 状态
 
-核心功能全部完成并经双模式一致性 e2e、子路径部署 e2e、无障碍（axe）与 Lighthouse 门槛验收；正在做开源发布的收尾。任务清单见 [docs/dev/ROADMAP.md](docs/dev/ROADMAP.md)。
+核心功能全部完成并经双模式一致性 e2e、子路径部署 e2e、无障碍（axe）与 Lighthouse 门槛验收；正在做开源发布的收尾。任务清单见 [docs/dev/ROADMAP.md](dev/ROADMAP.md)。
 
 ## 贡献与安全
 
-欢迎 issue 与 PR，流程与代码约束见 [CONTRIBUTING.md](CONTRIBUTING.md)。安全漏洞请走 [SECURITY.md](SECURITY.md) 的私密渠道，不要开公开 issue。
+欢迎 issue 与 PR，流程与代码约束见 [CONTRIBUTING.md](../.github/CONTRIBUTING.md)。安全漏洞请走 [SECURITY.md](../.github/SECURITY.md) 的私密渠道，不要开公开 issue。
 
 ## 许可
 

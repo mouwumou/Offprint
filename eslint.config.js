@@ -9,6 +9,7 @@ import tseslint from 'typescript-eslint'
 export default defineConfig(
   {
     ignores: [
+      '.offprint/**',
       'dist*/',
       '.astro/',
       'node_modules/',
@@ -34,6 +35,7 @@ export default defineConfig(
     files: [
       '*.config.{js,mjs,ts}',
       '*.cjs',
+      'e2e/*.cjs',
       'e2e/**/*.ts',
       'scripts/**/*.{js,mjs,ts}',
       'src/sync/**/*.ts',
@@ -41,7 +43,7 @@ export default defineConfig(
     languageOptions: { globals: { ...globals.node } },
   },
   {
-    files: ['*.cjs'],
+    files: ['*.cjs', 'e2e/*.cjs'],
     languageOptions: { sourceType: 'commonjs', globals: { ...globals.node } },
   },
   {

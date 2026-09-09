@@ -2,10 +2,11 @@ import { execSync, spawn, type ChildProcess } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
 import { expect, test } from '@playwright/test'
+import { DUAL_SERVER, DUAL_STATIC } from './lib/paths'
 import { discoverRedirects, discoverRoutes } from './lib/routes'
 
 // Constraint 2 / ADR-003: both runtime modes must emit identical HTML for the
-// same content. Static pages come from the dist-static build output; server
+// same content. Static pages come from the static build under .offprint/; server
 // pages from a running node-adapter process fed the same content directory.
 // EVERY discovered HTML route is compared (content-agnostic — the list grows
 // with the instance's content instead of naming sample slugs).
@@ -28,14 +29,14 @@ test.describe('dual-mode HTML parity', () => {
   test.beforeAll(async () => {
     test.setTimeout(240_000)
     execSync('pnpm build:static', {
-      env: { ...process.env, ASTRO_OUT_DIR: 'dist-static' },
+      env: { ...process.env, ASTRO_OUT_DIR: DUAL_STATIC },
       stdio: 'pipe',
     })
     execSync('pnpm build:server', {
-      env: { ...process.env, ASTRO_OUT_DIR: 'dist-server' },
+      env: { ...process.env, ASTRO_OUT_DIR: DUAL_SERVER },
       stdio: 'pipe',
     })
-    server = spawn('node', ['dist-server/server/entry.mjs'], {
+    server = spawn('node', [`${DUAL_SERVER}/server/entry.mjs`], {
       env: { ...process.env, HOST: '127.0.0.1', PORT: String(PORT) },
       stdio: 'pipe',
     })
@@ -56,11 +57,11 @@ test.describe('dual-mode HTML parity', () => {
   })
 
   test('static and server render identical HTML for every route', async () => {
-    const routes = discoverRoutes('dist-static')
+    const routes = discoverRoutes(DUAL_STATIC)
     expect(routes.length).toBeGreaterThan(0)
 
     for (const route of routes) {
-      const staticHtml = await readFile(join('dist-static', route, 'index.html'), 'utf8')
+      const staticHtml = await readFile(join(DUAL_STATIC, route, 'index.html'), 'utf8')
       const response = await fetch(BASE + route)
       expect.soft(response.status, `${route} status`).toBe(200)
       const serverHtml = await response.text()
@@ -69,7 +70,7 @@ test.describe('dual-mode HTML parity', () => {
   })
 
   test('redirects agree across modes: meta-refresh target = server Location', async () => {
-    for (const { route, target } of discoverRedirects('dist-static')) {
+    for (const { route, target } of discoverRedirects(DUAL_STATIC)) {
       const response = await fetch(BASE + route, { redirect: 'manual' })
       expect.soft(response.status, `${route} status`).toBeGreaterThanOrEqual(300)
       expect.soft(response.status, `${route} status`).toBeLessThan(400)

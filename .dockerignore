@@ -6,10 +6,9 @@
 .gitignore
 node_modules
 dist
-dist-*
+.offprint
 .vercel
 .lighthouseci
-test-results
 playwright-report
 *.log
 .DS_Store

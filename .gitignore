@@ -1,5 +1,7 @@
 # build output
-dist*/
+dist/
+# e2e / Lighthouse builds, reports, sync scratch (never committed)
+.offprint/
 # generated types
 .astro/
 
@@ -11,7 +13,6 @@ npm-debug.log*
 pnpm-debug.log*
 
 # environment variables
-.offprint-elog.config.ts
 .env
 .env.production
 
@@ -21,7 +22,6 @@ pnpm-debug.log*
 # tests
 coverage/
 .lighthouseci/
-test-results/
 playwright-report/
 blob-report/
 playwright/.cache/

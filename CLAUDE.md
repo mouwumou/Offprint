@@ -3,7 +3,7 @@
 Offprint（抽印本）是一个开源、可插拔、易部署的学术个人网站系统：学术首页 + 博客 + 项目 + CV。
 差异点：博客内容在 Notion 等工具里编排，经 elog 转成**约定格式的 markdown**发布；站点同一套代码既能编译成纯静态站，也能以 SSR 运行实现"发布即生效"。
 
-维护者：Q（mouwumou@gmail.com）。语言：README 双语（`README.md` 英文、`README.zh-CN.md` 中文，改一处须同步另一处），其余文档中文，代码/标识符/提交信息英文。
+维护者：Q（mouwumou@gmail.com）。语言：README 双语（`README.md` 英文、`docs/README.zh-CN.md` 中文，改一处须同步另一处），其余文档中文，代码/标识符/提交信息英文。
 
 ## 先读这些
 

@@ -24,4 +24,4 @@
 
 [dev/PLANNING.md](dev/PLANNING.md)（原始规划与框架分析）、[dev/ROADMAP.md](dev/ROADMAP.md)（阶段与任务清单）、[dev/REFERENCES.md](dev/REFERENCES.md)（参考项目的借鉴与回避）、[dev/DESIGN-REFERENCE.md](dev/DESIGN-REFERENCE.md)（设计 token 与原型来源）。日常使用不需要读；给贡献者与好奇的人。
 
-贡献流程见根目录 [CONTRIBUTING.md](../CONTRIBUTING.md)；安全策略见 [SECURITY.md](../SECURITY.md)。
+贡献流程见根目录 [CONTRIBUTING.md](../.github/CONTRIBUTING.md)；安全策略见 [SECURITY.md](../.github/SECURITY.md)。
