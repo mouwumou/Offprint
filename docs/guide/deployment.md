@@ -51,7 +51,7 @@ docker compose -f compose.server.yaml up -d --build
 
 建议把 `/api/*` 放在反向代理的额外防护之后，并用 `GET /api/health` 做存活探测——它报告当前内容版本、最近一次同步的结果与错误数。若 `SITE_URL` 带子路径，这些端点也在子路径下（`/<base>/api/…`），`REVALIDATE_URL` 与 Notion webhook 地址要相应带上。
 
-本项目的 Docker 相关验证都在远程测试机上做过（compose 的 static 与 server 两套均实测冷启动到首篇发布）；本机没有 Docker 的开发者可以完全跳过这两节。
+两套 compose 都用真实 Notion 凭据从冷启动验证到首篇文章上线：静态套件同步 → 构建 → 原子切换后由 Caddy 伺服；server 套件首次同步后文章即可访问，`/api/health` 报告内容版本，`/api/revalidate` 与 `/api/sync` 凭密钥放行、无密钥 401。没有 Docker 的开发者可以完全跳过这两节。
 
 ## 其他静态托管
 

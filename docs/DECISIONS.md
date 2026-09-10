@@ -190,5 +190,5 @@
 
 **背景**：部署文档写"根目录 `cp .env.example .env`，再 `docker compose -f docker/compose.*.yaml up`"，但 Compose 只从 compose 文件所在目录读 `.env`——根目录的文件从未被读到，自托管一直跑在无凭据的退化态（远程 Docker 主机上的探针证实：根目录 `.env` 不读，`--env-file .env` 或放到 `docker/.env` 才读）。`.env.example` 还列着死键（`SYNC_CRON`，实际是 `SYNC_INTERVAL`）与从未实现的 s3 键，缺 compose 真在读的端口与保留数。
 **决定**：`compose.static.yaml`、`compose.server.yaml` 移到仓库根目录（Dockerfile 与 Caddyfile 留在 `docker/`，`context: .`）——`.env` 与 compose 同目录，`pnpm sync` 与 Docker 读同一份，不靠任何参数或包装脚本。`.env.example` 只列真实存在、注明谁在读的键，按"站点 / Notion 同步 / Docker 静态 / Docker server / 高级"分组；`RUNTIME_MODE` 不再出现（构建期由 npm 脚本传入）。文档要求部署前用 `docker compose -f … config | grep NOTION_DB` 确认 `.env` 被读到。
-**后果**：根目录多两个 compose 文件，换来零配置正确性；实例升级脚本会把旧的 `docker/compose.*.yaml` 删掉。GitHub Pages 路径与本地构建仍不读 `.env`。
+**后果**：根目录多两个 compose 文件，换来零配置正确性；实例升级脚本会把旧的 `docker/compose.*.yaml` 删掉。GitHub Pages 路径与本地构建仍不读 `.env`。首次带凭据验证（2026-09-10）随即暴露并修掉了第二个问题：静态同步容器里 `content/posts` 来自镜像层，overlayfs 不允许重命名这类目录（`EXDEV`），原子切换改为在 `EXDEV` 时回退到复制加删除；两套 compose 均从冷启动验证到首篇文章上线。
 
