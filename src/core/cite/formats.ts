@@ -64,7 +64,7 @@ export function inlineCitation(publication: Publication): string {
   return `(${names}, ${publication.year})`
 }
 
-/** One reference-list entry (APA text) for the in-post bibliography (P3-2). */
+/** One reference-list entry (APA text) for the in-post bibliography. */
 export function bibliographyEntry(publication: Publication, lang: string): string {
   registerTemplates()
   const cite = new Cite(toCslJson(publication, lang))
@@ -74,7 +74,7 @@ export function bibliographyEntry(publication: Publication, lang: string): strin
 }
 
 /**
- * Server-side citation rendering (P3-1): BibTeX from our own generator, the
+ * Server-side citation rendering: BibTeX from our own generator, the
  * prose styles via citation-js + CSL (APA bundled; MLA/Chicago vendored,
  * CC-BY-SA, headers preserved). Pages pass the strings to the dialog island
  * so no citation machinery ships to the client.

@@ -117,7 +117,7 @@ describe('renderMarkdown', () => {
   })
 })
 
-describe('citations (P3-2)', () => {
+describe('citations', () => {
   it('links [@key] to the references section and appends entries in use order', async () => {
     const refs = new Map([
       ['a2025', { key: 'a2025', inline: '(Ada, 2025)', entry: 'Ada, A. (2025). Work.' }],
@@ -174,7 +174,7 @@ describe('citations (P3-2)', () => {
   })
 })
 
-describe('Notion export tolerance (ADR-026)', () => {
+describe('Notion export tolerance', () => {
   it('renders 4-space-indented paragraphs as prose, not code', async () => {
     const md = 'Intro paragraph.\n\n    第一，**高频词不一定重要**。公式 $k_1$ 在此。\n\n    第二段。\n'
     const { html } = await renderMarkdown(md)

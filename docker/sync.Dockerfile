@@ -1,4 +1,4 @@
-# Sync container for self-hosted static mode (P1-15): elog → validate →
+# Sync container for self-hosted static mode: elog → validate →
 # build → atomic release switch into the shared site volume.
 FROM node:22-alpine
 WORKDIR /app

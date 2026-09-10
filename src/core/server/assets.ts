@@ -19,7 +19,7 @@ const TYPES: Record<string, string> = {
  * them). Static builds copy the directory into the output instead.
  */
 export async function contentAssetResponse(pathname: string): Promise<Response | null> {
-  // Under a sub-path deployment the links say <base>/assets/… (ADR-023);
+  // Under a sub-path deployment the links say <base>/assets/…;
   // Astro's server router is lenient about the base (it also answers the
   // un-prefixed path), so strip the prefix when present rather than require it.
   const base = basePath()

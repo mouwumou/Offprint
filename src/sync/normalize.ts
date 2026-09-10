@@ -3,9 +3,9 @@ import { z } from 'zod'
 import { pageFrontmatterSchema, postFrontmatterSchema } from '../core/schema'
 import { detectLang } from './lang-detect'
 
-// CONTENT-CONTRACT §7.1: the observed differences between a real (NotionNext-
+// docs/CONTENT-CONTRACT.md §7.1: the observed differences between a real (NotionNext-
 // style) elog export and the contract, resolved here. Every step is
-// deliberately tool-tolerant (ADR-002): missing columns are derived, never
+// deliberately tool-tolerant: missing columns are derived, never
 // fatal, and unknown columns pass through.
 
 export type NormalizeResult =
@@ -90,7 +90,7 @@ export function normalizeDoc(
 
   // urlname: a readable slug wins; elog's own value is the Notion page UUID,
   // kept only when the title cannot be slugified (e.g. pure-CJK titles until
-  // the LLM transliteration step of ADR-013 exists).
+  // the LLM transliteration step exists).
   const title = typeof fm['title'] === 'string' ? fm['title'] : ''
   let urlname = typeof fm['urlname'] === 'string' ? fm['urlname'] : ''
   const isSlug = /^[a-z0-9-]+$/.test(urlname)
@@ -108,7 +108,7 @@ export function normalizeDoc(
   }
   fm['urlname'] = urlname
 
-  // lang: derived when absent (ADR-013).
+  // lang: derived when absent.
   if (typeof fm['lang'] !== 'string') {
     const detection = detectLang(`${title}\n${body}`, defaultLang)
     fm['lang'] = detection.lang

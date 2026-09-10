@@ -46,7 +46,7 @@ content/
 
 ## 3. publications（YAML，来自 Notion 数据库）
 
-Notion 里维护一个 publications 数据库，sync 导出为 `publications.yaml`（数组）。阶段 1 仅首页 Selected work 使用；阶段 3 加独立页与 Cite。
+Notion 里维护一个 publications 数据库，sync 导出为 `publications.yaml`（数组）。首页精选、出版物列表与详情页、Cite 弹窗都从这里取。
 
 | 字段 | 类型 | 必填 | 说明 |
 | --- | --- | --- | --- |
@@ -62,9 +62,9 @@ Notion 里维护一个 publications 数据库，sync 导出为 `publications.yam
 | `award` | string | | 如 "Best Paper" |
 | `thumbnail` | string | | 列表条目缩略图：`assets/…` 路径或绝对 URL |
 | `abstract` | string | | |
-| `bibtex` | string | | 可选：手填的 BibTeX；缺省时阶段 3 由上述字段生成 |
+| `bibtex` | string | | 可选：手填的 BibTeX；缺省时由上述字段生成 |
 
-BibTeX 文件导入作为可选 loader 留给模板用户（阶段 5）。
+从 BibTeX 文件导入尚未提供，可作为后续的可选 loader。
 
 ## 4. projects（YAML）
 
@@ -94,7 +94,7 @@ BibTeX 文件导入作为可选 loader 留给模板用户（阶段 5）。
 | `text` | string 或 `{en, zh}` | ✓ | 一句话 |
 | `href` | string | | 站内路径（`/blog/…`）或完整 URL |
 
-文件缺失 = 首页不渲染 news 块。v1 无归档页（维护者决定）。
+文件缺失 = 首页不渲染 news 块。没有归档页。
 
 ## 6. profile（`content/profile.yaml`，ADR-028）
 
@@ -143,9 +143,9 @@ posts 数据库（借鉴 NotionNext 的 `type` 列思路，一个数据库同时
 
 sync 的归一化步骤：日期格式统一为 `YYYY-MM-DD`；`categories` 规范为数组；`urlname` 校验 slug；`lang` 缺省回填并告警；未知列进入 `extra`。
 
-### 7.1 实测差异记录（P0-9，2026-08-23）
+### 7.1 与 elog 1.0 实际导出的差异
 
-实测环境：elog **1.0.0-beta.2** —— 已改为插件式工作流（`@elog/cli` + `@elog/plugin-from-notion` + `@elog/plugin-to-local`，CLI 参数 `-c/-e`），**0.x 的 write/deploy 配置不再兼容**；`databaseId` 仍可用（内部换取第一个 data source id，对应 Notion 2025-09 的 data source API）。测试库为维护者现有 NotionNext 模板库（列：title / slug / date / type / category / tags / summary / status / password / icon，无 lang / urlname / updated / cover 列）。
+elog **1.0** 改为插件式工作流（`@elog/cli` + `@elog/plugin-from-notion` + `@elog/plugin-to-local`，CLI 参数 `-c/-e`），**0.x 的 write/deploy 配置不再兼容**；`databaseId` 仍可用（内部换取第一个 data source id，对应 Notion 2025-09 的 data source API）。参照库是一个 NotionNext 模板库（列：title / slug / date / type / category / tags / summary / status / password / icon，无 lang / urlname / updated / cover 列）。
 
 elog 会自动补齐的字段（无需数据库列）：
 
@@ -153,12 +153,12 @@ elog 会自动补齐的字段（无需数据库列）：
 - `cover`：取 Notion 页面封面（数据库无 cover 列亦可）。真实上传的封面是 S3 签名 URL（约 1 小时过期），图床或 `local` 转存必须开启；
 - `urlname`：elog 写入的是 **Notion 页面 UUID**，不是人类可读 slug —— 契约的 `urlname` 须由 sync 从 `slug` 列映射覆盖。
 
-与契约的差异及 P1-13 sync 归一化清单：
+与契约的差异及 sync 的归一化对策：
 
-| 实测观察 | 契约期望 | sync 对策 |
+| 实际导出 | 契约期望 | sync 对策 |
 | --- | --- | --- |
 | `date`/`updated` 为 `'2021-11-05 08:00:00'`（空格分隔，非 ISO） | ISO date | 归一化为 `YYYY-MM-DD`；core schema 拒绝该格式，归一化必须发生在 sync 层 |
-| 无 `lang` 列 | `lang` 必填 | sync 做语言探测回填（ADR-013，维护者不在 Notion 加列；LLM 翻译管线另行设计） |
+| 无 `lang` 列 | `lang` 必填 | sync 做语言探测回填（ADR-013：不要求在 Notion 加列） |
 | `slug` 列（NotionNext 命名） | `urlname` | 改名映射并覆盖 elog 的 UUID 值；缺 slug 的行按标题 slug 化并告警 |
 | `category` 单值 select | `categories` | 改名；单值归一化 schema 已兼容 |
 | `summary` 列 | `description` | 改名映射 |

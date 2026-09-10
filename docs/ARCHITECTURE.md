@@ -31,7 +31,7 @@ offprint/
 ├─ schema/                   # site.yaml / home.yaml 的编辑器补全 schema（pnpm gen:schema 再生）
 ├─ .env.example
 ├─ extensions/               # 装进来的扩展（ADR-022，只读安装）：themes/ widgets/ modules/
-├─ content/                  # 维护者内容（sync 写入；模板用户替换）
+├─ content/                  # 站点内容（posts/ 由 sync 写入，其余作者手编）
 │  ├─ posts/<urlname>.<lang>.md
 │  ├─ pages/<slug>.<lang>.md # Notion type=Page 的独立页面（About、Now…）
 │  ├─ profile.yaml  publications.yaml  projects.yaml  cv.yaml  talks.yaml  news.yaml
@@ -41,27 +41,28 @@ offprint/
 │  ├─ core/                  # 未来的 @offprint/core，内部不得 import src/sync 或 extensions
 │  │  ├─ config/             # defineConfig + zod schema
 │  │  ├─ schema/             # posts / pages / publications / projects / cv / talks / news
-│  │  ├─ store/              # ContentStore: fs.ts (git.ts s3.ts 阶段 2) manifest.ts
+│  │  ├─ store/              # ContentStore: fs.ts git.ts manifest.ts
 │  │  ├─ content/            # ContentProvider, markdown 管线, cache
 │  │  ├─ loaders/            # Astro Content Layer loaders 包装 provider
-│  │  ├─ integration/        # Astro integration：模块开关、路由注入、(server 端点 阶段 2)
+│  │  ├─ integration/        # Astro integration：模块开关、路由注入、server 端点
 │  │  ├─ i18n/               # en.ts zh.ts + 工具
 │  │  ├─ seo/                # Head、JSON-LD、Highwire、OG 图、feed、sitemap
 │  │  ├─ theme/              # token CSS、字体、dark mode
 │  │  ├─ components/         # .astro + React islands；home/ 下是首页部件（可被 extensions 部件链覆盖）
-│  │  └─ server/             # 阶段 2：端点、watch、运行时索引（static 构建不打包）
+│  │  └─ server/             # server 模式：端点、watch、运行时索引（static 构建不打包）
 │  ├─ sync/                  # 未来的 @offprint/sync：elog 封装，只依赖 src/core/schema
 │  │  └─ { cli.ts, run.ts, elog-config.ts, manifest.ts, validate.ts, notify.ts }
 │  ├─ pages/                 # Astro 路由：[...lang]/ 下 blog / projects / cv / pages
 │  └─ layouts/
-├─ docker/                   # web.Dockerfile compose.static.yaml (site.Dockerfile compose.server.yaml 阶段 2)
+├─ compose.static.yaml  compose.server.yaml   # 根目录：Compose 从 compose 文件所在目录读 .env
+├─ docker/                   # web.Dockerfile sync.Dockerfile site.Dockerfile Caddyfile
 ├─ docs/
 ├─ .github/workflows/        # ci.yml sync.yml deploy-pages.yml
 ├─ e2e/                      # Playwright 与 Lighthouse 配置 + 各 spec（冒烟、双模式一致性、子路径、axe、手机视口）；构建产物进 .offprint/
 └─ scripts/                  # build-static.sh（sync → build → 原子切换）、serve-dist.mjs、check-live.mjs（线上验证）、upgrade-from-template.sh（实例升级）、gen-config-schema.ts
 ```
 
-边界由 eslint-plugin-import 的 `import/no-restricted-paths`（zones 按解析后的真实文件路径判定，比 `no-restricted-imports` 的导入字符串匹配可靠）守住：`src/core/**` 不得引用 `src/sync/**`、`extensions/**`、`src/pages/**`；`src/sync/**` 只能引用 `src/core/schema/**`。阶段 4 拆包时按目录平移。
+边界由 eslint-plugin-import 的 `import/no-restricted-paths`（zones 按解析后的真实文件路径判定，比 `no-restricted-imports` 的导入字符串匹配可靠）守住：`src/core/**` 不得引用 `src/sync/**`、`extensions/**`、`src/pages/**`；`src/sync/**` 只能引用 `src/core/schema/**`。将来拆成独立包时按目录平移。
 
 ## 3. 关键接口
 
@@ -85,8 +86,8 @@ offprint/
 
 ### 3.2 模块注册（ADR-019）
 
-模块以代码注册获得合法性（"模块注册表"）：`registerModule({ id, configSchema?, enabledByDefault?, nav?, copy?, collections? })`（`src/core/modules/registry.ts`）。`modules` 配置的校验 schema 在 `defineConfig()` **调用时**由注册表组合——site.yaml 里出现未注册的模块名会得到"module not registered"并列出当前已注册者。内置五模块在 `src/core/modules/builtin.ts` 自注册；**安装的模块**放 `extensions/modules/<id>/`，以 `module.yaml` 声明导航与文案（构建期 fs 读取自动注册，与主题机制对称，无 import 边界问题——ADR-021/022）。nav 缺省槽位与落地页文案缺省均来自注册信息，core 内不再各处硬编码模块名单。内置模块的路由仍是 `src/pages` 文件路由（以 `modules.<id>.enabled` 为门）；第三方模块的路由经 integration `injectRoute` 注入（P5-1e）。
-- 模块接口（内部，阶段 5 才对外）：
+模块以代码注册获得合法性（"模块注册表"）：`registerModule({ id, configSchema?, enabledByDefault?, nav?, copy?, collections? })`（`src/core/modules/registry.ts`）。`modules` 配置的校验 schema 在 `defineConfig()` **调用时**由注册表组合——site.yaml 里出现未注册的模块名会得到"module not registered"并列出当前已注册者。内置五模块在 `src/core/modules/builtin.ts` 自注册；**安装的模块**放 `extensions/modules/<id>/`，以 `module.yaml` 声明导航与文案（构建期 fs 读取自动注册，与主题机制对称，无 import 边界问题——ADR-021/022）。nav 缺省槽位与落地页文案缺省均来自注册信息，core 内不再各处硬编码模块名单。内置模块的路由仍是 `src/pages` 文件路由（以 `modules.<id>.enabled` 为门）；第三方模块的路由经 integration `injectRoute` 注入（计划中）。
+- 模块接口（内部，尚未作为公开 API 稳定）：
 
 ```ts
 interface OffprintModule {
@@ -100,7 +101,7 @@ interface OffprintModule {
 
 ## 4. 运行模式细节
 
-static 是默认与基线，server 是可选运行时（ADR-003）。阶段 1 只实现 static；server 相关代码（端点、watch、运行时索引）集中在 integration 与 `src/core/server/`，static 构建时不得被打包。
+static 是默认与基线，server 是可选运行时（ADR-003）。server 相关代码（端点、watch、运行时索引）集中在 integration 与 `src/core/server/`，static 构建时不得被打包。
 
 | | static | server |
 | --- | --- | --- |
@@ -136,8 +137,8 @@ rehype：`rehype-slug`、`rehype-autolink-headings`、`rehype-katex`（服务端
 | --- | --- | --- |
 | GitHub Pages | static | `deploy-pages.yml`：build → upload artifact |
 | 其他静态托管（Cloudflare Pages 等） | static | 放 `dist/` 即可；不做平台专属配置，server 模式只做容器（ADR-025） |
-| Docker 自托管（默认） | static | `docker/compose.static.yaml`：Caddy 伺服 `dist/` + sync 容器（elog → build → 原子切换），见 `DYNAMIC-PUBLISHING.md` §0 |
-| Docker 自托管（可选） | server | `docker/compose.server.yaml`：site + sync + 共享 volume，见 `DYNAMIC-PUBLISHING.md` §5 |
+| Docker 自托管（默认） | static | `compose.static.yaml`：Caddy 伺服 `dist/` + sync 容器（elog → build → 原子切换），见 `DYNAMIC-PUBLISHING.md` §0 |
+| Docker 自托管（可选） | server | `compose.server.yaml`：site + sync + 共享 volume，见 `DYNAMIC-PUBLISHING.md` §5 |
 
 ## 8. 安全
 

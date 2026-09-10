@@ -1,6 +1,6 @@
 import { timingSafeEqual } from 'node:crypto'
 
-// Shared endpoint protection (DYNAMIC-PUBLISHING §3.3): secret auth,
+// Shared endpoint protection (docs/DYNAMIC-PUBLISHING.md §3.3): secret auth,
 // per-endpoint rate limiting, and a single-flight mutex with a merge window
 // for the write endpoints.
 
@@ -11,7 +11,7 @@ export function json(body: unknown, status = 200, headers: Record<string, string
   })
 }
 
-/** Write endpoints require the shared secret header (constraint 8). */
+/** Write endpoints require the shared secret header. */
 export function checkSecret(request: Request): Response | null {
   const secret = process.env['REVALIDATE_SECRET']
   if (!secret) {
@@ -27,7 +27,7 @@ export function checkSecret(request: Request): Response | null {
 }
 
 /**
- * Notion webhook signature check (P2-7, optional): HMAC-SHA256 of the raw
+ * Notion webhook signature check (optional): HMAC-SHA256 of the raw
  * body with NOTION_WEBHOOK_SECRET, sent as `X-Notion-Signature: sha256=<hex>`.
  * Returns null when the header is absent or the secret unconfigured (caller
  * falls back to the shared-secret path).
@@ -67,7 +67,7 @@ export interface SingleFlight<T> {
 /**
  * Single-flight with a merge window: concurrent triggers join the running
  * task (202), and triggers arriving within `mergeMs` of a completed run are
- * absorbed instead of restarting elog (webhook replay protection, §6).
+ * absorbed instead of restarting elog (webhook replay protection).
  *
  * `isOk` classifies a RESOLVED value as success or failure — tasks like the
  * sync child process resolve `{ok: false}` instead of rejecting. Only

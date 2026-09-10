@@ -5,12 +5,12 @@ import { z } from 'zod'
 import type { MessageKey } from '../i18n'
 import { localizedString, type LocalizedString } from '../schema/localized'
 
-// ADR-019 module registry: a module becomes legal by REGISTERING, and the
+// Module registry: a module becomes legal by REGISTERING, and the
 // `modules` config schema is composed from the registered modules' own
 // schemas at defineConfig() time — an unregistered name in the config is a
 // "not registered" build error, not a hardcoded-whitelist rejection.
 // Built-ins register in ./builtin.ts; site-local modules are discovered
-// from extensions/modules/<id>/module.yaml manifests (ADR-021/022) right before
+// from extensions/modules/<id>/module.yaml manifests right before
 // the modules schema is composed.
 
 const copyShape = {
@@ -110,10 +110,10 @@ export function registerModule(def: OffprintModuleDef): void {
   })
 }
 
-// ── site-local module discovery (ADR-021) ────────────────────────────────────
+// ── site-local module discovery ────────────────────────────────────
 
 /** extensions/modules/<id>/module.yaml — declarative manifest, fs-read like a
- * theme's theme.json (no import across the ADR-006 boundary, no bundle
+ * theme's theme.json (no import across the core/sync boundary, no bundle
  * timing). Behaviour (routes) is injected separately by the integration. */
 const moduleManifestSchema = z.strictObject({
   nav: z
@@ -199,9 +199,7 @@ export function buildModulesSchema(): z.ZodType<ModulesConfig, unknown> {
           path: [key],
           message: `module "${key}" is not registered — registered modules: ${getModules()
             .map((m) => m.id)
-            .join(
-              ', ',
-            )}. Installed modules live in extensions/modules/<id>/ with a module.yaml (ADR-019/022).`,
+            .join(', ')}. Installed modules live in extensions/modules/<id>/ with a module.yaml.`,
         })
       }
     }

@@ -4,8 +4,8 @@ export { diffManifests, manifestEntrySchema, manifestSchema } from '../schema/ma
 export type { Manifest, ManifestDiff, ManifestEntry } from '../schema/manifest'
 
 /**
- * Byte-level content storage (DYNAMIC-PUBLISHING §3.1). Implementations:
- * FsStore (phase 0), GitStore / S3Store (phase 2). Reads and lists only —
+ * Byte-level content storage (docs/DYNAMIC-PUBLISHING.md §3.1). Implementations:
+ * FsStore (a local directory) and GitStore (a GitHub repository). Reads and lists only —
  * the semantic layer lives in ContentProvider.
  */
 export interface ContentStore {

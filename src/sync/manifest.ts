@@ -16,7 +16,7 @@ async function listMarkdown(root: string, dir: string): Promise<string[]> {
 }
 
 /**
- * Manifest for a content directory (CONTENT-CONTRACT §8): entry per markdown
+ * Manifest for a content directory (docs/CONTENT-CONTRACT.md §8): entry per markdown
  * document keyed `${collection}/${basename-without-ext}` plus the YAML
  * collections, hashes as ETags. `errors` come from the sync run (or a
  * standalone validate pass).

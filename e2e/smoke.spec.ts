@@ -6,7 +6,7 @@ import { resolveLocalized } from '../src/core/schema/localized'
 import { parseProfile } from '../src/core/schema/profile'
 
 const siteConfig = loadSiteConfig()
-// The author's name is content (content/profile.yaml, ADR-028), read the
+// The author's name is content (content/profile.yaml), read the
 // same way the site does — no sample-content strings in the test.
 const profile = parseProfile(YAML.parse(readFileSync('content/profile.yaml', 'utf8')))
 

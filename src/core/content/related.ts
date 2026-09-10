@@ -2,8 +2,8 @@ import { postsForLanguage } from './posts-view'
 import type { PostSummary } from './provider'
 
 /**
- * Related posts (P3-10): shared tags weigh double, shared categories single;
- * translations of the current post never appear, and the ADR-007 language
+ * Related posts: shared tags weigh double, shared categories single;
+ * translations of the current post never appear, and the language
  * preference applies.
  */
 export function relatedPosts(

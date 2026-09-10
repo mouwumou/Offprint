@@ -19,6 +19,6 @@ body:
     id: module
     attributes:
       label: 它属于哪个模块，配置项叫什么 / Which module & config key
-      description: Offprint 的模块都可关（约束 5）——新功能要能被 site.yaml 开关。不确定就写"不确定"。
+      description: Offprint 的模块都可关——新功能要能被 site.yaml 开关。不确定就写"不确定"。
     validations:
       required: true

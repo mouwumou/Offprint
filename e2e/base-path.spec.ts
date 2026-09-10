@@ -5,7 +5,7 @@ import { expect, test } from '@playwright/test'
 import { BASE_SERVER, BASE_STATIC } from './lib/paths'
 import { discoverRedirects, discoverRoutes } from './lib/routes'
 
-// ADR-023: a site deployed under a sub-path (user.github.io/repo) must carry
+// A site deployed under a sub-path (user.github.io/repo) must carry
 // that path on EVERY internal URL — nav, feeds, covers, canonical/hreflang,
 // redirect targets, search results — in both runtime modes. Content-agnostic
 // crawl: every discovered route is fetched under the base and every internal
@@ -77,7 +77,7 @@ async function crawlUnderBase(origin: string): Promise<void> {
   }
 }
 
-test.describe('deployment sub-path (ADR-023)', () => {
+test.describe('deployment sub-path', () => {
   test.describe.configure({ mode: 'serial' })
   test.setTimeout(360_000)
 

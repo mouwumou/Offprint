@@ -4,7 +4,7 @@ import { coldStartResponse } from './core/server/coldstart'
 import { ensureContentWatch } from './core/server/watch'
 
 // Server runtime bootstrap: the first request arms the manifest watch, and
-// until the very first manifest exists HTML routes get the §5 cold-start
+// until the very first manifest exists HTML routes get the cold-start
 // page. RUNTIME_MODE is inlined at build time (astro.config `define`): in a
 // static build this branch is the literal `false` and nothing server-only
 // reaches dist/; in a server build it needs no environment at start-up.

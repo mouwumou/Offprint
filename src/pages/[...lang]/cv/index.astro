@@ -99,7 +99,7 @@ const publications =
 const inlinePublications = cv.publicationsFromSite ? [] : cv.publications
 
 // content/profile.yaml is the single source; cv.yaml `basics` may override
-// per field (JSON Resume compatibility, ADR-028).
+// per field (JSON Resume compatibility).
 const profile = await provider.getProfile()
 // resolveLocalized yields '' for an absent value, so fall back on truthiness.
 const name = r(cv.basics?.name) || r(profile.name)

@@ -25,7 +25,7 @@ type Posts = Parameters<typeof tagsForLanguage>[0]
 
 /**
  * hreflang alternates for a tag/category page: only the languages whose own
- * display list carries the term (ADR-007 list rule) — a uniform set linked
+ * display list carries the term (per-language list rule) — a uniform set linked
  * every language to pages that do not exist for single-language terms.
  */
 export function termAlternates(

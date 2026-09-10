@@ -1,5 +1,5 @@
 #!/bin/sh
-# Seed the content volume from the image on every start (ADR-014 ownership):
+# Seed the content volume from the image on every start (content ownership):
 # author-owned collections (pages/, the YAML files, assets/) are refreshed
 # from the image — the repository is their source of truth — while posts/ and
 # manifest.json belong to sync and are only seeded when the volume has none

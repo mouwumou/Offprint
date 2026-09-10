@@ -1,5 +1,5 @@
 // Regenerates the JSON Schemas that give site.yaml and content/home.yaml
-// editor autocompletion, hover docs, and live squiggles (ADR-021) — the
+// editor autocompletion, hover docs, and live squiggles — the
 // yaml-language-server header comment in each file points here. Run after
 // changing any config zod schema:  pnpm gen:schema
 // The outputs are committed so a fresh clone has completion immediately.
@@ -11,7 +11,7 @@ import { listThemes, resolveTheme } from '../src/core/theme/resolve'
 
 /** Editor completion for theme.options: the union of every installed
  * theme's declared options (build-time validation stays exact per active
- * theme; the schema only serves completion — ADR-022). */
+ * theme; the schema only serves completion). */
 function themeOptionsProperties(): Record<string, unknown> {
   const properties: Record<string, unknown> = {}
   for (const name of listThemes()) {

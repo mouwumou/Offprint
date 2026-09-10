@@ -13,7 +13,7 @@ const pub = publicationSchema.parse({
   doi: '10.1038/x',
 })
 
-describe('publicationToBibtex (ADR-008: fields → BibTeX)', () => {
+describe('publicationToBibtex (fields → BibTeX)', () => {
   it('renders an @article with authors joined by and', () => {
     const bibtex = publicationToBibtex(pub, 'en')
     expect(bibtex).toContain('@article{voss2025geometry,')
@@ -32,7 +32,7 @@ describe('publicationToBibtex (ADR-008: fields → BibTeX)', () => {
   })
 })
 
-describe('citationFormats (P3-1)', () => {
+describe('citationFormats', () => {
   it('renders APA, MLA, and Chicago via CSL', () => {
     const formats = citationFormats(pub, 'en')
     expect(formats.apa).toMatch(/Voss, M\. E\., & Nakamura, R\. \(2025\)/)

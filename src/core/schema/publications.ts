@@ -11,13 +11,13 @@ export const publicationTypeSchema = z.enum([
 ])
 
 /**
- * One entry of content/publications.yaml (CONTENT-CONTRACT §3), exported by
- * sync from a Notion database (ADR-008). Unknown fields pass through under
+ * One entry of content/publications.yaml (docs/CONTENT-CONTRACT.md §3), exported by
+ * sync from a Notion database. Unknown fields pass through under
  * `extra` like the other collections.
  */
 export const publicationSchema = z
   .looseObject({
-    /** Stable identifier, doubles as the BibTeX key in phase 3. */
+    /** Stable identifier; also the BibTeX key. */
     key: slugSchema.or(
       z.string().regex(/^[a-z0-9-]+$/i, 'expected an identifier like voss2025geometry'),
     ),
@@ -42,7 +42,7 @@ export const publicationSchema = z
     /** Entry thumbnail for list layouts: assets/… path or absolute URL. */
     thumbnail: coverSource.optional(),
     abstract: localizedString.optional(),
-    /** Hand-written override; phase 3 generates BibTeX from the fields above. */
+    /** Hand-written override; otherwise BibTeX is generated from the fields above. */
     bibtex: z.string().optional(),
   })
   .transform(

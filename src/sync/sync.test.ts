@@ -8,7 +8,7 @@ import { buildManifest } from './manifest'
 import { normalizeDoc } from './normalize'
 import { validateContent } from './validate'
 
-// A raw elog export in the exact shape observed in P0-9 (NotionNext database).
+// A raw elog export in the exact shape observed (NotionNext database).
 const notionNextDoc = `---
 password: ''
 icon: ''
@@ -29,7 +29,7 @@ updated: '2024-09-23 05:49:00'
 这是一篇中文示例正文，用来验证语言探测与归一化流程。段落里应当有足够多的汉字。
 `
 
-describe('normalizeDoc (CONTENT-CONTRACT §7.1)', () => {
+describe('normalizeDoc (docs/CONTENT-CONTRACT.md §7.1)', () => {
   it('normalizes a real NotionNext export into contract shape', () => {
     const result = normalizeDoc(notionNextDoc, 'example-1.md', 'en')
     expect(result.kind).toBe('post')
@@ -134,7 +134,7 @@ describe('manifest + atomic switch', () => {
   })
 })
 
-describe('ADR-014: sync owns posts only', () => {
+describe('sync owns posts only', () => {
   it('a posts-only switch leaves author-owned pages untouched', async () => {
     const root = await mkdtemp(join(tmpdir(), 'offprint-adr14-'))
     const content = join(root, 'content')

@@ -28,8 +28,8 @@ function elogVersion(): string {
 }
 
 /**
- * One sync pass (DYNAMIC-PUBLISHING §4, without notify — that lands in P2-1):
- * elog → .staging/raw → normalize (CONTENT-CONTRACT §7.1) → per-document
+ * One sync pass (docs/DYNAMIC-PUBLISHING.md §4):
+ * elog → .staging/raw → normalize (docs/CONTENT-CONTRACT.md §7.1) → per-document
  * validation (failures recorded, never blocking) → manifest → atomic switch.
  */
 export async function runSync(options: {
@@ -90,7 +90,7 @@ async function syncPass(
     await rm(configPath, { force: true })
   }
 
-  // ADR-014: sync owns content/posts only. Notion type=Page routing is an
+  // Sync owns content/posts only. Notion type=Page routing is an
   // explicit opt-in — by default those docs are skipped and locally edited
   // pages/ are never touched.
   const includePages = process.env['SYNC_PAGES'] === 'true'
@@ -135,7 +135,7 @@ async function syncPass(
   )
   // Author-owned collections (pages/ unless opted in, plus every YAML) live
   // in the content dir, not staging — merge their entries so the manifest
-  // describes the whole content state (ADR-014).
+  // describes the whole content state.
   const liveManifest = await buildManifest(contentDir, manifest.tool)
   for (const [key, entry] of Object.entries(liveManifest.entries)) {
     if (key.startsWith('posts/')) continue
@@ -143,7 +143,7 @@ async function syncPass(
     manifest.entries[key] = entry
   }
 
-  // Previous manifest → diff for targeted revalidation (P2-1 notify).
+  // Previous manifest → diff for targeted revalidation (notify).
   let previous: Manifest | null = null
   try {
     previous = manifestSchema.parse(

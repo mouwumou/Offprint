@@ -19,7 +19,7 @@ const post = (over: Partial<PostSummary>): PostSummary =>
     ...over,
   }) as unknown as PostSummary
 
-describe('per-language tag/category views (ADR-007)', () => {
+describe('per-language tag/category views', () => {
   // publishing-from-notion case: the zh translation carries 工具链, the en
   // translation does not — the en list shows the en translation, so the tag
   // must not exist in en (it produced an empty /blog/tag/工具链 page).

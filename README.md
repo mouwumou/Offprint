@@ -35,7 +35,7 @@ Change three things and it is your site: `content/profile.yaml` (who you are), `
 
 ## Use as a template
 
-This repository is a **public template** (ADR-017): it ships sample content, builds self-sufficiently, and its CI and demo deploy use only `GITHUB_TOKEN` — **it holds no secrets and never will**. Your site is an **instance repository** generated from it: click "Use this template" above (cleaner than a fork — no development history).
+This repository is a **public template**: it ships sample content, builds self-sufficiently, and its CI and demo deploy use only `GITHUB_TOKEN` — **it holds no secrets and never will**. Your site is an **instance repository** generated from it: click "Use this template" above (cleaner than a fork — no development history).
 
 Everything an instance may need, all in your own repository's Settings, all optional:
 
@@ -53,7 +53,7 @@ Start at [docs/README.md](docs/README.md). The guides are currently written in C
 
 ## Status
 
-All core features are complete and gated by dual-mode HTML parity e2e, a sub-path deployment e2e, accessibility (axe) and Lighthouse thresholds; the open-source release is being finalised. Development happens on the `dev` branch; `main` is a clean release snapshot without the working documents (ADR-030). Task list: [ROADMAP on dev](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/ROADMAP.md).
+All core features are complete and gated by dual-mode HTML parity e2e, a sub-path deployment e2e, accessibility (axe) and Lighthouse thresholds; the open-source release is being finalised. Development happens on the `dev` branch; `main` is a clean release snapshot without the working documents. Task list: [ROADMAP on dev](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/ROADMAP.md).
 
 ## Contributing & security
 

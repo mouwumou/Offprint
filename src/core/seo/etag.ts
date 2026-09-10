@@ -2,7 +2,7 @@ import type { APIContext } from 'astro'
 import { getProvider } from '../content'
 
 /**
- * Wrap an endpoint body with content-version ETag / 304 handling (P2-8).
+ * Wrap an endpoint body with content-version ETag / 304 handling.
  * The version is the manifest hash, so any content change rolls the tag.
  * Static prerenders simply bake the headers; hosts layer their own caching.
  */

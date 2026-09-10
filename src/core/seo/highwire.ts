@@ -2,8 +2,8 @@ import type { SiteConfig } from '../config/schema'
 import { resolveLocalized, type Publication } from '../schema'
 
 /**
- * Highwire Press citation_* meta for publication detail pages (constraint 7,
- * P3-0) — what Google Scholar actually crawls.
+ * Highwire Press citation_* meta for publication detail pages — what Google
+ * Scholar actually crawls.
  */
 export function highwireMeta(
   config: SiteConfig,

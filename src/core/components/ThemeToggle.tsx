@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-// One of the few true islands (constraint 6). The anti-flash inline script in
+// One of the few true islands (zero JavaScript by default). The anti-flash inline script in
 // BaseLayout has already applied the stored/system theme class before paint;
 // this button only toggles and persists it.
 export default function ThemeToggle({ label }: { label: string }) {

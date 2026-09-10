@@ -1,6 +1,6 @@
 // Hand-rolled RSS 2.0 / Atom / JSON Feed builders — three small templates
 // beat a dependency. Endpoints call these in both runtime modes (static:
-// prerendered files; server: per request, P2-8 adds ETags).
+// prerendered files; server: per request, with ETags).
 
 export interface FeedItem {
   title: string

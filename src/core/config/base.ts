@@ -1,5 +1,5 @@
 /**
- * Deployment sub-path support (ADR-023). A site served under a path —
+ * Deployment sub-path support. A site served under a path —
  * `https://user.github.io/repo/` — needs every internal URL prefixed with
  * that path. There is ONE source: SITE_URL's pathname. astro.config derives
  * Astro's `base` from it; Astro then bakes the value into

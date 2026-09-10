@@ -1,7 +1,7 @@
 /* paper — the typeset-magazine theme ported from the original concept
-   prototype (DESIGN-REFERENCE; ADR-018 demoted its tokens from "system
-   locked" to this theme's definition). Fonts load here; tokens live in
-   theme.json and are injected by BaseLayout. */
+   prototype; its tokens are this theme's own definition, not a site-wide
+   system. Fonts load here; tokens live in theme.json and are injected by
+   BaseLayout. */
 @import '@fontsource-variable/newsreader';
 @import '@fontsource-variable/newsreader/wght-italic.css';
 @import '@fontsource-variable/inter';

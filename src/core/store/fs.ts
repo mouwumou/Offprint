@@ -14,7 +14,7 @@ function isNotFound(error: unknown): boolean {
 
 /**
  * ContentStore over a local directory (CONTENT_DIR). The baseline store for
- * both modes; `watch` arrives with server mode (P2-4).
+ * both modes; `watch` arrives with server mode.
  */
 export class FsStore implements ContentStore {
   constructor(private readonly root: string) {}
@@ -62,9 +62,9 @@ export class FsStore implements ContentStore {
   }
 
   /**
-   * Watch manifest.json (the sync pipeline writes it last, §4) and emit a
+   * Watch manifest.json (the sync pipeline writes it last) and emit a
    * key-level diff. chokidar loads lazily so a static build never executes —
-   * or ships — any watcher code (P2-4).
+   * or ships — any watcher code.
    */
   watch(onChange: (changed: ManifestDiff) => void): () => void {
     let closed = false

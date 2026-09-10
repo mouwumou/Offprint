@@ -26,9 +26,9 @@ export type Page = PageFrontmatter & { body: string }
 export type { NewsItem, Profile, Project, Publication, Resume } from '../schema'
 
 /**
- * The semantic content layer (DYNAMIC-PUBLISHING §3.2): parsed + validated +
+ * The semantic content layer (docs/DYNAMIC-PUBLISHING.md §3.2): parsed + validated +
  * cached. Pages and components depend on this interface and nothing below it
- * (constraint 1). Static mode calls it once at build; server mode per request.
+ * (pages read content only through the provider). Static mode calls it once at build; server mode per request.
  */
 export interface ContentProvider {
   listPosts(opts?: { includeDrafts?: boolean; lang?: string }): Promise<PostSummary[]>
@@ -77,7 +77,7 @@ function safeParam(value: string): boolean {
   return SAFE_SEGMENT.test(value)
 }
 
-/** posts/<urlname>.<lang>.md — the filename is part of the contract (§1). */
+/** posts/<urlname>.<lang>.md — the filename is part of the contract (docs/CONTENT-CONTRACT.md §1). */
 function checkFilename(path: string, expected: string): void {
   const basename = path.slice(path.lastIndexOf('/') + 1)
   if (basename !== expected) {
@@ -281,7 +281,7 @@ export function createProvider(store: ContentStore, options: ProviderOptions = {
       const profile = await load('profile.yaml', (raw, path) => parseProfile(YAML.parse(raw), path))
       if (profile === null) {
         throw new Error(
-          'content/profile.yaml is missing — it holds who you are (at least `name`; CONTENT-CONTRACT §6, ADR-028)',
+          'content/profile.yaml is missing — it holds who you are (at least `name`; see docs/CONTENT-CONTRACT.md §6)',
         )
       }
       return profile

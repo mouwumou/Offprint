@@ -1,4 +1,4 @@
-# Sample projects (template data, ADR-010).
+# Sample projects — replace with your own.
 - name: manifold-lab
   blurb:
     en: A Python toolkit for measuring the geometry of neural population codes.

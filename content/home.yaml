@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../schema/home.schema.json
 #
-# 首页的排布（ADR-021）：从上到下有哪些块、什么顺序、什么选项。
+# 首页的排布：从上到下有哪些块、什么顺序、什么选项。
 # 删掉这个文件 = 使用内置默认（即下面这个学术排布）。可用的块：
 #   bio-header              紧凑头部：名字 + 小头像 + bio + 快捷链接行
 #   news                    近况列表（content/news.yaml；count: 5）

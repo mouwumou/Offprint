@@ -17,7 +17,7 @@ interface SearchDoc extends SearchHit {
   text: string
 }
 
-// Server-mode in-memory index (P2-9): rebuilt lazily whenever the content
+// Server-mode in-memory index: rebuilt lazily whenever the content
 // version changes (which revalidate/watch roll on every sync).
 let cached: { version: string; index: MiniSearch<SearchDoc> } | null = null
 

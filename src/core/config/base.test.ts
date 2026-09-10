@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { basePath, basePathFromSiteUrl, normalizeBase } from './base'
 
-describe('basePathFromSiteUrl (ADR-023)', () => {
+describe('basePathFromSiteUrl', () => {
   it("is '' at the origin root and the normalised pathname otherwise", () => {
     expect(basePathFromSiteUrl('https://example.com')).toBe('')
     expect(basePathFromSiteUrl('https://example.com/')).toBe('')

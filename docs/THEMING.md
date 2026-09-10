@@ -1,13 +1,13 @@
-# 主题制作规范（ADR-018）
+# 主题制作规范
 
-主题决定站点的**皮肤**：颜色、圆角、字体，以及主题自带的附加样式。布局与交互不属于主题——那是部件层（`src/site/widgets/`，见 ARCHITECTURE §3.1）与编排层（`content/home.yaml` 的 sections、`site.yaml` 的 `nav` / `header` / `footer`）的职责。这个边界是刻意的：主题只要不碰结构，就永远不会因为核心升级而坏掉。
+主题决定站点的**皮肤**：颜色、圆角、字体，以及主题自带的附加样式。布局与交互不属于主题——那是部件层（`src/site/widgets/`，见 docs/ARCHITECTURE.md §3.1）与编排层（`content/home.yaml` 的 sections、`site.yaml` 的 `nav` / `header` / `footer`）的职责。这个边界是刻意的：主题只要不碰结构，就永远不会因为核心升级而坏掉。
 
 ## 1. 一个主题是什么
 
 一个目录，放在下列任一位置（同名时靠前者优先）：
 
 ```
-extensions/themes/<name>/   # 安装的主题（只读：升级 = 整目录替换，ADR-022）
+extensions/themes/<name>/ # 安装的主题（只读：升级 = 整目录替换）
 src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 ```
 
@@ -17,12 +17,12 @@ src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 <name>/
 ├─ theme.json     # 必需：manifest（tokens + fonts + typography + voice + options 声明）
 ├─ theme.css      # 可选：字体加载（@import fontsource 包）与主题特有样式
-└─ widgets/       # 可选：主题自带的首页部件实现（ADR-022；站点散件可逐个压过）
+└─ widgets/       # 可选：主题自带的首页部件实现（站点散件可逐个压过）
 ```
 
 没有注册表、没有枚举：**放进目录、通过校验，就是合法主题**。`site.yaml` 里 `theme: { name: <name> }` 即启用；名字解析不到时构建失败并列出当前可用的主题。
 
-**只读原则（ADR-022）**：使用者永远不编辑主题目录内部——你的一切可调项都在 site.yaml：`theme.accent` / `theme.tokens`（通用覆盖）与 `theme.options`（主题自定义选项，见 §2b）；想改某个部件，在 `extensions/widgets/` 放同名文件压过它，不要 fork 主题。
+**只读原则**：使用者永远不编辑主题目录内部——你的一切可调项都在 site.yaml：`theme.accent` / `theme.tokens`（通用覆盖）与 `theme.options`（主题自定义选项，见 §2b）；想改某个部件，在 `extensions/widgets/` 放同名文件压过它，不要 fork 主题。
 
 ## 2. theme.json
 
@@ -50,7 +50,7 @@ src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 
 token 的注入由 BaseLayout 完成（内联 `:root{…}.dark{…}`），主题不用也不要在 CSS 里重复定义它们。用户可在 config 里用 `theme.tokens` / `theme.accent` 在你的主题之上做覆盖——这是预期行为，不要用更高特异性对抗它。
 
-## 2b. options：主题自定义选项（ADR-022）
+## 2b. options：主题自定义选项
 
 在 theme.json 里**声明**你的选项，用户在 site.yaml `theme.options` 里**填值**：
 
@@ -83,7 +83,7 @@ pnpm lhci                                 # 四类 Lighthouse ≥ 0.95（性能/
 
 ## 5. 分发形态
 
-| 形态 | 现在 | 阶段 4 拆包后 |
+| 形态 | 现在 | 拆成 npm 包后 |
 | --- | --- | --- |
 | 站点自有 | `src/site/themes/<name>/` | 不变 |
 | 向模板贡献 | PR 到 `src/core/themes/<name>/` | 不变 |
@@ -91,11 +91,11 @@ pnpm lhci                                 # 四类 Lighthouse ≥ 0.95（性能/
 
 ## 6. 后续版本的契约扩展（计划中，尚未实现）
 
-以下字段**现在写了会被 schema 拒绝**（ADR-016：schema 只收已实现的）：
+以下字段**现在写了会被 schema 拒绝**（schema 只收已实现的）：
 
 - `shiki`：代码高亮双主题自定义（现为全站统一的 offprint 双主题）。
 
 ## 附：部件里的数据从哪来
 
-部件（内置的、主题携带的、`extensions/widgets/` 里覆盖的）一律经 `getProvider()` 取内容：文章、出版物、项目、CV，以及**作者信息** `getProvider().getProfile()`（`content/profile.yaml`，ADR-028）。`siteConfig` 里只有结构与开关，没有内容——不要在部件里假设它带 `profile`。
+部件（内置的、主题携带的、`extensions/widgets/` 里覆盖的）一律经 `getProvider()` 取内容：文章、出版物、项目、CV，以及**作者信息** `getProvider().getProfile()`（`content/profile.yaml`）。`siteConfig` 里只有结构与开关，没有内容——不要在部件里假设它带 `profile`。
 

@@ -7,13 +7,13 @@ import { contentAssetResponse } from '../server/assets'
 import { resolveTheme } from '../theme/resolve'
 
 /**
- * The Offprint Astro integration. Phase 2 scope: inject the server-only API
+ * The Offprint Astro integration: it injects the server-only API
  * routes when (and only when) building the server runtime — a static build
- * never sees this code (constraint 2). Module-driven route injection for
- * regular pages migrates here in phase 4.
+ * never sees this code (server-only code never enters a static build). Module-driven route injection for
+ * regular pages is a planned follow-up.
  */
 export function offprint(): AstroIntegration {
-  // Captured in config:setup for the dev middleware mount (ADR-023).
+  // Captured in config:setup for the dev middleware mount.
   let base = ''
   return {
     name: 'offprint',
@@ -46,7 +46,7 @@ export function offprint(): AstroIntegration {
       },
       'astro:config:setup': ({ injectRoute, injectScript, config }) => {
         base = config.base.replace(/\/+$/, '')
-        // ADR-018: the resolved theme's stylesheet (font loading, theme-
+        // The resolved theme's stylesheet (font loading, theme-
         // specific styles) joins every page; tokens are injected separately
         // by BaseLayout from the manifest. Resolution failures abort the
         // build here, before any page renders.
@@ -72,7 +72,7 @@ export function offprint(): AstroIntegration {
           pattern: '/api/search',
           entrypoint: './src/core/server/routes/search.ts',
         })
-        // P2-8: request-time sitemap under the same URLs the static build emits.
+        // Request-time sitemap under the same URLs the static build emits.
         injectRoute({
           pattern: '/sitemap-index.xml',
           entrypoint: './src/core/server/routes/sitemap-index.ts',

@@ -5,7 +5,7 @@ import { getProvider } from '../content'
 import { resolveLocalized } from '../schema'
 import type { FeedItem, FeedMeta } from './feeds'
 
-/** Shared per-language feed assembly for the rss/atom/json endpoints (ADR-007). */
+/** Shared per-language feed assembly for the rss/atom/json endpoints. */
 export async function feedData(
   context: APIContext,
   filename: string,

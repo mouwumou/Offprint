@@ -1,5 +1,5 @@
-# P1-11: dual-mode builds + unit tests + e2e (incl. dual-mode HTML parity)
-# + content validation, across Node LTS lines (ARCHITECTURE §6).
+# Dual-mode builds, unit tests, e2e (incl. dual-mode HTML parity), content
+# validation and Lighthouse, across Node LTS lines.
 name: CI
 
 on:
@@ -26,13 +26,13 @@ jobs:
       - run: pnpm format:check
       - run: pnpm typecheck
       - run: pnpm test
-      # Content validation job (constraint 4): non-compliant content fails CI.
+      # Content validation: non-compliant content fails CI.
       - run: pnpm sync validate
       - run: pnpm build:static
       - run: pnpm build:server
       - run: pnpm exec playwright install --with-deps chromium
-      # Includes the dual-mode HTML parity suite (ADR-003) and the axe audit.
+      # Includes the dual-mode HTML parity suite and the axe audit.
       - run: pnpm e2e
-      # Lighthouse thresholds >= 0.95 (P3-9); .offprint/e2e/dist was built by the e2e run.
+      # Lighthouse thresholds >= 0.95; .offprint/e2e/dist was built by the e2e run.
       - run: pnpm lhci
         if: matrix.node == 22

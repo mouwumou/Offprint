@@ -11,7 +11,7 @@ import BaseLayout from '../../../../core/components/BaseLayout.astro'
 export async function getStaticPaths() {
   if (!siteConfig.modules.blog.enabled) return []
   // Each language routes only the tags its own display list carries — a
-  // globally derived set produced empty pages (ADR-007 list rule).
+  // globally derived set produced empty pages (per-language list rule).
   const posts = await getProvider().listPosts()
   return siteConfig.i18n.locales.flatMap((locale) =>
     tagsForLanguage(posts, locale).map(({ tag }) => ({

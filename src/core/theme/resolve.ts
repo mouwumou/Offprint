@@ -3,9 +3,9 @@ import { join, resolve } from 'node:path'
 import { z } from 'zod'
 import { themeManifestSchema, type ResolvedTheme } from './contract'
 
-// Installed themes (extensions/, ADR-022) shadow built-ins of the same
+// Installed themes (extensions/) shadow built-ins of the same
 // name; npm-distributed themes join the chain when the package split lands
-// (phase 4). Reading theme.json via fs keeps ADR-006 intact: core never
+//. Reading theme.json via fs keeps the core/sync boundary intact: core never
 // imports extension code, and a manifest is data, not code.
 const THEME_ROOTS = ['extensions/themes', 'src/core/themes'] as const
 
@@ -32,7 +32,7 @@ export function listThemes(): string[] {
   return [...names].sort()
 }
 
-/** The resolver IS the validation (ADR-018): unknown names fail the build. */
+/** The resolver IS the validation: unknown names fail the build. */
 export function resolveTheme(name: string): ResolvedTheme {
   const cached = cache.get(name)
   if (cached !== undefined) return cached

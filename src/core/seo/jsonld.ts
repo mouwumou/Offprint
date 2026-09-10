@@ -3,7 +3,7 @@ import type { Post } from '../content'
 import type { Stats } from '../content/markdown'
 import { resolveLocalized, type Profile, type Publication } from '../schema'
 
-/** schema.org Person for the homepage (constraint 7). */
+/** schema.org Person for the homepage (academic SEO). */
 export function personJsonLd(
   profile: Profile,
   config: SiteConfig,
@@ -39,7 +39,7 @@ export function personJsonLd(
 
 /**
  * schema.org ScholarlyArticle entries for the homepage Selected work section
- * (P1-8). Highwire Press citation_* meta belongs to the phase-3 publication
+ *. Highwire Press citation_* meta belongs to the phase-3 publication
  * pages.
  */
 export function scholarlyArticlesJsonLd(
@@ -63,7 +63,7 @@ export function scholarlyArticlesJsonLd(
   }))
 }
 
-/** schema.org BlogPosting for post pages (constraint 7). */
+/** schema.org BlogPosting for post pages (academic SEO). */
 export function blogPostingJsonLd(
   profile: Profile,
   config: SiteConfig,

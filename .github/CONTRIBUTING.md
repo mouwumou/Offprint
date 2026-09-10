@@ -14,12 +14,12 @@ pnpm build:static        # 两种构建都必须成功
 pnpm build:server
 ```
 
-需要 Node 22+ 与 pnpm（版本见 `package.json` 的 `packageManager` 字段）。不需要任何密钥——模板自带样例内容，构建完全自足。测试与审计的一切生成物（e2e 构建、Playwright 结果、Lighthouse 报告）都在 `.offprint/`（gitignored），新增的生成物也放那里，根目录只保留真正的 `dist/`（ADR-029）。
+需要 Node 22+ 与 pnpm（版本见 `package.json` 的 `packageManager` 字段）。不需要任何密钥——模板自带样例内容，构建完全自足。测试与审计的一切生成物（e2e 构建、Playwright 结果、Lighthouse 报告）都在 `.offprint/`（gitignored），新增的生成物也放那里，根目录只保留真正的 `dist/`。
 
 ## 开始之前
 
 - 读 [docs/DECISIONS.md](../docs/DECISIONS.md)：已定的架构决策（ADR）不在 PR 里推翻；想改先开 issue 讨论。
-- 开发在 **`dev` 分支**进行，`main` 是不含开发文档的发布快照（ADR-030）——PR 请基于 dev。读 dev 分支上 [CLAUDE.md](https://github.com/mouwumou/Offprint/blob/dev/CLAUDE.md) 的"不可违反的约束"一节——它们同样约束人类贡献者，其中最常被踩的三条：
+- 开发在 **`dev` 分支**进行，`main` 是不含开发文档的发布快照——PR 请基于 dev。读 dev 分支上 [CLAUDE.md](https://github.com/mouwumou/Offprint/blob/dev/CLAUDE.md) 的"不可违反的约束"一节——它们同样约束人类贡献者，其中最常被踩的三条：
   1. 页面只依赖 `ContentProvider`，不得直接读文件系统或 `getCollection`；
   2. static 是基线：任何改动后两种构建都要成功，server 专属代码不得进入 static 产物；
   3. 新增 UI 文案必须进 `src/core/i18n/`，不得硬编码（双语是一等公民）。
@@ -27,7 +27,7 @@ pnpm build:server
 
 ## 贡献主题 / widget
 
-主题住在 `extensions/`（第三方）或 `src/core/themes/`（内置），契约见 [docs/THEMING.md](../docs/THEMING.md) 与 ADR-018/022：
+主题住在 `extensions/`（第三方）或 `src/core/themes/`（内置），契约见 [docs/THEMING.md](../docs/THEMING.md)：
 
 - 主题是一份 `theme.json`（token 表、字体、voice、可选 options 声明）加可选的 widget 组件；
 - token 值经 schema 校验（拒绝 `< > ; { }`），所有可配置项必须在 `theme.json` 里声明，不接受"改 src/ 才能用"的主题；

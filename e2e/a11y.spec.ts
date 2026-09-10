@@ -6,7 +6,7 @@ import { E2E_DIST } from './lib/paths'
 
 const siteConfig = loadSiteConfig()
 
-// P3-9: axe audit over one representative page per URL shape, discovered
+// Axe audit over one representative page per URL shape, discovered
 // from the build output (content-agnostic; every language and page type is
 // covered whatever the instance's content). Serious and critical violations
 // fail the suite.

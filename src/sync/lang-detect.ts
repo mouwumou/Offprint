@@ -1,4 +1,4 @@
-// Lightweight language detection (ADR-013): the maintainer keeps no lang
+// Lightweight language detection: the maintainer keeps no lang
 // column in Notion, so sync derives it. A CJK-ratio heuristic is the
 // "轻量检测器" option; an LLM pipeline may replace it later without touching
 // the contract.

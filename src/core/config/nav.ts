@@ -21,7 +21,7 @@ export interface NavPage {
 }
 
 // 'home' is the one non-module nav target; every other slot comes from the
-// module registry (ADR-019) — a registered module with a nav field gets one.
+// module registry — a registered module with a nav field gets one.
 const HOME_TARGET: Target = { path: '', key: 'nav.home' as MessageKey, exact: true }
 
 interface Target {
@@ -51,7 +51,7 @@ export function cvHref(config: SiteConfig, lang: string): string {
 /**
  * URL prefix for a language: '' for the default language, '/zh' style
  * otherwise — both carrying the deployment sub-path ('/repo/zh') when the
- * site lives under one (ADR-023). Every internal href composes from this.
+ * site lives under one. Every internal href composes from this.
  */
 export function langPrefix(config: SiteConfig, lang: string): string {
   return `${basePath()}${lang === config.i18n.default ? '' : `/${lang}`}`
@@ -63,7 +63,7 @@ export function homePath(config: SiteConfig, lang: string): string {
 }
 
 /**
- * Navigation as data (ADR-015). Without config.nav the theme default applies:
+ * Navigation as data. Without config.nav the theme default applies:
  * home, every enabled module, then pages flagged nav:true. With config.nav
  * the author's list is authoritative — entries pointing at a disabled module
  * or a missing page are skipped instead of breaking the build.
@@ -92,7 +92,7 @@ export function resolveNav(config: SiteConfig, lang: string, pages: readonly Nav
     })
   }
 
-  // A page summary may be the other-language fallback (ADR-007 list rule);
+  // A page summary may be the other-language fallback (per-language list rule);
   // link it under ITS OWN language prefix — prefixing the requested language
   // onto a page that has no translation there manufactures a dead URL.
   const pageHref = (page: NavPage): string => `${langPrefix(config, page.lang)}/${page.slug}`

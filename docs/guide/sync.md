@@ -1,6 +1,6 @@
 # Notion 写作与同步
 
-Offprint 不在运行时读 Notion（约束 3 / ADR-012）。博客文章的路径是：
+Offprint 不在运行时读 Notion。博客文章的路径是：
 
 ```
 Notion 数据库 ──elog 导出──▶ 归一化校验 ──▶ content/posts/*.md + manifest.json ──▶ 站点构建 / 请求期读取
@@ -12,7 +12,7 @@ Notion 数据库 ──elog 导出──▶ 归一化校验 ──▶ content/po
 
 1. 在 Notion 建一个 **integration**，拿到 token（`secret_…`）。
 2. 建一个数据库存放文章，把它**分享给这个 integration**，记下数据库 id（URL 里 32 位十六进制）。
-3. 数据库的列名与契约字段的对应关系见 [CONTENT-CONTRACT.md §7](../CONTENT-CONTRACT.md)。同步会从标题与内容派生 `lang` 与 `urlname`，Notion 里不需要额外加列（ADR-013）。
+3. 数据库的列名与契约字段的对应关系见 [CONTENT-CONTRACT.md §7](../CONTENT-CONTRACT.md)。同步会从标题与内容派生 `lang` 与 `urlname`，Notion 里不需要额外加列。
 
 ## 本地跑一次同步
 
@@ -25,7 +25,7 @@ pnpm dev                     # 看结果
 
 同步的行为要点：
 
-- **只写 `content/posts/`**（ADR-014）。`pages/`、各 `*.yaml` 是你手写的，同步永远不碰；想让 Notion 里 `type = Page` 的文档也进 `content/pages/`，设 `SYNC_PAGES=true`。
+- **只写 `content/posts/`**。`pages/`、各 `*.yaml` 是你手写的，同步永远不碰；想让 Notion 里 `type = Page` 的文档也进 `content/pages/`，设 `SYNC_PAGES=true`。
 - **逐篇校验、错误隔离**。一篇不合规的文章会被记录并跳过，其余照常发布；错误会打印，server 模式下也出现在 `/api/health`。
 - **图片物化**。Notion 托管的图片是几小时就过期的签名 URL，默认（`IMAGE_PLATFORM=local`）会下载到 `content/assets/` 并改写链接；同一张图按稳定路径去重，重复同步不重复下载。下载有 30 秒超时与 25MB 上限，失败保留原链接、不阻塞同步。
 - **原子切换**。新内容先在临时目录完成全部处理，最后一步整体切换，`manifest.json` 最后写入——读取方永远不会看到半成品。

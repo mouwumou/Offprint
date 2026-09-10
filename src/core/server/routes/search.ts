@@ -3,7 +3,7 @@ import siteConfig from '../../config/current'
 import { json } from '../guard'
 import { searchContent } from '../search-index'
 
-/** GET /api/search?q=…&lang=… (server mode, P2-9). */
+/** GET /api/search?q=…&lang=… (server mode). */
 export const GET: APIRoute = async ({ url }) => {
   const query = url.searchParams.get('q')?.trim() ?? ''
   const lang = url.searchParams.get('lang') ?? siteConfig.i18n.default

@@ -1,6 +1,6 @@
-// Lighthouse CI thresholds (ARCHITECTURE §6: ≥ 95). Runs against the static
+// Lighthouse CI thresholds (docs/ARCHITECTURE.md §6: ≥ 95). Runs against the static
 // build output; `pnpm lhci` locally (after an e2e run builds .offprint/e2e/dist) or the
-// CI job. The URL list is discovered from the build (ADR-017: deep tests are
+// CI job. The URL list is discovered from the build (deep tests are
 // content-agnostic) — the root, each top-level index, and one collection
 // entry per top-level section.
 /* eslint-disable @typescript-eslint/no-require-imports -- lhci loads this file as CommonJS */
@@ -42,7 +42,7 @@ function discoverUrls() {
       const path = join(dir, name)
       if (statSync(path).isDirectory()) walk(path, `${prefix}${name}/`)
       else if (name === 'index.html') {
-        // Skip the meta-refresh stubs redirects.yaml builds into (P1-10).
+        // Skip the meta-refresh stubs redirects.yaml builds into.
         const head = readFileSync(path, 'utf8').slice(0, 512)
         if (!head.includes('http-equiv="refresh"')) routes.push(prefix)
       }

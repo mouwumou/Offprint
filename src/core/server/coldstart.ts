@@ -5,7 +5,7 @@ import { useTranslations } from '../i18n'
 let contentReady = false
 
 /**
- * §5 cold start: before the very first manifest lands, HTML routes get a 503
+ * Cold start: before the very first manifest lands, HTML routes get a 503
  * "content is syncing" page instead of broken pages. Once content is seen,
  * the check short-circuits forever (per process).
  */
@@ -14,7 +14,7 @@ export async function coldStartResponse(pathname: string): Promise<Response | nu
     return null
   const store = getStore()
   const manifest = await store.manifest().catch(() => null)
-  // Hand-written content ships without a manifest (CONTENT-CONTRACT §1) —
+  // Hand-written content ships without a manifest (docs/CONTENT-CONTRACT.md §1) —
   // any posts on disk also count as ready.
   if (manifest !== null || (await store.list('posts')).length > 0) {
     contentReady = true

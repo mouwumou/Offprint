@@ -39,7 +39,7 @@ describe('defineConfig', () => {
 
   it('rejects unknown keys anywhere (typo protection)', () => {
     expect(() => defineConfig({ ...minimal, modles: {} } as never)).toThrow(/Invalid site\.config/)
-    // profile moved to content/profile.yaml (ADR-028): a leftover block is now a typo-class error.
+    // profile moved to content/profile.yaml: a leftover block is now a typo-class error.
     expect(() => defineConfig({ profile: { name: 'Q' } } as never)).toThrow(/Invalid site\.config/)
   })
 
@@ -63,7 +63,7 @@ describe('resolveLocalized', () => {
   })
 })
 
-describe('comments (P3-8)', () => {
+describe('comments', () => {
   it('defaults off and demands full giscus config when enabled', () => {
     expect(defineConfig(minimal).comments.enabled).toBe(false)
     expect(() => defineConfig({ ...minimal, comments: { enabled: true } })).toThrow(/requires/)
@@ -81,7 +81,7 @@ describe('comments (P3-8)', () => {
   })
 })
 
-describe('module copy overrides (ADR-015)', () => {
+describe('module copy overrides', () => {
   it('widens booleans to settings and accepts copy objects', () => {
     const config = defineConfig({
       ...minimal,
@@ -99,7 +99,7 @@ describe('module copy overrides (ADR-015)', () => {
     expect(() =>
       defineConfig({ ...minimal, modules: { blog: { titel: 'typo' } } as never }),
     ).toThrow()
-    // ADR-016: unimplemented freedoms are rejected, not silently accepted.
+    // Unimplemented freedoms are rejected, not silently accepted.
     expect(() => defineConfig({ ...minimal, modules: { talks: true } as never })).toThrow()
     expect(() =>
       defineConfig({ ...minimal, theme: { fonts: { serif: 'Lora' } } as never }),
@@ -107,7 +107,7 @@ describe('module copy overrides (ADR-015)', () => {
   })
 })
 
-describe('header/footer chrome (ADR-015)', () => {
+describe('header/footer chrome', () => {
   it('defaults keep every chrome element on', () => {
     const config = defineConfig(minimal)
     expect(config.header).toEqual({ search: true, themeToggle: true, languageSwitcher: true })
@@ -128,7 +128,7 @@ describe('header/footer chrome (ADR-015)', () => {
   })
 })
 
-describe('home sections (ADR-015)', () => {
+describe('home sections', () => {
   it('defaults to the academic bio/news/publications/posts sequence (A4)', () => {
     const config = defineConfig(minimal)
     expect(config.layout.width).toBe('narrow')
@@ -173,7 +173,7 @@ describe('home sections (ADR-015)', () => {
   })
 })
 
-describe('module registry (ADR-019)', () => {
+describe('module registry', () => {
   it('rejects an unregistered module with a "not registered" error', () => {
     expect(() => defineConfig({ ...minimal, modules: { talks: true } as never })).toThrow(
       /module "talks" is not registered/,
@@ -206,7 +206,7 @@ describe('module registry (ADR-019)', () => {
   })
 })
 
-describe('site-local module manifests (ADR-021)', () => {
+describe('site-local module manifests', () => {
   it('discovers src/site/modules/<id>/module.yaml and makes it legal config', async () => {
     const { mkdir, rm, writeFile } = await import('node:fs/promises')
     await mkdir('extensions/modules/reading', { recursive: true })

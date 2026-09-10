@@ -15,12 +15,12 @@
 
 | 文档 | 内容 |
 | --- | --- |
-| [DECISIONS.md](DECISIONS.md) | 架构决策记录（ADR-001–030）：每个"为什么这样做"的出处 |
+| [DECISIONS.md](DECISIONS.md) | 架构决策记录（ADR）：每个"为什么这样做"的出处 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 分层、双运行模式、仓库结构、包边界 |
 | [CONTENT-CONTRACT.md](CONTENT-CONTRACT.md) | 内容契约：所有集合的 front-matter / YAML schema，工具无关 |
 | [DYNAMIC-PUBLISHING.md](DYNAMIC-PUBLISHING.md) | server 模式发布链设计：`ContentStore`/`ContentProvider`、原子切换、revalidate |
 
-## 开发过程文档（只在 `dev` 分支，ADR-030）
+## 开发过程文档（只在 `dev` 分支）
 
 `main` 是不含开发文档的发布快照；项目 0→1 的工作文件在 dev 分支的 `docs/dev/`：[PLANNING](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/PLANNING.md)（原始规划与框架分析）、[ROADMAP](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/ROADMAP.md)（阶段与任务清单）、[REFERENCES](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/REFERENCES.md)（参考项目的借鉴与回避）、[DESIGN-REFERENCE](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/DESIGN-REFERENCE.md）（设计 token 与原型来源）。给 Claude Code 的项目说明 [CLAUDE.md](https://github.com/mouwumou/Offprint/blob/dev/CLAUDE.md) 同样只在 dev。
 

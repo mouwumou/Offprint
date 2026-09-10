@@ -20,7 +20,7 @@ const ORDER: { key: keyof CitationFormats; label: string }[] = [
   { key: 'chicago', label: 'Chicago' },
 ]
 
-// Cite dialog island (P3-1): all formats are prerendered server-side; the
+// Cite dialog island: all formats are prerendered server-side; the
 // client only opens a <dialog> and copies text.
 export default function CiteDialog({ formats, labels, mono = false }: Props) {
   const dialogRef = useRef<HTMLDialogElement>(null)

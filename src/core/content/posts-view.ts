@@ -1,12 +1,12 @@
 import type { PageSummary, PostSummary } from './provider'
 
 /**
- * ADR-007 list rule: every list shows each article once — in the requested
+ * List rule: every list shows each article once — in the requested
  * language when a translation exists, otherwise in its only language (the
  * caller renders a language badge when `post.lang` differs). Input order
  * (pinned-first, newest-first) is preserved by first occurrence.
  */
-/** ADR-007 list rule for standalone pages, keyed by slug. */
+/** The same list rule for standalone pages, keyed by slug. */
 export function pagesForLanguage(pages: readonly PageSummary[], lang: string): PageSummary[] {
   const bySlug = new Map<string, PageSummary>()
   for (const page of pages) {
@@ -24,7 +24,7 @@ export function collectCategories(posts: readonly PostSummary[]): string[] {
 }
 
 /**
- * Tags visible in one language's display list, with counts (ADR-007). A tag
+ * Tags visible in one language's display list, with counts. A tag
  * carried only by a post's other-language translation does NOT belong here —
  * deriving tags globally produced empty /blog/tag/* pages in the language
  * whose translation lacks the tag, and double counts for shared tags.

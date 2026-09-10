@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { parseProfile } from './profile'
 
-describe('content/profile.yaml (ADR-028)', () => {
+describe('content/profile.yaml', () => {
   it('needs only a name and applies the defaults', () => {
     const profile = parseProfile({ name: 'Ada Lovelace' })
     expect(profile.nameVariants).toEqual([])

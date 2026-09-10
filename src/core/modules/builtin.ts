@@ -4,7 +4,7 @@ import { moduleToggleWith, moduleToggleWithColophon, registerModule } from './re
 // The five built-in modules, registered on first import (config/schema.ts
 // imports this file for its side effect). Their routes remain file-based
 // under src/pages, gated on modules.<id>.enabled; third-party module routes
-// go through the integration's injectRoute (ADR-019, P5-1e).
+// go through the integration's injectRoute.
 
 registerModule({
   id: 'blog',

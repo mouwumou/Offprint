@@ -1,5 +1,5 @@
 // elog 1.0 plugin-workflow config, generated at sync time from environment
-// variables (DYNAMIC-PUBLISHING §4) — a token-bearing config never lives in
+// variables (docs/DYNAMIC-PUBLISHING.md §4) — a token-bearing config never lives in
 // the repository. Raw export lands in the staging dir for normalization.
 // NOTE: @elog/plugin-to-local joins outputDir onto process.cwd() even when
 // absolute — always pass a RELATIVE dir and run elog with cwd=staging.

@@ -26,8 +26,8 @@ async function listMarkdown(root: string, dir: string): Promise<string[]> {
 
 /**
  * `pnpm sync validate` — schema-check everything under the content dir
- * (constraint 4). Returns per-file issues; the CLI turns them into a
- * non-zero exit for CI (P1-11 内容校验 job).
+ * (the schema is the validation). Returns per-file issues; the CLI turns them into a
+ * non-zero exit for CI (the CI content-validation step).
  */
 export async function validateContent(root: string): Promise<ValidationIssue[]> {
   const problems: ValidationIssue[] = []

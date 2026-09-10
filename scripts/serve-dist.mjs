@@ -1,6 +1,6 @@
 // Minimal static file server for e2e (usage: node scripts/serve-dist.mjs [dir] [port] [base]).
 // With a base ('/sub') the build is mounted under that path, like a
-// user.github.io/repo deployment: only <base>/… resolves (ADR-023).
+// user.github.io/repo deployment: only <base>/… resolves.
 // `astro preview` daemonizes / short-circuits when any instance is already
 // running, which breaks Playwright's webServer ownership — this stays in the
 // foreground and dies with its parent.

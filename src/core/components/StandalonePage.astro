@@ -17,7 +17,7 @@ interface Props {
 
 const { lang, page, rendered, alternates } = Astro.props
 const t = useTranslations(lang)
-// SEO: every page carries a meta description (constraint 7) — front matter
+// SEO: every page carries a meta description (academic SEO) — front matter
 // first, else the opening of the body.
 const description = page.description ?? plainText(page.body).slice(0, 160)
 ---

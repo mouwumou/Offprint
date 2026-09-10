@@ -1,4 +1,4 @@
-// Static-mode search index (P2-9): run pagefind over the build output.
+// Static-mode search index: run pagefind over the build output.
 // Server mode uses the MiniSearch /api/search endpoint instead.
 import { spawnSync } from 'node:child_process'
 import { existsSync } from 'node:fs'

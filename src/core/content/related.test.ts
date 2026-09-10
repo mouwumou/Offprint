@@ -34,7 +34,7 @@ const all = [
   post({ urlname: 'e', tags: ['z'] }), // score 0
 ]
 
-describe('relatedPosts (P3-10)', () => {
+describe('relatedPosts', () => {
   it('ranks by shared tags then categories and excludes self/translations', () => {
     expect(relatedPosts(all, current, 'en').map((p) => p.urlname)).toEqual(['b', 'c', 'd'])
   })
