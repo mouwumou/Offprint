@@ -1,13 +1,16 @@
-# Server-mode deployment (DYNAMIC-PUBLISHING §5, P2-5): SSR site + sync
-# sidecar sharing a content volume. Publishing latency: webhook seconds /
-# cron one interval. Until the first sync lands, the site serves the
-# cold-start "content is syncing" page.
+# Server mode: the site renders on request from a content volume that a
+# sync sidecar keeps fresh. Publishing latency: seconds via the Notion
+# webhook, or one SYNC_INTERVAL via polling. Until the first sync lands the
+# site serves a "content is syncing" page.
 #
-#   docker compose -f docker/compose.server.yaml up -d --build
+# Lives at the repository root on purpose: Compose reads `.env` from the
+# directory of the compose file, so `cp .env.example .env` here is enough.
+#
+#   docker compose -f compose.server.yaml up -d --build
 services:
   site:
     build:
-      context: ..
+      context: .
       dockerfile: docker/site.Dockerfile
       args:
         # Baked into the build (canonical/feeds/sitemap); runtime env alone
@@ -27,7 +30,7 @@ services:
       SYNC_PAGES: ${SYNC_PAGES:-false}
       NOTION_WEBHOOK_SECRET: ${NOTION_WEBHOOK_SECRET:-}
     volumes:
-      # rw: /api/sync runs the sync CLI inside this container (P2-3 note).
+      # rw: /api/sync runs the sync CLI inside this container.
       - content:/content
     ports:
       - '${SITE_PORT:-4321}:4321'
@@ -40,13 +43,14 @@ services:
 
   sync:
     build:
-      context: ..
+      context: .
       dockerfile: docker/sync.Dockerfile
     command: ['sh', 'scripts/sync-server-loop.sh']
     environment:
       NOTION_TOKEN: ${NOTION_TOKEN:-}
       NOTION_DB: ${NOTION_DB:-}
       DEFAULT_LANG: ${DEFAULT_LANG:-en}
+      IMAGE_PLATFORM: ${IMAGE_PLATFORM:-local}
       SYNC_PAGES: ${SYNC_PAGES:-false}
       CONTENT_DIR: /content
       SYNC_INTERVAL: ${SYNC_INTERVAL:-300}

@@ -39,7 +39,7 @@
 - [x] P1-12 GH Pages 与 Vercel 两条部署 workflow（deploy-pages.yml / deploy-vercel.yml；需配置 SITE_URL 变量与 Vercel secrets，运行待推仓库后验证）（deploy-vercel.yml 于 2026-09-07 删除，ADR-025）
 - [x] P1-13 `src/sync` 基础：elog 配置生成、staging、逐篇校验、manifest、原子切换（DYNAMIC-PUBLISHING §4，不含 notify）
 - [x] P1-14 sync 的 GitHub Action 形态：schedule/dispatch → elog → commit `content/` → 触发构建（sync.yml，30 分钟 cron + dispatch；需配置 NOTION_TOKEN/NOTION_DB secrets）
-- [x] P1-15 自托管静态：`docker/compose.static.yaml`（web 静态伺服 + sync 容器 elog→build→原子切换 dist/）（2026-08-23 dockertest 实测：首次发布原子切换成功、Caddy 200；无凭据时退化为仅构建已提交内容）
+- [x] P1-15 自托管静态：`compose.static.yaml`（web 静态伺服 + sync 容器 elog→build→原子切换 dist/）（2026-08-23 dockertest 实测：首次发布原子切换成功、Caddy 200；无凭据时退化为仅构建已提交内容）
 - [x] P1-16（2026-09-08 完成：实例仓库从模板生成、Pages 根路径上线、NotionNext 数据库经同步链接入，首轮真实内容暴露的问题见 ADR-026/027）迁移真实内容，以 static 模式上线替换旧站（在维护者的**实例仓库**进行，不在本模板内 — ADR-017）
 
 退出标准：在 Notion 点 Published，无需碰仓库，1–3 分钟后新文章在线上可见（自托管与 GH Pages 两条路径均验证）。
@@ -50,7 +50,7 @@
 - [x] P2-2 server 模式 `astro.config` 分支 + node adapter + `docker/site.Dockerfile`（config 分支 P0-1 已有；镜像随 P2-5 compose 在 dockertest 验证）
 - [x] P2-3 server 模式端点：`/api/revalidate` `/api/sync` `/api/health`（鉴权、幂等、互斥、限流）（实测：401/429/202 started→running→200 merged、sync 后 version 变化；integration 注入，static 构建零 API 痕迹）
 - [x] P2-4 `FsStore.watch`（chokidar 监听 manifest）+ 增量失效（活体验证：改文件+manifest 后无重启即出新内容，日志 +0 ~1 -0）
-- [x] P2-5 `docker/compose.server.yaml`（site + sync + volume）+ 首次冷启动"同步中"页（dockertest 实测：冷启动 503 双语页 → 内容落地后 /zh/ 200、health 报真实 version）
+- [x] P2-5 `compose.server.yaml`（site + sync + volume）+ 首次冷启动"同步中"页（dockertest 实测：冷启动 503 双语页 → 内容落地后 /zh/ 200、health 报真实 version）
 - [x] P2-6 `GitStore`（GitHub Contents API）与 Vercel ISR revalidate 路径（GitStore + ETag 缓存 + mock 测试；Vercel 路径 = sync notify → /api/revalidate 清缓存后按请求重取，边缘 ISR 细节待选定 vercel adapter 时补）
 - [x] P2-7 Notion webhook 触发（可选）（/api/sync 支持 X-Notion-Signature HMAC 校验与订阅握手 token 透出；真实 webhook 配置待维护者在 Notion 侧开启）
 - [x] P2-8 server 模式 feed/sitemap 按请求生成 + ETag（实测 If-None-Match→304；sitemap 端点与 static 同 URL，45 URL 含 hreflang）

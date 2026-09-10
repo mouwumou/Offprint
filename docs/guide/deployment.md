@@ -11,34 +11,38 @@
 
 两种模式输出**相同的 HTML**（CI 逐页比对），内容目录与配置完全一样，随时可以切换。
 
-## 密钥放哪里（ADR-017）
+## 密钥放哪里
 
 - GitHub Actions：只放在**你自己实例仓库**的 Settings → Secrets / Variables；
-- 自托管：服务器本地 `.env`（`.env.example` 列全了所有变量，`.gitignore` 与 `.dockerignore` 都排除它）；
+- 自托管：仓库根目录的 `.env`（`.env.example` 列全了所有变量并注明谁在读它；`.gitignore` 与 `.dockerignore` 都排除它）；
 - 任何情况下都不进仓库、不进镜像。
 
 ## GitHub Pages（static，默认路径）
 
 生成仓库后什么都不用配：推送 `main` 即触发 `Deploy to GitHub Pages`，工作流会自动为仓库启用 Pages 并发布。站点地址由工作流从 Pages 设置取得（`https://<你>.github.io/<仓库名>/`，或你配的自定义域名）作为 `SITE_URL`；仓库变量 `SITE_URL` 只在想覆盖时才需要。
 
-**子路径**：项目页默认地址是子路径部署。构建会从 `SITE_URL` 的路径派生 Astro `base`，站内链接、feed、sitemap、搜索结果全部自动带前缀（ADR-023）。配了自定义域名后地址回到域名根，前缀自动消失。
+**子路径**：项目页默认地址是子路径部署。构建会从 `SITE_URL` 的路径派生 Astro `base`，站内链接、feed、sitemap、搜索结果全部自动带前缀。配了自定义域名后地址回到域名根，前缀自动消失。
 
 ## Docker：静态自托管
 
-`docker/compose.static.yaml`，两个服务：`web`（Caddy 伺服构建产物）与 `sync`（按 `SYNC_INTERVAL` 秒轮询：同步 → 构建 → 原子切换产物目录）。没有 Notion 凭据时退化为只构建仓库里已提交的内容。
+`compose.static.yaml`（在仓库根目录），两个服务：`web`（Caddy 伺服构建产物）与 `sync`（按 `SYNC_INTERVAL` 秒轮询：同步 → 构建 → 原子切换产物目录）。没有 Notion 凭据时退化为只构建仓库里已提交的内容。
 
 ```bash
 cp .env.example .env          # 填 SITE_URL、NOTION_TOKEN、NOTION_DB
-docker compose -f docker/compose.static.yaml up -d --build
+docker compose -f compose.static.yaml config | grep NOTION_DB   # 确认 .env 被读到（应显示你的库 id）
+docker compose -f compose.static.yaml up -d --build
 ```
+
+compose 文件放在根目录不是随意的：Compose 只从 compose 文件所在目录读 `.env`，文件在根目录，`.env` 也在根目录，`pnpm sync` 与 Docker 用的是同一份。
 
 ## Docker：server 模式自托管
 
-`docker/compose.server.yaml`，三部分：`site`（Node 进程，`RUNTIME_MODE=server`）、`sync`（按 `SYNC_CRON` 同步，完成后通知 `site` 的 `/api/revalidate`）、共享内容卷 `content`。
+`compose.server.yaml`（在仓库根目录），三部分：`site`（Node 进程，`RUNTIME_MODE=server`）、`sync`（按 `SYNC_CRON` 同步，完成后通知 `site` 的 `/api/revalidate`）、共享内容卷 `content`。
 
 ```bash
-cp .env.example .env          # 另加 REVALIDATE_SECRET（随机长串），可选 NOTION_WEBHOOK_SECRET
-docker compose -f docker/compose.server.yaml up -d --build
+cp .env.example .env          # 另加 REVALIDATE_SECRET（`openssl rand -hex 32`），可选 NOTION_WEBHOOK_SECRET
+docker compose -f compose.server.yaml config | grep REVALIDATE_SECRET   # 确认 .env 被读到
+docker compose -f compose.server.yaml up -d --build
 ```
 
 运行模式在构建期就固定进了产物（`pnpm build:server`），启动进程时不必再设 `RUNTIME_MODE`。首次冷启动内容卷为空时，站点返回一个双语的"同步中"页（503），首次同步落地后自动恢复。之后把 Notion webhook 指向 `https://<你的域名>/api/sync` 即得秒级发布（握手流程见 [sync.md](sync.md)）。
