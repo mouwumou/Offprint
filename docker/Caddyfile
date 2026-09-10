@@ -1,5 +1,5 @@
 # Serves the static build (dist/). TLS/domain config belongs to the host's
-# reverse proxy or an extended Caddyfile in deployment (P1-15 compose).
+# reverse proxy or an extended Caddyfile in deployment (compose).
 :80 {
 	root * /srv
 	encode zstd gzip

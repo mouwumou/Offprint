@@ -19,7 +19,7 @@ interface Props {
 const { lang, alternates = [] } = Astro.props
 
 // Language switcher targets: the current page's translation when it exists,
-// otherwise that language's home (ADR-007 interlinking).
+// otherwise that language's home (language interlinking).
 const switcher = config.i18n.locales.map((locale) => ({
   locale,
   label: selfLabel(locale),
@@ -28,13 +28,13 @@ const switcher = config.i18n.locales.map((locale) => ({
 }))
 const t = useTranslations(lang)
 const prefix = langPrefix(config, lang)
-// P1-7c/ADR-015: standalone pages participate in nav resolution — as the
+// Standalone pages participate in nav resolution — as the
 // appended nav:true set by default, or as {page} slots in an explicit config.nav.
 const navPages = config.modules.pages.enabled
   ? pagesForLanguage(await getProvider().listPages(), lang)
   : []
 const nav = resolveNav(config, lang, navPages)
-// Brand block (ADR-015): configurable, defaulting to the profile (content/profile.yaml, ADR-028).
+// Brand block: configurable, defaulting to the profile (content/profile.yaml).
 const profile = await getProvider().getProfile()
 const name = resolveLocalized(profile.name, lang, config.i18n.default)
 const field = resolveLocalized(profile.field, lang, config.i18n.default)
@@ -92,7 +92,7 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
     <nav class="flex items-center gap-1 sm:gap-2">
       <!-- Inline links need ~700px with every module on, so they live behind
            lg; below that the disclosure drawer at the end takes over (zero JS,
-           constraint 6 — details/summary, no island). -->
+           zero JavaScript by default — details/summary, no island). -->
       {
         nav.map((item) => (
           <a

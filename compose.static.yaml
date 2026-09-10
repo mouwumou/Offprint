@@ -1,0 +1,38 @@
+# Self-hosted static site: Caddy serves the latest build; a sidecar syncs
+# from Notion, builds, and switches releases atomically every SYNC_INTERVAL
+# seconds. Publishing latency is one build (1–3 min); no always-on app.
+#
+# Lives at the repository root on purpose: Compose reads `.env` from the
+# directory of the compose file, so `cp .env.example .env` here is enough.
+#
+#   docker compose -f compose.static.yaml up -d --build
+services:
+  web:
+    image: caddy:2-alpine
+    ports:
+      - '${WEB_PORT:-8080}:80'
+    volumes:
+      - site:/srv:ro
+      - ./docker/Caddyfile.compose:/etc/caddy/Caddyfile:ro
+    restart: unless-stopped
+
+  sync:
+    build:
+      context: .
+      dockerfile: docker/sync.Dockerfile
+    environment:
+      NOTION_TOKEN: ${NOTION_TOKEN:-}
+      NOTION_DB: ${NOTION_DB:-}
+      DEFAULT_LANG: ${DEFAULT_LANG:-en}
+      SITE_URL: ${SITE_URL:-https://example.com}
+      IMAGE_PLATFORM: ${IMAGE_PLATFORM:-local}
+      SYNC_PAGES: ${SYNC_PAGES:-false}
+      SYNC_INTERVAL: ${SYNC_INTERVAL:-300}
+      KEEP_RELEASES: ${KEEP_RELEASES:-2}
+      SITE_DIR: /srv
+    volumes:
+      - site:/srv
+    restart: unless-stopped
+
+volumes:
+  site:

@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 // Lives in core/schema (not core/store) because src/sync both writes the
-// manifest and may only import src/core/schema (ADR-006).
+// manifest and may only import src/core/schema.
 
 export const manifestEntrySchema = z.object({
   /** e.g. posts/geometry-of-uncertainty.en.md */

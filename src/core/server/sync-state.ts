@@ -9,7 +9,7 @@ export interface SyncResult {
 }
 
 // One single-flight per server process; 60s merge window absorbs webhook
-// replays (DYNAMIC-PUBLISHING §6). The child resolves {ok:false} on failure
+// replays (docs/DYNAMIC-PUBLISHING.md §6). The child resolves {ok:false} on failure
 // rather than rejecting — the predicate keeps failed runs out of the merge
 // window and marks them failed on /api/health.
 export const syncFlight: SingleFlight<SyncResult> = createSingleFlight<SyncResult>(
@@ -19,7 +19,7 @@ export const syncFlight: SingleFlight<SyncResult> = createSingleFlight<SyncResul
 
 /**
  * Run the sync CLI as a child process (a process boundary, not an import —
- * the ADR-006 core→sync rule stays intact) and drop the provider caches when
+ * the core→sync boundary stays intact) and drop the provider caches when
  * it succeeds.
  */
 // A hung child (stalled elog or a slow image drip) must not pin the

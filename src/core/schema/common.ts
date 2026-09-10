@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-/** URL-safe identifier used by urlname/slug fields (CONTENT-CONTRACT §2). */
+/** URL-safe identifier used by urlname/slug fields (docs/CONTENT-CONTRACT.md §2). */
 export const slugSchema = z
   .string()
   .regex(/^[a-z0-9-]+$/, 'expected a slug containing only a-z, 0-9 and hyphens')

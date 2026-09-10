@@ -5,7 +5,7 @@ import { expect, test } from '@playwright/test'
 import { DUAL_SERVER, DUAL_STATIC } from './lib/paths'
 import { discoverRedirects, discoverRoutes } from './lib/routes'
 
-// Constraint 2 / ADR-003: both runtime modes must emit identical HTML for the
+// Both runtime modes must emit identical HTML for the
 // same content. Static pages come from the static build under .offprint/; server
 // pages from a running node-adapter process fed the same content directory.
 // EVERY discovered HTML route is compared (content-agnostic — the list grows

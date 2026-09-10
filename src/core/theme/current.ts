@@ -1,5 +1,5 @@
 // The resolved theme of THIS site, for components that branch on voice or
-// read theme options (A3, ADR-022). Kept separate from resolve.ts so the
+// read theme options (A3). Kept separate from resolve.ts so the
 // resolver stays config-free.
 import config from '../config/current'
 import type { ThemeOptionDecl, ThemeOptionValue } from './contract'
@@ -8,7 +8,7 @@ import { resolveTheme } from './resolve'
 const { manifest } = resolveTheme(config.theme.name)
 
 /** Validate site.yaml theme.options against the theme's declaration and
- * fill defaults — unknown keys and wrong types fail the build (ADR-022). */
+ * fill defaults — unknown keys and wrong types fail the build. */
 export function resolveThemeOptions(
   themeName: string,
   declared: Record<string, ThemeOptionDecl>,

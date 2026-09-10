@@ -2,7 +2,7 @@ import { z } from 'zod'
 import { localizedString } from './localized'
 
 // Pragmatic zod subset of the JSON Resume schema (https://jsonresume.org/schema),
-// per CONTENT-CONTRACT §5: YAML-authored, every free-text field may be
+// per docs/CONTENT-CONTRACT.md §5: YAML-authored, every free-text field may be
 // localized {en, zh}, unknown fields pass through untouched. Extensions:
 // `teaching[]` (same shape as work) and `publicationsFromSite` (render the
 // publications collection instead of an inline list). `period` may override
@@ -78,7 +78,7 @@ export const resumeSchema = z.looseObject({
   teaching: z.array(workEntrySchema).default([]),
   skills: z.array(skillEntrySchema).default([]),
   languages: z.array(languageEntrySchema).default([]),
-  /** Extension: render the site's publications collection (§3) in the CV. */
+  /** Extension: render the site's publications collection in the CV. */
   publicationsFromSite: z.boolean().default(false),
   publications: z
     .array(

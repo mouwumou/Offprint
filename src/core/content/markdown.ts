@@ -32,7 +32,7 @@ export interface RenderedMarkdown {
 }
 
 // Content comes from external tools, so the generated tree is sanitized
-// (ARCHITECTURE §8) BEFORE KaTeX/Shiki run: their generated classes and inline
+// (docs/ARCHITECTURE.md §8) BEFORE KaTeX/Shiki run: their generated classes and inline
 // styles are trusted output of our own pipeline, while everything upstream
 // passes the whitelist. remark-rehype drops raw HTML already; sanitize is the
 // second fence.
@@ -55,7 +55,7 @@ const sanitizeSchema: typeof defaultSchema = {
 
 /**
  * remark plugin: map :::name{title="…"} container directives (and their
- * inline/leaf forms) onto classed elements. Styling lands in P3-3.
+ * inline/leaf forms) onto classed elements. Styled by base.css (.prose .directive).
  */
 function directivesToHtml() {
   return (tree: import('mdast').Root): void => {
@@ -170,7 +170,7 @@ function collectToc() {
 // Content stays deployment-agnostic: authors write `assets/x` or root-relative
 // internal links, sync writes `/assets/x` (deep routes need it absolute); the
 // deployment sub-path is applied here at render time, never baked into
-// content (ADR-023).
+// content.
 function absolutizeAssetPaths() {
   const base = basePath()
   return (tree: import('hast').Root): void => {
@@ -190,7 +190,7 @@ function absolutizeAssetPaths() {
 }
 
 export interface RenderOptions {
-  /** Enable [@key] citations (P3-2); refs precomputed by the caller. */
+  /** Enable [@key] citations; refs precomputed by the caller. */
   citations?: Map<string, CitationRef>
   /** Heading of the appended references section. */
   citationsLabel?: string
@@ -302,7 +302,7 @@ function getProcessor(): Processor {
   return processor
 }
 
-/** Markdown → HTML + TOC + prose stats (ARCHITECTURE §5). Shared by both modes. */
+/** Markdown → HTML + TOC + prose stats (docs/ARCHITECTURE.md §5). Shared by both modes. */
 export async function renderMarkdown(
   markdown: string,
   options?: RenderOptions,

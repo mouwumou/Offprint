@@ -33,7 +33,7 @@
 
 **背景**：[dev/PLANNING.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/PLANNING.md) §2 的对比分析。
 **决定**：Astro 5+，React islands 复用原型交互组件，Tailwind 4（2026-08-22 确认）。
-**后果**：adapter 矩阵 `@astrojs/node`（Docker）/ `vercel` / `netlify` / `cloudflare`；static 模式直出 `dist/`。P0-11（Next.js spike）取消。
+**后果**：adapter 矩阵 `@astrojs/node`（Docker）/ `vercel` / `netlify` / `cloudflare`；static 模式直出 `dist/`。Next.js 的试探性方案取消。
 
 ## ADR-006 仓库形态 — 已定（单包起步）
 
@@ -58,7 +58,7 @@
 
 ## ADR-009 旧站迁移 — 推迟
 
-**决定**（2026-08-22）：上线前再处理。机制（`redirects.yaml` → 各平台产物，P1-10）照常实现，清单由维护者在 P1-16 前提供。
+**决定**（2026-08-22）：上线前再处理。机制（`redirects.yaml` → 各平台产物）照常实现，清单在上线前提供。
 
 ## ADR-010 开源许可 — 已定（MIT）
 
@@ -74,9 +74,9 @@
 
 ## ADR-013 lang / urlname 由 sync 派生，不在 Notion 加列 — 已定（方向），细节待敲定
 
-**背景**：P0-9 用维护者现有 NotionNext 库实测（2026-08-23），库中无 `lang` / `urlname` 列。维护者决定（2026-08-23）不在 Notion 维护这两列：主要用中文写作，计划后续接入 LLM API 做文档语言探测与翻译（暂不实现、暂不设计细节）。
+**背景**：用维护者现有 NotionNext 库实测（2026-08-23），库中无 `lang` / `urlname` 列。维护者决定（2026-08-23）不在 Notion 维护这两列：主要用中文写作，计划后续接入 LLM API 做文档语言探测与翻译（暂不实现、暂不设计细节）。
 **决定**：**内容契约不变** —— 物化到 `content/` 的 markdown 中 `lang` 与 `urlname` 仍为必填（ADR-007、CONTENT-CONTRACT §2）；这两个字段改由 **sync 层派生**：`lang` 用语言探测回填（LLM 或轻量检测器，实现方式待定），`urlname` 沿用既定预案 —— 有 `slug` 列则映射，缺省由标题 slug 化生成并告警。跨语言译本生成（如中文原文 → 英文译本）作为 sync 的可选 LLM 增强步骤，模型选择、成本、缓存、幂等、是否写回 Notion 等细节留待专门设计，不阻塞阶段 1。
-**后果**：ADR-007 中「Notion 里 lang 列必填」的采集侧要求废止，改为「sync 保证物化产物含合法 lang」；ADR-007 的路由、urlname 互链、hreflang 设计不变。P1-13 的 sync 归一化清单增加 lang 探测回填；CONTENT-CONTRACT §7 映射表相应调整。站点代码（core / pages）完全不感知此决定 —— 这正是契约层存在的意义（ADR-002）。
+**后果**：ADR-007 中「Notion 里 lang 列必填」的采集侧要求废止，改为「sync 保证物化产物含合法 lang」；ADR-007 的路由、urlname 互链、hreflang 设计不变。sync 归一化清单增加 lang 探测回填；CONTENT-CONTRACT §7 映射表相应调整。站点代码（core / pages）完全不感知此决定 —— 这正是契约层存在的意义（ADR-002）。
 
 ## ADR-014 站点归站点，博客归博客 — 已定
 
@@ -102,7 +102,7 @@
 
 **决定**：仓库分两种角色。**模板仓库**（本仓库，公开）：代码 + 样例内容 + 工作流文件 + 文档，GitHub 环境**永不配置任何外部密钥**；得益于 ADR-010（样例内容随模板）与 ADR-012（构建不请求 Notion），它的构建完全自足，因此 CI 全套照跑，`deploy-pages.yml` 也**不设门**——在模板上它发布官方 demo 站并充当每次 push 的真实部署测试（`actions/configure-pages` 带 `enablement: true` 消除首跑摩擦）。**实例仓库**（Use this template 生成，或 fork）：用户替换 `site.config.ts` 与 `content/`，在自己仓库配置 Secrets（`NOTION_TOKEN`、`NOTION_DB`，可选 `VERCEL_*`）与 Variables（`SITE_URL`、开关）。**只有碰外部密钥的工作流设变量门**：`sync.yml` 以 `vars.SYNC_ENABLED == 'true'` 为门、`deploy-vercel.yml` 以 `vars.DEPLOY_VERCEL == 'true'` 为门——模板不设变量则显示 skipped，永远绿。自托管（server 模式）的密钥只存在于服务器本地 `.env`，与 GitHub 无关。
 
-**后果**：Notion 同步链是唯一无法在模板仓库验证的链路，其首跑验证在**私有测试实例**中进行（一次性 Use this template 仓库，验证后可删）；P1-16（维护者真实内容上线）发生在维护者自己的实例仓库，不在模板内。将来阶段 4 若发 Docker 镜像，学 NotionNext 发 ghcr.io（`GITHUB_TOKEN`，`IMAGE_NAME=github.repository`，fork 自动发到自己名下）；若出现模板专属发布物，用 al-folio 式 owner 守卫而非变量门。
+**后果**：Notion 同步链是唯一无法在模板仓库验证的链路，其首跑验证在**私有测试实例**中进行（一次性 Use this template 仓库，验证后可删）；维护者真实内容上线发生在维护者自己的实例仓库，不在模板内。将来若发 Docker 镜像，学 NotionNext 发 ghcr.io（`GITHUB_TOKEN`，`IMAGE_NAME=github.repository`，fork 自动发到自己名下）；若出现模板专属发布物，用 al-folio 式 owner 守卫而非变量门。
 
 ## ADR-018 主题是契约化的可贡献单元，校验来自解析而非枚举 — 已定
 
@@ -116,12 +116,12 @@
 **背景**：`modulesSchema` 的 strictObject 硬写死模块键集合，ADR-016 又以删键方式处理未实现的 talks/news——维护者指出这违背设计初衷：想要一个模块就在配置里加进来并提供实现，不需要就不放，系统不该用白名单做门卫。
 **决定**：引入模块注册机制（下称"模块注册表"，指：模块以代码注册获得合法性，`modules` 配置的校验 schema 由已注册模块各自的 configSchema 组合而成；配置里出现未注册的模块名时报"未注册"而非"不在白名单"）。`defineModule({ id, configSchema?, nav?, copyDefaults?, collections?, widgets? })`（ARCHITECTURE §3 草图的落地）；内置五模块改为自注册；nav 缺省、模块文案缺省、首页 section 与模块的对应关系全部由注册信息驱动，不再各处硬编码。站点本地模块放 `src/site/modules/<id>/`，由 pages/integration 层聚合（ADR-006 边界内）；第三方路由经 integration `injectRoute` 注入。
 **修订**：ADR-016 对 talks/news 的删除是正确结论、错误机制——它们（及任何新模块）以"注册即合法"的方式回归。
-**后果**：P5-1 提前启动；插件 API（阶段 5）在此之上只剩"npm 分发 + 接口稳定化"。
+**后果**：模块注册提前落地；插件 API 在此之上只剩"npm 分发 + 接口稳定化"。
 
 ## ADR-020 配置只经版本化文本文件 — 已定
 
 **背景**：曾提议 `pnpm setup` 交互式向导降低上手门槛，维护者否决。
-**决定**：一切配置的唯一事实来源是版本化文本文件（`site.config.ts`、`content/*.yaml`、`.env`）；不提供任何交互式写入工具。理由：交互产生的状态无法 diff、无法复现，与声明式配置不对称。降低门槛的手段是文档与带注释的样例配置（P4-4 配置参考）。
+**决定**：一切配置的唯一事实来源是版本化文本文件（`site.config.ts`、`content/*.yaml`、`.env`）；不提供任何交互式写入工具。理由：交互产生的状态无法 diff、无法复现，与声明式配置不对称。降低门槛的手段是文档与带注释的样例配置（配置参考）。
 
 ## ADR-021 站点配置 YAML 化，页面编排归 content — 已定
 
@@ -185,4 +185,10 @@
 **背景**：模板公开后，根目录的 `CLAUDE.md` 与 `docs/dev/`（规划、路线图、参考项目、设计原型来源）是给维护者与 AI 协作用的工作文件，对用模板的人是噪音；维护者要求 main 做成干净目录、开发另起分支（2026-09-09）。
 **决定**：`dev` 为唯一的工作分支，一切提交在此；`main` 只接受 `scripts/release-main.sh`（`pnpm release:main`）产出的**快照提交**——把 dev 的文件树整体铺到 main，删除 dev 已删的文件，再剔除 `CLAUDE.md` 与 `docs/dev/`。不用 merge：合并会在这些被剔除的文件上反复冲突，快照则让 main 历史线性、每次差异极小。CI 在两个分支都跑，Pages demo 与 "Use this template" 只来自 main。设计文档（ADR、ARCHITECTURE、CONTENT-CONTRACT、DYNAMIC-PUBLISHING）留在 main；其中引用开发文档的地方改为指向 dev 分支的绝对链接，两个分支上都能点。
 **后果**：main 上永远不手工提交，也不接 PR（PR 基于 dev）；实例升级脚本以 main 检出为源并排除 `docs/dev/`；`CLAUDE.md` 只在 dev，模板用户若用 Claude Code，得到的是自己实例里的说明而不是模板内部的开发约束。
+
+## ADR-031 Compose 文件放仓库根目录，`.env` 是自托管与本地同步的唯一入口 — 已定
+
+**背景**：部署文档写"根目录 `cp .env.example .env`，再 `docker compose -f docker/compose.*.yaml up`"，但 Compose 只从 compose 文件所在目录读 `.env`——根目录的文件从未被读到，自托管一直跑在无凭据的退化态（远程 Docker 主机上的探针证实：根目录 `.env` 不读，`--env-file .env` 或放到 `docker/.env` 才读）。`.env.example` 还列着死键（`SYNC_CRON`，实际是 `SYNC_INTERVAL`）与从未实现的 s3 键，缺 compose 真在读的端口与保留数。
+**决定**：`compose.static.yaml`、`compose.server.yaml` 移到仓库根目录（Dockerfile 与 Caddyfile 留在 `docker/`，`context: .`）——`.env` 与 compose 同目录，`pnpm sync` 与 Docker 读同一份，不靠任何参数或包装脚本。`.env.example` 只列真实存在、注明谁在读的键，按"站点 / Notion 同步 / Docker 静态 / Docker server / 高级"分组；`RUNTIME_MODE` 不再出现（构建期由 npm 脚本传入）。文档要求部署前用 `docker compose -f … config | grep NOTION_DB` 确认 `.env` 被读到。
+**后果**：根目录多两个 compose 文件，换来零配置正确性；实例升级脚本会把旧的 `docker/compose.*.yaml` 删掉。GitHub Pages 路径与本地构建仍不读 `.env`。
 

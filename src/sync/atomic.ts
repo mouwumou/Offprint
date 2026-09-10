@@ -12,7 +12,7 @@ async function exists(path: string): Promise<boolean> {
 }
 
 /**
- * Atomic switch (DYNAMIC-PUBLISHING §4): move freshly synced collection dirs
+ * Atomic switch (docs/DYNAMIC-PUBLISHING.md §4): move freshly synced collection dirs
  * from staging into the live content dir via renames — readers never observe
  * a half-written collection — and write manifest.json LAST, because the site
  * only watches the manifest.

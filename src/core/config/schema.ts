@@ -9,14 +9,14 @@ import { cssValue, TOKEN_NAMES, typographySchema } from '../theme/contract'
 // typo and must fail the build, not be silently ignored (constraint: schema
 // is the validation).
 
-// ── profile: moved to content/profile.yaml (ADR-028) — see src/core/schema/profile.ts
+// ── profile: moved to content/profile.yaml — see src/core/schema/profile.ts
 
-// ── modules (ADR-019: composed from the module registry at call time) ────────
+// ── modules (composed from the module registry at call time) ────────
 
 export type { ModuleSetting, ModulesConfig } from '../modules/registry'
 export type ModuleName = import('../modules/registry').BuiltinModuleId
 
-// ── home composition (ADR-015: the homepage is a section sequence) ───────────
+// ── home composition (the homepage is a section sequence) ───────────
 
 /**
  * One homepage section. Every variant's `title` overrides the theme's i18n
@@ -80,7 +80,7 @@ export const homeSchema = z.strictObject({
     ]),
 })
 
-// ── navigation (ADR-015: nav is data, not module wiring) ─────────────────────
+// ── navigation (nav is data, not module wiring) ─────────────────────
 
 /**
  * One nav slot. `module` points at a module landing page (label defaults to
@@ -126,7 +126,7 @@ export const layoutSchema = z.strictObject({
   width: z.enum(['narrow', 'wide']).default('narrow'),
 })
 
-// ── chrome: header & footer (ADR-015) ────────────────────────────────────────
+// ── chrome: header & footer ────────────────────────────────────────
 
 /** `false` hides the element; a localized string replaces the theme default. */
 const hideable = z.union([z.literal(false), localizedString])
@@ -148,9 +148,9 @@ export const footerSchema = z.strictObject({
   rss: z.boolean().default(true),
 })
 
-// ── theme (DESIGN-REFERENCE; tokens locked by ADR-011) ───────────────────────
+// ── theme ───────────────────────
 
-// ADR-018: the theme is resolved by NAME against src/site/themes/ and the
+// The theme is resolved by NAME against src/site/themes/ and the
 // built-ins — the resolver is the validation (unknown names fail the build
 // listing what exists), so no enum here to keep third-party themes possible.
 export const themeSchema = z.strictObject({
@@ -165,11 +165,11 @@ export const themeSchema = z.strictObject({
   /** Article body typography (proseSize); overrides the theme's declaration. */
   typography: typographySchema.partial().optional(),
   /** Values for the options the ACTIVE theme declares in its theme.json;
-   * validated against that declaration at build (ADR-022). */
+   * validated against that declaration at build. */
   options: z.record(z.string(), z.union([z.boolean(), z.string(), z.number()])).optional(),
 })
 
-// ── i18n (ADR-007) ───────────────────────────────────────────────────────────
+// ── i18n ───────────────────────────────────────────────────────────
 
 export const i18nSchema = z
   .strictObject({
@@ -189,7 +189,7 @@ export const i18nSchema = z
     path: ['noindex'],
   })
 
-// ── runtime (ADR-003 / ADR-004) ──────────────────────────────────────────────
+// ── runtime ──────────────────────────────────────────────
 
 export const runtimeSchema = z.strictObject({
   /** static is the default and baseline; server is the optional runtime. */
@@ -198,7 +198,7 @@ export const runtimeSchema = z.strictObject({
   store: z.enum(['fs', 'git']).default('fs'),
 })
 
-// ── comments (P3-8) ──────────────────────────────────────────────────────────
+// ── comments ──────────────────────────────────────────────────────────
 
 export const commentsSchema = z
   .strictObject({
@@ -234,7 +234,7 @@ export const seoSchema = z.strictObject({
 // ── site config ──────────────────────────────────────────────────────────────
 
 /**
- * Built at parse CALL time, not module-load time (ADR-019/021): the modules
+ * Built at parse CALL time, not module-load time: the modules
  * and nav schemas come from the registry, which discovers site-local module
  * manifests (src/site/modules/<id>/module.yaml) right before composing.
  */
@@ -252,7 +252,7 @@ export function buildSiteConfigSchema() {
     seo: seoSchema.prefault({}),
     runtime: runtimeSchema.prefault({}),
     comments: commentsSchema.prefault({}),
-    /** Old URL → new URL (P1-10); formerly the standalone redirects.yaml. */
+    /** Old URL → new URL; formerly the standalone redirects.yaml. */
     redirects: redirectsSchema.prefault({}),
   })
 }

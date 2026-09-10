@@ -1,5 +1,5 @@
 #!/bin/sh
-# Self-hosted static publish pass (DYNAMIC-PUBLISHING §0):
+# Self-hosted static publish pass:
 #   sync (when Notion creds exist) → astro build → atomic release switch.
 # The site volume holds /srv/releases/<stamp> plus /srv/current (symlink);
 # the symlink rename is the atomic switch, Caddy serves /srv/current.

@@ -16,7 +16,7 @@ export interface GitStoreOptions {
 }
 
 /**
- * ContentStore over the GitHub Contents API (ADR-004, P2-6) — the serverless
+ * ContentStore over the GitHub Contents API — the serverless
  * path: the sync Action pushes content to a repo, the site reads it at
  * request time. Responses are ETag-cached in memory, so unchanged files cost
  * a 304 instead of a body (and barely touch the rate limit). No push

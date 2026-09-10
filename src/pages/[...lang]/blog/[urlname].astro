@@ -18,7 +18,7 @@ import { blogPostingJsonLd } from '../../../core/seo/jsonld'
 import BaseLayout from '../../../core/components/BaseLayout.astro'
 
 // Static mode: one path per published post × language; the default language
-// lives at the root, others get a prefix (ADR-007). Server mode ignores this
+// lives at the root, others get a prefix. Server mode ignores this
 // and resolves from params per request — the body below serves both.
 export async function getStaticPaths() {
   if (!siteConfig.modules.blog.enabled) return []
@@ -47,7 +47,7 @@ if (!post || post.draft) {
 const t = useTranslations(lang)
 
 // [@key] citations resolve against publications.yaml plus any front-matter
-// `references` entries shaped like publications (P3-2).
+// `references` entries shaped like publications.
 let citations: Map<string, CitationRef> | undefined
 if (siteConfig.modules.publications.enabled && post.cite !== false) {
   const { publicationSchema } = await import('../../../core/schema')
@@ -82,7 +82,7 @@ const showUpdated = post.updated.getTime() !== post.date.getTime()
 const kicker = post.categories[0]
 const colophonSetting = siteConfig.modules.blog.colophon
 const colophonText =
-  colophonSetting === false ? null : (rl(colophonSetting, lang, siteConfig.i18n.default) ?? null) // ADR-027: no default text
+  colophonSetting === false ? null : (rl(colophonSetting, lang, siteConfig.i18n.default) ?? null) // no default text
 const prefix = langPrefix(siteConfig, lang)
 
 const translations = await getProvider().getTranslations(urlname)
@@ -90,7 +90,7 @@ const alternates = translations.map((translation) => ({
   lang: translation.lang,
   path: `${langPrefix(siteConfig, translation.lang)}/blog/${urlname}/`,
 }))
-// "Cite this post" (P3-5): a synthetic publication reuses the P3-1 formats.
+// "Cite this post": a synthetic publication reuses the citation formats.
 import { publicationSchema as pubSchema, resolveLocalized } from '../../../core/schema'
 const site = Astro.site ?? new URL('https://example.com')
 const postUrl = new URL(Astro.url.pathname, site).toString()

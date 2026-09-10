@@ -12,7 +12,7 @@ export interface SiteUrl {
 
 /**
  * Every routable page with its hreflang alternates — the server-mode sitemap
- * source (P2-8), mirroring what the routes' getStaticPaths produce in a
+ * source, mirroring what the routes' getStaticPaths produce in a
  * static build.
  */
 export async function listSiteUrls(): Promise<SiteUrl[]> {
@@ -60,7 +60,7 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
     uniform('/blog')
     if (siteConfig.modules.blog.search !== false) uniform('/search')
     const posts = await provider.listPosts()
-    // Tags/categories exist per language (ADR-007 list rule); alternates
+    // Tags/categories exist per language (per-language list rule); alternates
     // interlink only the languages that actually carry the term.
     const perLanguage = (kind: 'tag' | 'category'): void => {
       const langsByTerm = new Map<string, string[]>()

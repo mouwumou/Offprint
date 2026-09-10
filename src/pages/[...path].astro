@@ -7,9 +7,9 @@ import { getProvider } from '../core/content'
 import { renderMarkdown } from '../core/content/markdown'
 import type { Alternate } from '../core/seo/alternates'
 
-// ADR-015/022 widget lookup chain: site-level one-off overrides beat the
+// Widget lookup chain: site-level one-off overrides beat the
 // active theme's bundled widgets, which beat the built-ins. Collected here —
-// not in core — because core must not import extensions (ADR-006/022); the
+// not in core — because core must not import extensions; the
 // globs are compile-time literals, so ALL themes' widgets are collected and
 // the active theme's are picked at render time.
 const themeWidgetModules = import.meta.glob<{ default: unknown }>(

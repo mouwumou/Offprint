@@ -80,7 +80,7 @@ describe('postFrontmatterSchema', () => {
     ).toThrow(/cover/)
   })
 
-  it('rejects a post without lang (ADR-007)', () => {
+  it('rejects a post without lang', () => {
     const { lang: _lang, ...withoutLang } = minimalPost
     expect(() => postFrontmatterSchema.parse(withoutLang)).toThrow()
   })

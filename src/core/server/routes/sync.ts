@@ -7,9 +7,9 @@ const allow = createRateLimiter(6)
 /**
  * POST /api/sync — trigger one sync pass (self-hosted path). Auth: the shared
  * secret header, or a valid Notion webhook signature when
- * NOTION_WEBHOOK_SECRET is configured (P2-7). Responds 202 immediately;
+ * NOTION_WEBHOOK_SECRET is configured. Responds 202 immediately;
  * progress/outcome surfaces on /api/health. Concurrent and replayed triggers
- * are absorbed by the single-flight merge window (§6).
+ * are absorbed by the single-flight merge window.
  */
 // Notion webhook payloads are tiny; anything larger is abuse. Cap the read so
 // an anonymous POST can't balloon memory (the route is public in server mode).

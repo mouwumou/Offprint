@@ -20,7 +20,7 @@ interface Props {
   noResults: string
 }
 
-// One island, two backends (P2-9): a static deployment ships /pagefind/*
+// One island, two backends: a static deployment ships /pagefind/*
 // (build-time index), a server deployment answers /api/search (MiniSearch).
 // The backend is probed at runtime so both modes render identical HTML.
 let pagefindPromise: Promise<PagefindApi | null> | undefined
@@ -33,7 +33,7 @@ function loadPagefind(): Promise<PagefindApi | null> {
   const runtimeOnlyPath = `${base}/pagefind/pagefind.js`
   pagefindPromise ??= import(/* @vite-ignore */ runtimeOnlyPath)
     .then(async (module: PagefindApi) => {
-      // Result URLs must carry the sub-path too (ADR-023).
+      // Result URLs must carry the sub-path too.
       await module.options({ baseUrl: `${base}/` })
       return module
     })

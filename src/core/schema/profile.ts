@@ -1,11 +1,11 @@
 import { z } from 'zod'
 import { localizedString } from './localized'
 
-// content/profile.yaml — who the author is (ADR-028). It is CONTENT: it
+// content/profile.yaml — who the author is. It is CONTENT: it
 // lives with the other author-owned files and reaches pages through the
 // ContentProvider like cv.yaml or publications.yaml. Every field except
 // `name` is optional; an absent field simply does not render. Where each
-// field shows up is documented in CONTENT-CONTRACT §6.
+// field shows up is documented in docs/CONTENT-CONTRACT.md §6.
 
 export const profileLinkSchema = z.strictObject({
   label: localizedString,

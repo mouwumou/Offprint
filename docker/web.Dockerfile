@@ -1,4 +1,4 @@
-# Static-mode image (ADR-003 baseline): build dist/ with Node, serve with Caddy.
+# Static-mode image: build dist/ with Node, serve with Caddy.
 # Build:  docker build -f docker/web.Dockerfile -t offprint-web .
 # Run:    docker run --rm -p 8080:80 offprint-web
 

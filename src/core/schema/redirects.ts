@@ -3,7 +3,7 @@ import { z } from 'zod'
 const pathString = z.string().regex(/^\//, 'redirect paths must start with /')
 
 /**
- * redirects.yaml (P1-10, ADR-009): map of old path → new path or
+ * redirects.yaml: map of old path → new path or
  * { destination, status }. Fed to Astro's `redirects` config, which emits
  * meta-refresh pages for static hosts and real 30x responses under the node
  * adapter.

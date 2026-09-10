@@ -5,10 +5,10 @@ import satori from 'satori'
 import siteConfig from '../config/current'
 import { resolveLocalized, type Profile } from '../schema'
 
-// OG card generation (P3-4): satori (layout → SVG) + resvg (SVG → PNG),
+// OG card generation: satori (layout → SVG) + resvg (SVG → PNG),
 // entirely server-side. Static builds prerender the endpoint into PNG files;
 // server mode renders on demand with an in-memory cache. Latin fonts only for
-// now — CJK subsetting is the P3-7 follow-up.
+// now — CJK subsetting is a follow-up.
 
 const require = createRequire(import.meta.url)
 
@@ -42,7 +42,7 @@ function getFonts(needsCjk: boolean): OgFont[] {
     },
   ]
   if (!needsCjk) return fonts
-  // Loaded only for CJK text (P3-7). Satori only falls back across fonts
+  // Loaded only for CJK text. Satori only falls back across fonts
   // with DIFFERENT family names — registering the CJK face under the latin
   // families does nothing (measured), so it gets its own name.
   cjkFonts ??= [

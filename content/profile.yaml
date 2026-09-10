@@ -1,6 +1,6 @@
 # yaml-language-server: $schema=../schema/profile.schema.json
 #
-# 你是谁（ADR-028）。这是内容，不是配置：站点各处（首页头部、页脚、CV 页、
+# 你是谁。这是内容，不是配置：站点各处（首页头部、页脚、CV 页、
 # 分享图、feed、结构化数据）都从这里取作者信息。只有 name 必填，其余不填就不显示。
 # 每个字段显示在哪：
 #   name         <title> 后缀、站名、页脚、feed 作者、结构化数据       （必填）

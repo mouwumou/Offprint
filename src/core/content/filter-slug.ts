@@ -1,7 +1,7 @@
 /**
  * URL segment for a tag/category filter route (/blog/tag/<slug>). Filter
  * state lives in the path, not a query string: a static build cannot vary on
- * queries, and ADR-003 demands both modes render one URL identically.
+ * queries, and both modes must render one URL identically.
  * Unicode (中文 tags) passes through — URLs encode it transparently.
  */
 export function filterSlug(value: string): string {

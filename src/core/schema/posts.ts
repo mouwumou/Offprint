@@ -2,14 +2,14 @@ import { z } from 'zod'
 import { coverSource, isoDate, slugSchema, stringOrStringArray } from './common'
 
 /**
- * Post front-matter (CONTENT-CONTRACT §2). Tool-agnostic: anything that emits
+ * Post front-matter (docs/CONTENT-CONTRACT.md §2). Tool-agnostic: anything that emits
  * markdown + this YAML front-matter is a valid source. Unknown keys are not an
  * error — they pass through under `extra` for pages to read.
  */
 export const postFrontmatterSchema = z
   .looseObject({
     title: z.string().min(1),
-    /** Route is /[lang/]blog/:urlname; translations share one urlname (ADR-007). */
+    /** Route is /[lang/]blog/:urlname; translations share one urlname. */
     urlname: slugSchema,
     /** First published. */
     date: isoDate,
@@ -20,7 +20,7 @@ export const postFrontmatterSchema = z
     categories: stringOrStringArray.default([]),
     tags: z.array(z.string()).default([]),
     cover: coverSource.optional(),
-    /** Required (ADR-007); sync backfills the default language with a warning. */
+    /** Required; sync backfills the default language with a warning. */
     lang: z.string().min(2),
     /** Posts in the same series interlink. */
     series: z.string().optional(),

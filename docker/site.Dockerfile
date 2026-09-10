@@ -1,6 +1,6 @@
-# Server-mode image (ADR-003 optional runtime, P2-2): SSR via the node
+# Server-mode image: SSR via the node
 # adapter, reading content from a mounted volume at request time. Single
-# stage on purpose: /api/sync (P2-3) spawns the sync CLI inside this image,
+# stage on purpose: /api/sync spawns the sync CLI inside this image,
 # which needs the full toolchain (tsx, elog).
 # Build:  docker build -f docker/site.Dockerfile -t offprint-site .
 FROM node:22-alpine

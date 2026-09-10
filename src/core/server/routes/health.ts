@@ -3,7 +3,7 @@ import { getProvider, getStore } from '../../content'
 import { json } from '../guard'
 import { syncFlight } from '../sync-state'
 
-/** GET /api/health — content version, manifest state, last sync (§3.3). */
+/** GET /api/health — content version, manifest state, last sync. */
 export const GET: APIRoute = async () => {
   const manifest = await getStore().manifest()
   const last = syncFlight.last()

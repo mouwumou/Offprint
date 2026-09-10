@@ -159,7 +159,7 @@ describe('image download safety (security audit)', () => {
   })
 })
 
-describe('cover and page-link handling (ADR-026)', () => {
+describe('cover and page-link handling', () => {
   it('does not treat notion.so PAGE links as assets, only /image and /signed', () => {
     expect(isNotionAssetUrl('https://www.notion.so/27082c8a-3c52-80e2-b832-c2678345c394')).toBe(
       false,

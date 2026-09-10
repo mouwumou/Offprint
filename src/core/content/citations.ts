@@ -21,7 +21,7 @@ export interface CitationContext {
 }
 
 /**
- * rehype plugin (P3-2): replace pandoc-style [@key] / [@a; @b] citations with
+ * rehype plugin: replace pandoc-style [@key] / [@a; @b] citations with
  * linked in-text labels and append a references section for the keys actually
  * used. All strings are precomputed server-side (citation-js), the plugin is
  * pure tree surgery. The refs arrive per document on vfile.data — baking

@@ -1,11 +1,11 @@
 # 动态发布链设计
 
 > 状态：设计草案 v0.2（2026-08-22）
-> 前置：[dev/PLANNING.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/PLANNING.md) §3.3、`ARCHITECTURE.md`、ADR-003。§0 是阶段 1 就要交付的 static 自动重建路径；§1 起是阶段 2 的 server 模式。不涉及页面与样式。
+> 前置：[dev/PLANNING.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/PLANNING.md) §3.3、`ARCHITECTURE.md`、ADR-003。§0 是 static 模式的自动重建路径；§1 起是 server 模式。不涉及页面与样式。
 
 ---
 
-## 0. 基线：static + 自动重建（阶段 1）
+## 0. 基线：static + 自动重建
 
 ADR-003 规定 static 是默认与基线。"在 Notion 点发布、不碰仓库、一两分钟后上线"这个核心体验**不需要 server 模式**，靠"同步后自动重建"即可：
 
@@ -18,7 +18,7 @@ GitHub Pages 静态：
   GitHub Action (schedule / dispatch) ──▶ elog → 校验 → commit content/ → 平台重新构建部署
 ```
 
-发布延迟 = 构建时长（1–3 分钟）。线上无常驻进程、无端点、无缓存一致性问题；内容错误在构建期暴露。自托管的 `docker/compose.static.yaml` 为 `web`（静态文件服务器）+ `sync`（elog + build）。
+发布延迟 = 构建时长（1–3 分钟）。线上无常驻进程、无端点、无缓存一致性问题；内容错误在构建期暴露。自托管的 `compose.static.yaml` 为 `web`（静态文件服务器）+ `sync`（elog + build）。
 
 server 模式在此之上换取秒级发布与运行时功能，代价见 [dev/PLANNING.md](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/PLANNING.md) §3.3 对比表；切换时内容目录与模板不变。
 
@@ -121,11 +121,11 @@ export interface ContentProvider {
   getTranslations(urlname: string): Promise<{ lang: string }[]>
   listTags(): Promise<{ tag: string; count: number }[]>
   listPages(lang?: string): Promise<PageSummary[]>
-  getPage(slug: string, lang: string): Promise<Page | null>   // 2026-08-23 补：pages 模块（P1-7c）
+  getPage(slug: string, lang: string): Promise<Page | null>
   listPublications(): Promise<Publication[]>
-  listProjects(): Promise<Project[]>          // 2026-08-23 补：projects 模块（P1-5）
-  getCV(): Promise<Resume | null>             // 2026-08-23 改：文件缺失返回 null（P1-6）
-  getProfile(): Promise<Profile>              // 2026-09-09 增：content/profile.yaml，缺失即报错（ADR-028）
+  listProjects(): Promise<Project[]>
+  getCV(): Promise<Resume | null>             // 文件缺失返回 null
+  getProfile(): Promise<Profile>              // content/profile.yaml；缺失即报错（ADR-028）
   /** 失效缓存；不传参数则全部失效 */
   revalidate(keys?: string[]): Promise<void>
   /** 当前内容版本（manifest hash），用于 ETag / 304 */
@@ -145,7 +145,7 @@ export interface ContentProvider {
 
 两个写端点都要幂等、限流（同一分钟内合并请求），并在 sync 进行中时返回 202 而非重复启动。
 
-> 2026-08-23 实现注记（P2-3）：`/api/sync` 由 site 进程直接以子进程运行 sync CLI（进程边界，不违反 ADR-006 的 import 规则），共享 content volume 时无需跨容器信令；compose 中的 sync 容器仍可作为 cron 兜底并存。写端点鉴权用 `x-revalidate-secret`，Astro 的 Origin CSRF 检查已关闭（无 cookie 会话，webhook/CLI 调用方不带 Origin）。
+> 实现注记：`/api/sync` 由 site 进程直接以子进程运行 sync CLI（进程边界，不违反 ADR-006 的 import 规则），共享 content volume 时无需跨容器信令；compose 中的 sync 容器仍可作为 cron 兜底并存。写端点鉴权用 `x-revalidate-secret`，Astro 的 Origin CSRF 检查已关闭（无 cookie 会话，webhook/CLI 调用方不带 Origin）。
 
 ---
 
@@ -165,7 +165,7 @@ export interface ContentProvider {
 
 elog 配置由 sync 从环境变量生成（`NOTION_TOKEN`、`NOTION_DB`、`IMAGE_PLATFORM`…），不把含 token 的 `elog.config.js` 放进仓库。
 
-> 2026-08-23 实测更新：elog 已进入 **1.0 插件式工作流**（`@elog/cli` + `@elog/plugin-from-notion` + `@elog/plugin-to-local`，`elog sync -c <config> -e <env>`），0.x 的 write/deploy 配置不再兼容；P1-13 按 1.0 实现。字段差异与归一化清单见 `CONTENT-CONTRACT.md` §7.1；`lang`/`urlname` 由 sync 派生（ADR-013）。
+> elog **1.0 插件式工作流**（`@elog/cli` + `@elog/plugin-from-notion` + `@elog/plugin-to-local`，`elog sync -c <config> -e <env>`），0.x 的 write/deploy 配置不再兼容；sync 按 1.0 实现。字段差异与归一化清单见 `CONTENT-CONTRACT.md` §7.1；`lang`/`urlname` 由 sync 派生（ADR-013）。
 
 ---
 
@@ -220,7 +220,7 @@ volumes:
 
 ---
 
-## 7. 验收标准（阶段 2 完成的定义）
+## 7. 验收标准
 
 - 在 Notion 把一篇文章状态改为 Published，自托管环境 ≤ 15 秒（webhook）或 ≤ 5 分钟（cron）后，`curl` 文章 URL 得到含完整正文与 meta 标签的 HTML。
 - 同一代码库 `RUNTIME_MODE=static` 构建出的页面与 server 模式渲染结果 HTML 快照一致（Playwright 对比）。

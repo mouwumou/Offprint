@@ -77,7 +77,7 @@ describe('createSingleFlight', () => {
   })
 })
 
-describe('checkNotionSignature (P2-7)', () => {
+describe('checkNotionSignature', () => {
   afterEach(() => {
     delete process.env['NOTION_WEBHOOK_SECRET']
   })

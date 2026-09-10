@@ -3,7 +3,7 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* ---------------------------------------------------------------------------
-   Token-agnostic typographic base (ADR-018). Color/radius tokens and font
+   Token-agnostic typographic base. Color/radius tokens and font
    stacks arrive from the resolved theme: BaseLayout injects them as
    :root/.dark CSS variables from the theme's theme.json (plus the user's
    theme.tokens overrides); the theme's own theme.css loads its fonts.
@@ -248,7 +248,7 @@
   text-decoration: var(--shiki-dark-text-decoration) !important;
 }
 
-/* In-post references (P3-2) */
+/* In-post references */
 .prose .references {
   margin-top: 3em;
   border-top: 1px solid var(--border);
@@ -276,7 +276,7 @@
   color: var(--muted-foreground);
 }
 
-/* Directive containers (:::note / :::warning / :::theorem{title="…"} …), P3-3.
+/* Directive containers (:::note / :::warning / :::theorem{title="…"} …).
    The mono label shows the directive name, overridden by a title attribute. */
 .prose .directive {
   border: 1px solid var(--border);

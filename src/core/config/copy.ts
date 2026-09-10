@@ -4,9 +4,9 @@ import { resolveLocalized } from '../schema/localized'
 import type { SiteConfig } from './schema'
 
 /**
- * A module's landing copy (ADR-015): the author's override from
+ * A module's landing copy: the author's override from
  * modules.<name>, falling back to the defaults the module registered
- * (ADR-019), falling back to the module id.
+ *, falling back to the module id.
  */
 export function moduleCopy(
   config: SiteConfig,

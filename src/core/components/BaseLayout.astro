@@ -39,7 +39,7 @@ const {
 const t = useTranslations(lang)
 const prefix = langPrefix(config, lang)
 
-// ADR-018: tokens come from the resolved theme's manifest, overlaid with the
+// Tokens come from the resolved theme's manifest, overlaid with the
 // user's theme.tokens (both color schemes) and the accent shorthand.
 const { manifest } = resolveTheme(config.theme.name)
 const accent = config.theme.accent

@@ -1,6 +1,6 @@
 import type { ThemeRegistration } from 'shiki'
 
-// Code-highlight colors from DESIGN-REFERENCE §1, locked by ADR-011:
+// Code-highlight colors of the paper theme's design prototype:
 // comment = muted-foreground italic, keyword = primary, plus fixed
 // string/number/title colors per scheme.
 

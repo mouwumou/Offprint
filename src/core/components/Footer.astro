@@ -23,7 +23,7 @@ const links = profile.links.map((link) => ({
   label: resolveLocalized(link.label, lang, config.i18n.default),
 }))
 const year = new Date().getFullYear()
-// ADR-027: no default credit line — the template never signs the author's
+// No default credit line — the template never signs the author's
 // site. A colophon appears only when site.yaml provides one.
 const colophon =
   config.footer.colophon === false

@@ -1,5 +1,4 @@
-# P1-14: the GitHub-Action form of sync (DYNAMIC-PUBLISHING §0, serverless
-# path): schedule/dispatch → elog → normalize → commit content/ → explicit
+# The GitHub Actions form of sync, for sites without a server: schedule/dispatch → elog → normalize → commit content/ → explicit
 # workflow_dispatch of the deploy workflows. The push alone cannot retrigger
 # them: events caused by GITHUB_TOKEN never start new workflow runs — the
 # documented exception is dispatching via the API, which is what we do below.
@@ -23,7 +22,7 @@ permissions:
 
 jobs:
   sync:
-    # ADR-017: this workflow only runs on INSTANCE repositories. The template
+    # This workflow only runs on INSTANCE repositories. The template
     # repo never carries Notion credentials, so the job is gated behind an
     # explicit repository variable — set SYNC_ENABLED=true (Settings →
     # Variables) plus the NOTION_* secrets in your own repo to activate it.

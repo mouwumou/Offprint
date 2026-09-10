@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Upgrade an INSTANCE repository from a local checkout of the Offprint template
-# (its main branch — the clean release snapshot, ADR-030).
+# (its main branch — the clean release snapshot).
 # Run from the instance root:  bash scripts/upgrade-from-template.sh /path/to/Offprint
 # Copies template-owned paths; instance-owned paths (site.yaml, content/,
 # extensions/, README.md, CLAUDE.md, .env*) are never touched. Excludes are

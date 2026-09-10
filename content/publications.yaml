@@ -1,5 +1,5 @@
-# Sample publications (template data, ADR-010). In production this file is
-# exported by sync from the maintainer's Notion publications database.
+# Sample publications — replace with your own. Hand-written YAML, or exported
+# from a Notion publications database by sync; either way this file is the source.
 - key: voss2025geometry
   title: 'The geometry of uncertainty: curved manifolds in cortical population codes'
   authors: [M. E. Voss, R. Nakamura, D. Feldmann]

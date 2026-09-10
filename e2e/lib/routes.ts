@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 
-// Content-agnostic route discovery (ADR-017): the deep tests derive their
+// Content-agnostic route discovery: the deep tests derive their
 // route lists from the build output instead of hardcoding sample-content
 // slugs, so the same suite passes on any instance's content.
 
@@ -17,7 +17,7 @@ export function discoverRoutes(distDir: string): string[] {
   return walkRoutes(distDir).filter((route) => redirectTarget(distDir, route) === null)
 }
 
-/** The redirect stubs (P1-10), with the destination each one points at. */
+/** The redirect stubs, with the destination each one points at. */
 export function discoverRedirects(distDir: string): { route: string; target: string }[] {
   return walkRoutes(distDir).flatMap((route) => {
     const target = redirectTarget(distDir, route)

@@ -286,7 +286,7 @@ describe('createProvider · publications order (modules.publications.order)', ()
   })
 })
 
-describe('createProvider · profile (ADR-028)', () => {
+describe('createProvider · profile', () => {
   it('fails loudly when content/profile.yaml is missing', async () => {
     await expect(createProvider(new FsStore(root)).getProfile()).rejects.toThrow(/profile\.yaml is missing/)
   })

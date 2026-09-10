@@ -8,7 +8,7 @@ const declared: Record<string, ThemeOptionDecl> = {
   columns: { type: 'number' },
 }
 
-describe('theme options (ADR-022)', () => {
+describe('theme options', () => {
   it('fills defaults and accepts declared values', () => {
     expect(resolveThemeOptions('x', declared, { sidebar: 'left' })).toEqual({
       sidebar: 'left',

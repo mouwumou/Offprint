@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Publish a clean snapshot of the development branch onto main (ADR-030).
+# Publish a clean snapshot of the development branch onto main.
 # main never receives hand-made commits: its tree is dev's tree minus the
 # development-only paths below. Run from the template checkout, any branch:
 #   pnpm release:main            # then: git push origin main

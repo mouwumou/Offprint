@@ -29,9 +29,9 @@ export function getStore(): ContentStore {
 }
 
 /**
- * The provider instance pages use (constraint 1). Static mode calls it during
+ * The provider instance pages use (pages read content only through the provider). Static mode calls it during
  * the build, server mode per request; both read CONTENT_DIR (default ./content).
- * git / s3 stores land in phase 2 (ADR-004).
+ * The git store reads content from a GitHub repository at request time.
  */
 export function getProvider(): ContentProvider {
   provider ??= createProvider(getStore(), {

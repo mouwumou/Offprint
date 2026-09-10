@@ -13,7 +13,7 @@ const pages: NavPage[] = [
   { slug: 'teaching', title: 'Teaching', lang: 'en', nav: false },
 ]
 
-describe('resolveNav (ADR-015)', () => {
+describe('resolveNav', () => {
   it('defaults to home, enabled modules, then nav:true pages', () => {
     const config = defineConfig({ ...minimal, modules: { publications: false } })
     const nav = resolveNav(config, 'en', pages)
@@ -70,7 +70,7 @@ describe('resolveNav (ADR-015)', () => {
   })
 })
 
-describe('resolveNav language fallback (ADR-007)', () => {
+describe('resolveNav language fallback', () => {
   it('links a fallback-language page under its own prefix, not the requested one', () => {
     // The /zh/now dead link: `now` exists only in en, so the zh nav must
     // link /now — /zh/now is not a route.
@@ -86,7 +86,7 @@ describe('resolveNav language fallback (ADR-007)', () => {
   })
 })
 
-describe('deployment sub-path (ADR-023)', () => {
+describe('deployment sub-path', () => {
   // mockReset (not restoreAllMocks): vitest 4 only restores vi.spyOn spies,
   // so a spy-mocked module export would leak into the describes below.
   afterEach(() => vi.mocked(basePath).mockReset())

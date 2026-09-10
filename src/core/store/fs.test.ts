@@ -85,7 +85,7 @@ describe('FsStore', () => {
   })
 })
 
-describe('FsStore.watch (P2-4)', () => {
+describe('FsStore.watch', () => {
   it('emits a manifest diff when manifest.json changes', async () => {
     const manifest = (hash: string) => ({
       generatedAt: '2026-08-23T10:00:00Z',

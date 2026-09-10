@@ -4,11 +4,11 @@ import { localizedString } from './localized'
 
 export const projectStatusSchema = z.enum(['active', 'maintained', 'archived'])
 
-/** One entry of content/projects.yaml (CONTENT-CONTRACT §4). */
+/** One entry of content/projects.yaml (docs/CONTENT-CONTRACT.md §4). */
 export const projectSchema = z
   .looseObject({
     name: z.string().min(1),
-    /** One-liner; localized per ADR-007. */
+    /** One-liner; localizable. */
     blurb: localizedString,
     /** A paragraph. */
     description: localizedString.optional(),

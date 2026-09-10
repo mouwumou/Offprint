@@ -1,4 +1,4 @@
-// offprint-sync CLI: `pnpm sync [validate|manifest]` (DYNAMIC-PUBLISHING §4).
+// offprint-sync CLI: `pnpm sync [validate|manifest]` (docs/DYNAMIC-PUBLISHING.md §4).
 import { writeFile } from 'node:fs/promises'
 
 // .env for local runs; explicitly exported variables take precedence.
@@ -23,7 +23,7 @@ switch (command) {
       `synced ${summary.posts} post(s), ${summary.pages} page(s); ` +
         `skipped ${summary.skipped}; ${summary.errors.length} error(s)`,
     )
-    if (summary.errors.length > 0) process.exitCode = 0 // errors recorded, not fatal (§4)
+    if (summary.errors.length > 0) process.exitCode = 0 // errors recorded, not fatal
     break
   }
   case 'validate': {
@@ -41,7 +41,7 @@ switch (command) {
     break
   }
   case 'manifest': {
-    // Hand-written content support (CONTENT-CONTRACT §1).
+    // Hand-written content support (docs/CONTENT-CONTRACT.md §1).
     const manifest = await buildManifest(contentDir, { name: 'offprint-sync', version: '0.0.0' })
     await writeFile(join(contentDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
     console.log(`manifest.json written (${Object.keys(manifest.entries).length} entries)`)

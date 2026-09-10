@@ -10,7 +10,7 @@ const entryTypes: Record<Publication['type'], string> = {
 }
 
 /**
- * BibTeX generated from the YAML fields (ADR-008: fields → BibTeX, never the
+ * BibTeX generated from the YAML fields (fields → BibTeX, never the
  * reverse). A hand-written `bibtex` field overrides everything.
  */
 export function publicationToBibtex(publication: Publication, fallbackLang: string): string {

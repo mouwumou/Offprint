@@ -1,5 +1,5 @@
 #!/bin/sh
-# Entrypoint of the sync container (docker/compose.static.yaml): publish once
+# Entrypoint of the sync container (compose.static.yaml): publish once
 # at startup, then every SYNC_INTERVAL seconds. A failed pass logs and waits
 # for the next tick — the site keeps serving the previous release.
 set -u

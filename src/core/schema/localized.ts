@@ -2,7 +2,7 @@ import { z } from 'zod'
 
 /**
  * A translatable value: a single string shared by all languages, or a
- * per-language record like `{ en: 'Physics', zh: '物理' }` (ADR-007).
+ * per-language record like `{ en: 'Physics', zh: '物理' }`.
  * Used by site config and content collections alike.
  */
 export const localizedString = z.union([z.string(), z.record(z.string(), z.string())])

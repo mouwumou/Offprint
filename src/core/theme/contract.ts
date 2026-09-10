@@ -1,6 +1,6 @@
 import { z } from 'zod'
 
-// ADR-018: a theme is a directory conforming to this contract — tokens plus
+// A theme is a directory conforming to this contract — tokens plus
 // font stacks in theme.json, optional theme.css alongside (font loading and
 // theme-specific styles). Themes carry no JS and no layout forks (layout
 // belongs to the widget layer). Validation happens by RESOLUTION, not by an
@@ -31,7 +31,7 @@ export type TokenName = (typeof TOKEN_NAMES)[number]
 // Token and font values are injected raw into a <style> block by BaseLayout,
 // so a value like `#000}</style><script>…` from a third-party theme package
 // would break out. Forbid the CSS-value metacharacters that enable that
-// (installed themes are untrusted data — ADR-022). Legit colors, radii, and
+// (installed themes are untrusted data). Legit colors, radii, and
 // font stacks never contain these.
 export const cssValue = z
   .string()
@@ -66,7 +66,7 @@ export const themeVoiceSchema = z
 
 /**
  * A theme's own configurable options, DECLARED here and VALUED by the user
- * in site.yaml `theme.options` (ADR-022: the theme package is read-only,
+ * in site.yaml `theme.options` (the theme package is read-only,
  * every knob lives in the site config). Validated at build against this
  * declaration; gen:schema folds it into site.yaml's editor completion.
  */

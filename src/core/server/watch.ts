@@ -4,8 +4,7 @@ let started = false
 
 /**
  * Start the manifest watch once per server process: a manifest diff maps
- * straight onto provider.revalidate(changedKeys) (incremental invalidation,
- * P2-4). No-op outside server mode.
+ * straight onto provider.revalidate(changedKeys) (incremental invalidation). No-op outside server mode.
  */
 export function ensureContentWatch(): void {
   if (started || import.meta.env.RUNTIME_MODE !== 'server') return

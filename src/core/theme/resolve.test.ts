@@ -3,7 +3,7 @@ import { afterEach, describe, expect, it } from 'vitest'
 import { themeManifestSchema } from './contract'
 import { listThemes, resolveTheme } from './resolve'
 
-describe('theme resolution (ADR-018)', () => {
+describe('theme resolution', () => {
   it('resolves the built-in paper theme with full token tables', () => {
     const { manifest, cssPath } = resolveTheme('paper')
     expect(manifest.name).toBe('paper')

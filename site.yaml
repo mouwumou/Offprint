@@ -1,8 +1,8 @@
 # yaml-language-server: $schema=schema/site-config.schema.json
 #
 # ──────────────────────────────────────────────────────────────────────────────
-# Offprint 站点配置（ADR-021）。这一个文件 = 站点长什么样，不含任何内容。
-# 你是谁在 content/profile.yaml（ADR-028）；页面里显示什么在 content/ 目录；首页的排布在 content/home.yaml；
+# Offprint 站点配置。这一个文件 = 站点长什么样，不含任何内容。
+# 你是谁在 content/profile.yaml；页面里显示什么在 content/ 目录；首页的排布在 content/home.yaml；
 # 装进来的扩展（主题/部件/模块）在 extensions/。密钥只放 .env，永不进仓库。
 #
 # 所有键都会在构建时校验：拼错键、类型不对会直接报错并指出位置。

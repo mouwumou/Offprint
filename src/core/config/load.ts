@@ -4,7 +4,7 @@ import YAML from 'yaml'
 import { z } from 'zod'
 import { buildSiteConfigSchema, type SiteConfig } from './schema'
 
-// ADR-021: the site configuration is pure data in site.yaml (validated by
+// The site configuration is pure data in site.yaml (validated by
 // the same zod schemas as ever — the error quality never came from the TS
 // file format), and the homepage composition lives with the content in
 // content/home.yaml. Both are read at build/startup; changing them means
@@ -25,9 +25,7 @@ function readYaml(path: string): unknown {
 export function loadSiteConfig(root: string = process.cwd()): SiteConfig {
   const sitePath = resolve(root, SITE_FILE)
   if (!existsSync(sitePath)) {
-    throw new Error(
-      `${SITE_FILE} not found at ${sitePath} — the site configuration lives there (ADR-021)`,
-    )
+    throw new Error(`${SITE_FILE} not found at ${sitePath} — the site configuration lives there`)
   }
   const site = readYaml(sitePath)
   if (typeof site !== 'object' || site === null) {
@@ -35,12 +33,12 @@ export function loadSiteConfig(root: string = process.cwd()): SiteConfig {
   }
   if ('home' in site) {
     throw new Error(
-      `${SITE_FILE} must not contain "home" — the homepage composition lives in ${HOME_FILE} (ADR-021)`,
+      `${SITE_FILE} must not contain "home" — the homepage composition lives in ${HOME_FILE}`,
     )
   }
   if ('profile' in site) {
     throw new Error(
-      `${SITE_FILE} must not contain "profile" — who you are is content and lives in content/profile.yaml (ADR-028). ` +
+      `${SITE_FILE} must not contain "profile" — who you are is content and lives in content/profile.yaml. ` +
         'Move the block there unchanged (drop the two-space indent); every field keeps its name.',
     )
   }

@@ -2,14 +2,14 @@ import { z } from 'zod'
 import { isoDate, slugSchema } from './common'
 
 /**
- * Standalone-page front-matter (CONTENT-CONTRACT §6a): About, Now, … —
+ * Standalone-page front-matter (docs/CONTENT-CONTRACT.md §6a): About, Now, … —
  * Notion rows with type=Page. Body syntax is identical to posts.
  */
 export const pageFrontmatterSchema = z
   .looseObject({
     title: z.string().min(1),
     slug: slugSchema,
-    /** Required (ADR-007). */
+    /** Required. */
     lang: z.string().min(2),
     /** Meta description; absent → derived from the body's opening text. */
     description: z.string().optional(),
