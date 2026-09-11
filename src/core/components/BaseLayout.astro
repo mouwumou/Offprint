@@ -7,6 +7,7 @@ import { useTranslations } from '../i18n'
 import type { Alternate } from '../seo/alternates'
 import Head from '../seo/Head.astro'
 import { resolveTheme } from '../theme/resolve'
+import { resolveWidget } from '../widgets/registry'
 import '../theme/base.css'
 
 interface Props {
@@ -38,6 +39,8 @@ const {
 } = Astro.props
 const t = useTranslations(lang)
 const prefix = langPrefix(config, lang)
+const SiteHeader = resolveWidget('site-header', Header)
+const SiteFooter = resolveWidget('site-footer', Footer)
 
 // Tokens come from the resolved theme's manifest, overlaid with the
 // user's theme.tokens (both color schemes) and the accent shorthand.
@@ -57,7 +60,13 @@ const themeCss = `:root{${tokenBlock(manifest.tokens.light)}${fontBlock}}.dark{$
 ---
 
 <!doctype html>
-<html lang={lang}>
+<html
+  lang={lang}
+  data-theme-name={manifest.name}
+  data-labels={manifest.voice.labels}
+  data-density={manifest.voice.density}
+  data-photo={manifest.voice.photo}
+>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -117,18 +126,18 @@ const themeCss = `:root{${tokenBlock(manifest.tokens.light)}${fontBlock}}.dark{$
     <slot name="head" />
   </head>
   <body>
-    <div class="flex min-h-screen flex-col">
+    <div data-part="site" class="flex min-h-screen flex-col">
       <a
         href="#main-content"
         class="sr-only rounded-md bg-primary px-4 py-2 font-mono text-xs tracking-[0.12em] text-primary-foreground uppercase focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50"
       >
         {t('layout.skipToContent')}
       </a>
-      <Header lang={lang} alternates={alternates ?? []} />
-      <main id="main-content" tabindex="-1" class="flex-1 outline-none">
+      <SiteHeader lang={lang} alternates={alternates ?? []} />
+      <main id="main-content" data-part="main" tabindex="-1" class="flex-1 outline-none">
         <slot />
       </main>
-      <Footer lang={lang} />
+      <SiteFooter lang={lang} />
     </div>
   </body>
 </html>

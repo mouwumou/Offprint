@@ -2,8 +2,10 @@
 import siteConfig from '../../config/current'
 import { langPrefix } from '../../config/nav'
 import type { PostSummary } from '../../content/provider'
-import { formatDate, useTranslations } from '../../i18n'
+import { useTranslations } from '../../i18n'
 import { themeVoice } from '../../theme/current'
+import { resolveWidget } from '../../widgets/registry'
+import PostRowBuiltin from '../PostRow.astro'
 import PlainSection from './PlainSection.astro'
 import SectionShell from './SectionShell.astro'
 
@@ -23,31 +25,20 @@ const postHref = (post: { urlname: string; lang: string }) =>
 // The section frame follows the theme's voice (A3): the plain academic
 // heading in scholar-like themes, the label-column shell in paper.
 const plain = themeVoice.labels === 'plain'
+const PostRow = resolveWidget('post-row', PostRowBuiltin)
 ---
 
 {
   plain && (
-    <PlainSection title={title} moreHref={`${prefix}/blog`} moreLabel={t('home.allPosts')}>
-      <div class="divide-y divide-border">
+    <PlainSection
+      part="recent-posts"
+      title={title}
+      moreHref={`${prefix}/blog`}
+      moreLabel={t('home.allPosts')}
+    >
+      <div data-part="post-list" class="divide-y divide-border">
         {posts.map((post) => (
-          <a href={postHref(post)} class="group block py-4 first:pt-0">
-            <div class="flex items-baseline gap-3">
-              <time datetime={post.date.toISOString()} class="text-sm text-muted-foreground">
-                {formatDate(post.date, lang)}
-              </time>
-              {post.lang !== lang && (
-                <span class="rounded-sm border border-border px-1.5 text-xs text-muted-foreground">
-                  {post.lang}
-                </span>
-              )}
-            </div>
-            <span class="mt-0.5 block font-serif text-[17px] leading-snug text-primary group-hover:underline">
-              {post.title}
-            </span>
-            {post.description && (
-              <p class="mt-0.5 max-w-2xl text-sm text-muted-foreground">{post.description}</p>
-            )}
-          </a>
+          <PostRow post={post} lang={lang} href={postHref(post)} variant="compact" />
         ))}
       </div>
     </PlainSection>
@@ -56,7 +47,7 @@ const plain = themeVoice.labels === 'plain'
 
 {
   !plain && (
-    <SectionShell label={title}>
+    <SectionShell part="recent-posts" label={title}>
       <a
         slot="aside"
         href={`${prefix}/blog`}
@@ -64,34 +55,9 @@ const plain = themeVoice.labels === 'plain'
       >
         {t('home.allPosts')}
       </a>
-      <div class="divide-y divide-border">
+      <div data-part="post-list" class="divide-y divide-border">
         {posts.map((post) => (
-          <a href={postHref(post)} class="group block py-5 first:pt-0">
-            <div class="flex items-baseline gap-3">
-              <time
-                datetime={post.date.toISOString()}
-                class="font-mono text-xs text-muted-foreground"
-              >
-                {formatDate(post.date, lang)}
-              </time>
-              {post.categories[0] && (
-                <span class="font-mono text-[11px] tracking-[0.14em] text-primary uppercase">
-                  {post.categories[0]}
-                </span>
-              )}
-              {post.lang !== lang && (
-                <span class="rounded-sm border border-border px-1.5 font-mono text-[10px] tracking-[0.14em] text-muted-foreground uppercase">
-                  {post.lang}
-                </span>
-              )}
-            </div>
-            <h3 class="mt-1.5 font-serif text-xl leading-snug transition-colors group-hover:text-primary">
-              {post.title}
-            </h3>
-            {post.description && (
-              <p class="mt-1 max-w-2xl text-muted-foreground">{post.description}</p>
-            )}
-          </a>
+          <PostRow post={post} lang={lang} href={postHref(post)} variant="compact" />
         ))}
       </div>
     </SectionShell>

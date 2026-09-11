@@ -22,11 +22,11 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   resolveLocalized(value, lang, siteConfig.i18n.default)
 ---
 
-<SectionShell label={title}>
+<SectionShell part="selected-publications" label={title}>
   <div class="space-y-8">
     {
       selected.map((pub) => (
-        <article>
+        <article data-part="pub-row" data-key={pub.key}>
           <div class="flex items-baseline gap-3">
             <span class="font-mono text-xs text-primary">{pub.year}</span>
             <span class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">

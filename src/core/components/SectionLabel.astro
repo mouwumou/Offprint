@@ -1,6 +1,4 @@
 ---
-import { themeVoice } from '../theme/current'
-
 interface Props {
   text: string
 }
@@ -8,10 +6,4 @@ interface Props {
 const { text } = Astro.props
 ---
 
-{
-  themeVoice.labels === 'mono-caps' ? (
-    <h2 class="mb-6 font-mono text-xs tracking-[0.2em] text-muted-foreground uppercase">{text}</h2>
-  ) : (
-    <h2 class="mb-4 font-serif text-lg font-semibold">{text}</h2>
-  )
-}
+<h2 data-part="section-label" class="section-label">{text}</h2>

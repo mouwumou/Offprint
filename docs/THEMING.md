@@ -1,58 +1,47 @@
 # 主题制作规范
 
-主题决定站点的**皮肤**：颜色、圆角、字体，以及主题自带的附加样式。布局与交互不属于主题——那是部件层（`extensions/widgets/`，见 docs/ARCHITECTURE.md §3.1）与编排层（`content/home.yaml` 的 sections、`site.yaml` 的 `nav` / `header` / `footer`）的职责。这个边界是刻意的：主题只要不碰结构，就永远不会因为核心升级而坏掉。
+一个主题是一个目录：`theme.json`（必需）、`theme.css`（可选）、`widgets/`（可选）。它能做三个层次的事，逐层深入：
 
-## 1. 一个主题是什么
+| 层次 | 靠什么 | 能改什么 |
+| --- | --- | --- |
+| 1. 皮肤 | `theme.json` | 颜色、圆角、字体栈、正文字号、腔调预设、主题自定义选项 |
+| 2. 样式 | `theme.css` + **样式挂钩** | 任何部件的任何样式，包括布局——挂钩是稳定的 `data-part` 名与预设类，不是工具类名 |
+| 3. 部件 | `widgets/<name>.astro` | 整个替换某个部件（首页各节、出版物行、文章行、站点头尾），props 与内置相同 |
 
-一个目录，放在下列任一位置（同名时靠前者优先）：
+验收只有一条：`pnpm theme:check <name> [目录]` 把仓库复制一份、装上你的主题、跑双模式构建与全套 e2e（双模式 HTML 一致、无障碍、手机视口、子路径）。模板 CI 对内置的 `paper` 和示例主题 `gutter` 固定跑这条。
+
+## 1. 目录与安装
 
 ```
-extensions/themes/<name>/ # 安装的主题（只读：升级 = 整目录替换）
+extensions/themes/<name>/   # 安装的主题（只读：升级 = 整目录替换）
 src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 ```
 
-目录内容：
+同名时 `extensions/` 优先。没有注册表、没有枚举：**放进目录、通过校验，就是合法主题**。`site.yaml` 里 `theme: { name: <name> }` 即启用；名字解析不到时构建失败并列出可用主题。
 
-```
-<name>/
-├─ theme.json     # 必需：manifest（tokens + fonts + typography + voice + options 声明）
-├─ theme.css      # 可选：字体加载（@import fontsource 包）与主题特有样式
-└─ widgets/       # 可选：主题自带的首页部件实现（站点散件可逐个压过）
-```
-
-没有注册表、没有枚举：**放进目录、通过校验，就是合法主题**。`site.yaml` 里 `theme: { name: <name> }` 即启用；名字解析不到时构建失败并列出当前可用的主题。
-
-**只读原则**：使用者永远不编辑主题目录内部——你的一切可调项都在 site.yaml：`theme.accent` / `theme.tokens`（通用覆盖）与 `theme.options`（主题自定义选项，见 §2b）；想改某个部件，在 `extensions/widgets/` 放同名文件压过它，不要 fork 主题。
+**只读原则**：使用者永远不编辑主题目录——一切可调项在 site.yaml：`theme.accent` / `theme.tokens` / `theme.typography`（通用覆盖）与 `theme.options`（主题自定义选项）；想改某个部件，在 `extensions/widgets/` 放同名文件压过它。
 
 ## 2. theme.json
 
 ```json
 {
   "name": "<name>",
-  "voice": { "labels": "plain", "photo": "plain" },
+  "voice": { "labels": "plain", "photo": "plain", "density": "compact" },
+  "typography": { "proseSize": "1.0625rem" },
+  "options": {},
   "tokens": {
     "light": { "background": "#ffffff", "...": "全部 15 个 token 必填" },
     "dark": { "...": "同上" }
   },
-  "fonts": {
-    "sans": "完整 font-family 栈（含 CJK 与系统回退）",
-    "serif": "…",
-    "mono": "…"
-  }
+  "fonts": { "sans": "…", "serif": "…", "mono": "…" }
 }
 ```
 
-- **voice（腔调，可省略，缺省全 plain）**：`labels: mono-caps | plain` 控制装饰语域——mono-caps 是等宽大写宽字距的 kicker/节标签/导航（paper 的样子），plain 是普通字体且不渲染装饰性 kicker（学术常态）；`photo: grayscale-hover | plain` 控制首页大头图的灰度悬停处理；`density: airy | compact` 控制页面留白（页脚、标题上方间距等），缺省 compact。
-- **typography（排版，可省略）**：`proseSize` 是文章正文 `.prose` 的基准字号，缺省 `1.0625rem`（17px）；paper 声明 `1.1875rem`。使用者可在 site.yaml `theme.typography.proseSize` 覆盖，主题只提供缺省。
-- **token 词表**（15 个，见 `src/core/theme/contract.ts` 的 `TOKEN_NAMES`）：`background` `foreground` `card` `card-foreground` `primary` `primary-foreground` `secondary` `secondary-foreground` `muted` `muted-foreground` `accent` `accent-foreground` `border` `ring` `radius`。缺一个、多一个都是构建期错误（zod 逐键报名）。
-- 两种配色（light/dark）都必须给全——站点有用户可切换的暗色模式，主题不能只管一半。
-- 字体栈**必须含 CJK 回退**（参照 paper 的栈；中文 webfont 体积不划算，走系统字体是项目约定）。
-
-token 的注入由 BaseLayout 完成（内联 `:root{…}.dark{…}`），主题不用也不要在 CSS 里重复定义它们。用户可在 config 里用 `theme.tokens` / `theme.accent` 在你的主题之上做覆盖——这是预期行为，不要用更高特异性对抗它。
-
-## 2b. options：主题自定义选项
-
-在 theme.json 里**声明**你的选项，用户在 site.yaml `theme.options` 里**填值**：
+- **tokens**（15 个，`src/core/theme/contract.ts` 的 `TOKEN_NAMES`）：`background` `foreground` `card` `card-foreground` `primary` `primary-foreground` `secondary` `secondary-foreground` `muted` `muted-foreground` `accent` `accent-foreground` `border` `ring` `radius`。light/dark 都必须给全；缺一个、多一个都是构建期错误。BaseLayout 把它们注入为 `:root{…}.dark{…}` 变量，主题不要在 CSS 里重复定义。
+- **fonts**：完整 `font-family` 栈，**必须含 CJK 回退**。字体文件的加载放 theme.css（`@import '@fontsource/...'`）。
+- **typography.proseSize**：文章正文基准字号，缺省 `1.0625rem`；用户可在 site.yaml 覆盖。
+- **voice（腔调预设，可省略）**：`labels: plain | mono-caps`（普通字体 vs 等宽大写宽字距的标签、导航、kicker）、`density: compact | airy`（学术密度 vs 杂志留白）、`photo: plain | grayscale-hover`。这三个值会被打在 `<html>` 上（`data-labels` / `data-density` / `data-photo`），核心的预设样式按它们切换——见 §3；你在 theme.css 里可以覆盖预设的任何一条。
+- **options**：主题自定义选项的**声明**，用户在 site.yaml `theme.options` 里填值，构建期按声明校验，`pnpm gen:schema` 并入编辑器补全：
 
 ```json
 "options": {
@@ -61,41 +50,73 @@ token 的注入由 BaseLayout 完成（内联 `:root{…}.dark{…}`），主题
 }
 ```
 
-构建期按声明精确校验（未知选项 / 类型不符 / 越出 enum 都报错）；`pnpm gen:schema` 会把声明并入 site.yaml 的编辑器补全。部件里经 `themeOptions`（`src/core/theme/current.ts`）读取解析后的值。
+部件里经 `themeOptions`（`src/core/theme/current.ts`）读取解析后的值。
 
-## 3. theme.css（可选）
+## 3. theme.css 与样式挂钩
 
-- **字体加载**放这里：`@import '@fontsource/...'`（fontsource 包需在 package.json 里，向模板贡献主题时一并加入依赖）。
-- 可以写主题特有的样式微调，但**只准新增，不准结构性覆盖**：不要重排版式基座（`src/core/theme/base.css`）里的布局规则，不要 `display:none` 掉核心组件，不要引入 JS。
-- 想改布局？那不是主题，去写部件覆盖或改编排配置。
+theme.css 由构建注入到每一页，且**不在任何 cascade layer 里**——核心的基础样式与 Tailwind 工具类都在 layer 内，所以 theme.css 的普通选择器天然赢过它们，不需要提高特异性或 `!important`。
 
-## 4. 质量门：跑深度测试
+写主题 CSS 只用两种选择器，它们是契约的一部分，核心保证稳定（改名走 ADR）：
 
-深度测试套件是**内容无关也主题无关**的——换上你的主题后全套照跑：
+**(a) `data-part` 挂钩** —— 每个部件的根与关键子元素：
 
-```bash
-pnpm build:static && pnpm build:server   # 双模式都必须成功
-pnpm e2e                                  # 双模式 HTML 一致性 + axe 可访问性 + 375px 无横向溢出
-pnpm lhci                                 # 四类 Lighthouse ≥ 0.95（性能/可访问性/最佳实践/SEO）
+| 区域 | 挂钩 |
+| --- | --- |
+| 骨架 | `site` `main` `site-header` `brand` `nav` `nav-item` `nav-search` `lang-switch` `theme-toggle` `nav-drawer` `site-footer` `footer-name` `footer-affiliation` `footer-links` `footer-colophon` |
+| 首页各节 | `section`（并带 `data-section="<节类型>"`）`section-label` `section-title` `section-more`；`bio-header` `bio-name` `bio-subtitle` `bio-tagline` `bio-text` `bio-photo` `bio-links`；`hero-name` `hero-photo`；`news-list` `news-item` |
+| 列表页头 | `page-head` `page-kicker` `page-title` `page-lede` |
+| 出版物 | `pub-year-group`（带 `data-year`）`pub-year` `pub-list` `pub-row`（带 `data-key`）`pub-thumb` `pub-title` `pub-meta` `pub-venue`；详情页 `pub-detail` `pub-back` `pub-head` `pub-abstract` |
+| 文章 | 列表 `post-list` `post-filter` `post-updated` `post-row`（带 `data-urlname`）`post-meta` `post-category` `post-lang` `post-title` `post-description` `post-tags`；文章页 `post` `post-back` `post-head` `post-kicker` `post-lede` `post-cover` `post-body` `post-colophon` `post-series` `post-related` `post-toc` |
+| 独立页面 | `page` `page-head` `page-title` `page-body` |
+
+`<html>` 上另有 `data-theme-name`、`data-labels`、`data-density`、`data-photo`。
+
+**(b) 预设类** —— 核心按腔调切换样式的地方都用语义类而不是工具类，你可以按类重定义：页面节奏 `page-top` `article-top` `page-head` `section-gap` `list-tools` `post-row-pad` `site-footer--stack` `site-footer__body` `article-toc`；标题 `page-title` `page-lede` `article-head` `article-title` `article-lede` `kicker`；标签语域 `ui-label` `ui-meta` `ui-caption` `ui-heading` `ui-heading-sm` `section-label`。
+
+不要依赖的：Tailwind 工具类名（`mt-4`、`text-sm`…）——它们随实现变动，不是契约。
+
+一个真实例子——示例主题 `gutter` 只用挂钩就把出版物页改成了"年份在左栏、细线分隔"的简历式排布：
+
+```css
+[data-part='pub-year-group'] { display: grid; grid-template-columns: 5.5rem 1fr; column-gap: 1.25rem; }
+[data-part='pub-year-group'] > [data-part='pub-year'] { border: 0; padding: .95rem 0 0; font-size: 1rem; color: var(--muted-foreground); }
+[data-part='pub-year-group'] [data-part='pub-row'] { padding: .95rem 0; border-top: 1px solid var(--border); }
 ```
 
-最常见的翻车点是 **axe 的颜色对比度**（`muted-foreground` 对 `background`、`primary` 对 `background` 都要过 AA）和暗色模式漏配。PR 一个内置主题时，CI 会替你把关，但本地先跑省来回。
+完整文件见 `e2e/fixtures/themes/gutter/theme.css`。
 
-## 5. 分发形态
+## 4. widgets/：主题自带的部件
 
-| 形态 | 现在 | 拆成 npm 包后 |
+`widgets/<name>.astro` 替换同名内置部件；查找链是 **站点散件（`extensions/widgets/`）> 启用主题的 `widgets/` > 内置**。文件名必须是下表的名字之一，否则构建报错并列出合法名字。
+
+| 部件名 | 内置实现（props 契约） | 用在哪 |
 | --- | --- | --- |
-| 站点自有 | `extensions/themes/<name>/` | 不变 |
-| 向模板贡献 | PR 到 `src/core/themes/<name>/` | 不变 |
-| npm 包 | — | `offprint-theme-<name>`（解析链加入 node_modules 查找） |
+| `bio-header` `hero` `about` `news` `publication-list` `selected-publications` `recent-posts` `projects` `prose` | `src/core/components/home/<对应文件>.astro` | 首页各节（`content/home.yaml`） |
+| `publication-row` | `src/core/components/PublicationRow.astro`：`{ publication, lang, href?, thumbnail?, cite?, as? }` | 出版物页每一条、首页 publication-list |
+| `post-row` | `src/core/components/PostRow.astro`：`{ post, lang, href, variant: 'full' \| 'compact', minutes? }` | 文章列表页、首页 recent-posts |
+| `site-header` | `src/core/components/Header.astro`：`{ lang, alternates }` | 每一页 |
+| `site-footer` | `src/core/components/Footer.astro`：`{ lang }` | 每一页 |
 
-## 6. 后续版本的契约扩展（计划中，尚未实现）
+部件里的数据一律经 `getProvider()` 取（文章、出版物、项目、CV，作者信息 `getProvider().getProfile()`）；`siteConfig` 只有结构与开关。从主题目录引用核心用相对路径（`../../../../src/core/...`），示例见 `e2e/fixtures/themes/gutter/widgets/site-footer.astro`。
 
-以下字段**现在写了会被 schema 拒绝**（schema 只收已实现的）：
+## 5. 验收
 
-- `shiki`：代码高亮双主题自定义（现为全站统一的 offprint 双主题）。
+```bash
+pnpm theme:check <name>                      # 内置或已装进 extensions/ 的主题
+pnpm theme:check gutter e2e/fixtures/themes/gutter   # 目录形式的主题
+```
 
-## 附：部件里的数据从哪来
+脚本把仓库复制到 `.offprint/theme-check/<name>/`、装上主题、把 site.yaml 指向它，然后 `build:static`、`build:server`、`pnpm e2e`。最常见的翻车点是 **axe 的颜色对比度**（`muted-foreground` 与 `primary` 对 `background` 都要过 AA）和暗色模式漏配。
 
-部件（内置的、主题携带的、`extensions/widgets/` 里覆盖的）一律经 `getProvider()` 取内容：文章、出版物、项目、CV，以及**作者信息** `getProvider().getProfile()`（`content/profile.yaml`）。`siteConfig` 里只有结构与开关，没有内容——不要在部件里假设它带 `profile`。
+## 6. 分发形态
 
+| 形态 | 现在 |
+| --- | --- |
+| 站点自有 | `extensions/themes/<name>/` |
+| 向模板贡献 | PR 到 `src/core/themes/<name>/`，CI 自动跑 theme:check |
+| npm 包 | 计划中：`offprint-theme-<name>`，解析链加入 node_modules 查找 |
+
+## 7. 尚未实现
+
+- `shiki`：代码高亮双主题自定义（现为全站统一）。
+- 更多部件：文章页头、CV 各段尚未部件化；先用挂钩。

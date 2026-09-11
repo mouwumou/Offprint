@@ -6,12 +6,16 @@ import SectionLabel from '../SectionLabel.astro'
 // "all posts" link) goes into the `aside` slot.
 interface Props {
   label: string
+  /** Section type, stamped as data-section for theme CSS. */
+  part?: string | undefined
 }
 
-const { label } = Astro.props
+const { label, part } = Astro.props
 ---
 
 <section
+  data-part="section"
+  data-section={part}
   class="grid gap-6 border-t border-border py-12 md:grid-cols-[200px_1fr] md:gap-10 md:py-14 lg:gap-16"
 >
   <div>

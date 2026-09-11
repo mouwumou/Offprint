@@ -62,29 +62,19 @@ function projectLinks(project: (typeof projects)[number]): { label: string; href
   description={copy.description}
   alternates={uniformAlternates(siteConfig, '/projects')}
 >
-  <div class:list={[container, themeVoice.density === 'airy' ? 'pt-16 lg:pt-24' : 'pt-8 lg:pt-10']}>
-    <header class="max-w-2xl">
+  <div class:list={[container, 'page-top']}>
+    <header data-part="page-head" class="max-w-2xl">
       {
         themeVoice.labels === 'mono-caps' && (
-          <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">
+          <p data-part="page-kicker" class="kicker">
             {t('projects.kicker')}
           </p>
         )
       }
-      <h1
-        class:list={[
-          'font-serif tracking-tight',
-          themeVoice.density === 'airy' ? 'mt-4 text-4xl sm:text-5xl' : 'text-3xl',
-        ]}
-      >
+      <h1 data-part="page-title" data-part="page-title" data-part="page-title" class="page-title">
         {copy.title}
       </h1>
-      <p
-        class:list={[
-          'font-serif leading-relaxed text-muted-foreground',
-          themeVoice.density === 'airy' ? 'mt-4 text-lg' : 'mt-2 text-base',
-        ]}
-      >
+      <p data-part="page-lede" data-part="page-lede" data-part="page-lede" class="page-lede">
         {copy.description}
       </p>
     </header>

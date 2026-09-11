@@ -11,6 +11,7 @@ import { resolveLocalized, type LocalizedString } from '../schema'
 import { uniformAlternates } from '../seo/alternates'
 import { personJsonLd, scholarlyArticlesJsonLd } from '../seo/jsonld'
 import { katexCss } from '../theme/katex'
+import { resolveWidget } from '../widgets/registry'
 import BaseLayout from './BaseLayout.astro'
 import About from './home/About.astro'
 import BioHeader from './home/BioHeader.astro'
@@ -22,28 +23,23 @@ import Prose from './home/Prose.astro'
 import RecentPosts from './home/RecentPosts.astro'
 import SelectedPublications from './home/SelectedPublications.astro'
 
-// Widget overrides: the pages layer may pass site-local widget components
-// (from extensions/widgets/<type>.astro) that replace the built-ins below.
-// Each override receives exactly the props of the built-in it replaces.
-type Widgets = Partial<Record<import('../config/schema').HomeSection['type'], unknown>>
-
+// Every section renders through the widget registry: a site-level or
+// theme-carried override replaces the built-in and receives exactly its props.
 interface Props {
   lang: string
-  widgets?: Widgets
 }
 
-const { lang, widgets = {} } = Astro.props
+const { lang } = Astro.props
 const impl = {
-  'bio-header': (widgets['bio-header'] ?? BioHeader) as typeof BioHeader,
-  news: (widgets.news ?? NewsList) as typeof NewsList,
-  'publication-list': (widgets['publication-list'] ?? PublicationList) as typeof PublicationList,
-  hero: (widgets.hero ?? Hero) as typeof Hero,
-  about: (widgets.about ?? About) as typeof About,
-  prose: (widgets.prose ?? Prose) as typeof Prose,
-  'selected-publications': (widgets['selected-publications'] ??
-    SelectedPublications) as typeof SelectedPublications,
-  'recent-posts': (widgets['recent-posts'] ?? RecentPosts) as typeof RecentPosts,
-  projects: (widgets.projects ?? Projects) as typeof Projects,
+  'bio-header': resolveWidget('bio-header', BioHeader),
+  news: resolveWidget('news', NewsList),
+  'publication-list': resolveWidget('publication-list', PublicationList),
+  hero: resolveWidget('hero', Hero),
+  about: resolveWidget('about', About),
+  prose: resolveWidget('prose', Prose),
+  'selected-publications': resolveWidget('selected-publications', SelectedPublications),
+  'recent-posts': resolveWidget('recent-posts', RecentPosts),
+  projects: resolveWidget('projects', Projects),
 }
 const t = useTranslations(lang)
 const fallback = siteConfig.i18n.default

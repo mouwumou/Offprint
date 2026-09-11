@@ -1,0 +1,107 @@
+---
+import siteConfig from '../config/current'
+import { assetUrl } from '../content/asset-url'
+import type { Publication } from '../schema'
+import { resolveLocalized } from '../schema'
+import { themeVoice } from '../theme/current'
+import Authors from './Authors.astro'
+import PublicationLinks from './PublicationLinks.astro'
+
+// One publication entry — the built-in behind the `publication-row` widget.
+// Used by the publications page and the home "publication-list" section.
+// `href` is the detail page when publications.detail is on, else undefined
+// and the title renders as text. Two registers: plain (title → authors →
+// venue → link chips) and mono-caps (label row → title → authors → links).
+interface Props {
+  publication: Publication
+  lang: string
+  href?: string | undefined
+  /** Show the thumbnail column (home list); the publications page omits it. */
+  thumbnail?: boolean
+  /** Element to render as: `li` inside an ordered list, else `article`. */
+  as?: 'li' | 'article'
+  /** Append a Cite chip pointing at the detail page (home list). */
+  cite?: boolean
+}
+
+const {
+  publication: pub,
+  lang,
+  href,
+  thumbnail = false,
+  as = 'article',
+  cite = false,
+} = Astro.props
+const Root = as
+const Title = href !== undefined ? 'a' : 'span'
+const Thumb = href !== undefined ? 'a' : 'div'
+const mono = themeVoice.labels === 'mono-caps'
+const r = (value: Parameters<typeof resolveLocalized>[0]) =>
+  resolveLocalized(value, lang, siteConfig.i18n.default)
+const showThumb = thumbnail && pub.thumbnail !== undefined
+---
+
+{
+  mono ? (
+    <Root data-part="pub-row" data-key={pub.key}>
+      <div data-part="pub-meta" class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+        <span class="font-mono text-[11px] tracking-[0.14em] text-muted-foreground uppercase">
+          {pub.venue}
+        </span>
+        <span class="font-mono text-[10px] tracking-[0.12em] text-muted-foreground uppercase">
+          {pub.type}
+        </span>
+        {pub.award && (
+          <span class="rounded-full border border-primary/40 px-2 py-0.5 font-mono text-[10px] tracking-[0.12em] text-primary uppercase">
+            {pub.award}
+          </span>
+        )}
+      </div>
+      <h3 data-part="pub-title" class="mt-1.5 font-serif text-xl leading-snug">
+        <Title
+          {...(href !== undefined ? { href } : {})}
+          class:list={[href !== undefined && 'transition-colors hover:text-primary']}
+        >
+          {r(pub.title)}
+        </Title>
+      </h3>
+      <Authors authors={pub.authors} />
+      <PublicationLinks publication={pub} lang={lang} />
+    </Root>
+  ) : (
+    <Root data-part="pub-row" data-key={pub.key} class:list={[showThumb && 'flex gap-5']}>
+      {showThumb && (
+        <Thumb
+          {...(href !== undefined ? { href, 'aria-hidden': 'true', tabindex: '-1' } : {})}
+          data-part="pub-thumb"
+          class="hidden shrink-0 sm:block"
+        >
+          <img
+            src={assetUrl(pub.thumbnail ?? '')}
+            alt=""
+            loading="lazy"
+            class="h-[94px] w-[150px] rounded-sm border border-border object-cover"
+          />
+        </Thumb>
+      )}
+      <div class="min-w-0">
+        <Title
+          {...(href !== undefined ? { href } : {})}
+          data-part="pub-title"
+          class:list={[
+            'font-serif text-[17px] leading-snug font-medium',
+            href !== undefined ? 'text-primary hover:underline' : 'text-foreground',
+          ]}
+        >
+          {r(pub.title)}
+        </Title>
+        <Authors authors={pub.authors} />
+        <p data-part="pub-venue" class="text-sm text-muted-foreground">
+          <i>{pub.venue}</i>, {pub.year}
+          {pub.award && <span class="font-medium text-foreground"> · {pub.award}</span>}
+        </p>
+        <PublicationLinks publication={pub} lang={lang} citeHref={cite ? href : undefined} />
+      </div>
+    </Root>
+  )
+}

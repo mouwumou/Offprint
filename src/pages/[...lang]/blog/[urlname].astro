@@ -145,64 +145,36 @@ const jsonLd = blogPostingJsonLd(
     class="mx-auto w-full max-w-6xl px-5 sm:px-8 lg:px-12 xl:grid xl:max-w-7xl xl:grid-cols-[1fr_minmax(0,48rem)_1fr] xl:gap-8"
   >
     <div class="hidden xl:block" aria-hidden="true"></div>
-    <article
-      class:list={[
-        'mx-auto w-full max-w-3xl pb-20',
-        themeVoice.density === 'airy' ? 'pt-14 lg:pt-20' : 'pt-8 lg:pt-10',
-      ]}
-      data-pagefind-body
-    >
+    <article data-part="post" class="article-top mx-auto w-full max-w-3xl pb-20" data-pagefind-body>
       <a
         href={`${prefix}/blog`}
-        class:list={[
-          'text-muted-foreground transition-colors hover:text-primary',
-          themeVoice.labels === 'mono-caps'
-            ? 'font-mono text-xs tracking-[0.14em] uppercase'
-            : 'text-sm',
-        ]}
+        data-part="post-back"
+        class="ui-label text-muted-foreground transition-colors hover:text-primary"
       >
         {t('post.back')}
       </a>
 
-      <header
-        class:list={[
-          'border-b border-border',
-          themeVoice.density === 'airy' ? 'mt-6 pb-8' : 'mt-4 pb-6',
-        ]}
-      >
+      <header data-part="post-head" class="article-head article-head--after-link">
         {
-          kicker &&
-            (themeVoice.labels === 'mono-caps' ? (
-              <p class="font-mono text-xs tracking-[0.18em] text-primary uppercase">{kicker}</p>
-            ) : (
-              <p class="text-sm text-muted-foreground">{kicker}</p>
-            ))
+          kicker && (
+            <p data-part="post-kicker" class="kicker">
+              {kicker}
+            </p>
+          )
         }
-        <h1
-          class:list={[
-            'font-serif leading-[1.15] tracking-tight',
-            themeVoice.density === 'airy' ? 'mt-3 text-4xl sm:text-[2.75rem]' : 'mt-2 text-[2rem]',
-          ]}
-        >
+        <h1 data-part="post-title" class="article-title">
           {post.title}
         </h1>
         {
           post.description && (
-            <p
-              class:list={[
-                'font-serif leading-relaxed text-muted-foreground',
-                themeVoice.density === 'airy' ? 'mt-4 text-xl' : 'mt-2 text-lg',
-              ]}
-            >
+            <p data-part="post-lede" class="article-lede">
               {post.description}
             </p>
           )
         }
         <div
-          class:list={[
-            'mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground',
-            themeVoice.labels === 'mono-caps' ? 'font-mono text-xs' : 'text-sm',
-          ]}
+          data-part="post-meta"
+          class="ui-meta mt-6 flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground"
         >
           <time datetime={post.date.toISOString()}>{formatDate(post.date, lang)}</time>
           <span aria-hidden="true">·</span>
@@ -256,16 +228,17 @@ const jsonLd = blogPostingJsonLd(
             width="1600"
             height="900"
             fetchpriority="high"
+            data-part="post-cover"
             class="mt-8 aspect-[16/9] w-full rounded-md border border-border bg-muted object-cover"
           />
         )
       }
 
-      <div class="prose mt-10" set:html={rendered.html} />
+      <div data-part="post-body" class="prose mt-10" set:html={rendered.html} />
 
       {
         post.tags.length > 0 && (
-          <div class="mt-14 flex flex-wrap gap-2 border-t border-border pt-6">
+          <div data-part="post-tags" class="mt-14 flex flex-wrap gap-2 border-t border-border pt-6">
             {post.tags.map((tag) => (
               <span class="rounded-full border border-border px-3 py-1 font-mono text-[11px] text-muted-foreground">
                 #{tag}
@@ -277,17 +250,11 @@ const jsonLd = blogPostingJsonLd(
 
       {
         colophonText && (
-          <div class="mt-10 rounded-md border border-border bg-muted/40 px-5 py-4">
-            <p
-              class:list={[
-                'text-muted-foreground',
-                themeVoice.labels === 'mono-caps'
-                  ? 'font-mono text-[11px] tracking-[0.14em] uppercase'
-                  : 'text-xs font-semibold',
-              ]}
-            >
-              {t('post.colophon')}
-            </p>
+          <div
+            data-part="post-colophon"
+            class="mt-10 rounded-md border border-border bg-muted/40 px-5 py-4"
+          >
+            <p class:list={['text-muted-foreground', 'ui-heading-sm']}>{t('post.colophon')}</p>
             <p class="mt-1.5 text-sm text-muted-foreground">{colophonText}</p>
           </div>
         )
@@ -296,30 +263,17 @@ const jsonLd = blogPostingJsonLd(
       {
         series.length > 0 && (
           <nav
+            data-part="post-series"
             aria-label={t('post.series')}
             class="mt-10 rounded-md border border-border px-5 py-4"
           >
-            <p
-              class:list={[
-                'text-muted-foreground',
-                themeVoice.labels === 'mono-caps'
-                  ? 'font-mono text-[11px] tracking-[0.14em] uppercase'
-                  : 'text-xs font-semibold',
-              ]}
-            >
+            <p class:list={['text-muted-foreground', 'ui-heading-sm']}>
               {t('post.series')} · {post.series}
             </p>
             <ol class="mt-3 space-y-1.5">
               {series.map((entry, index) => (
                 <li class="flex items-baseline gap-3">
-                  <span
-                    class:list={[
-                      'text-muted-foreground',
-                      themeVoice.labels === 'mono-caps' ? 'font-mono text-xs' : 'text-sm',
-                    ]}
-                  >
-                    {index + 1}
-                  </span>
+                  <span class:list={['text-muted-foreground', 'ui-meta']}>{index + 1}</span>
                   {entry.urlname === post.urlname ? (
                     <span class="font-serif font-semibold">{entry.title}</span>
                   ) : (
@@ -339,17 +293,8 @@ const jsonLd = blogPostingJsonLd(
 
       {
         related.length > 0 && (
-          <section class="mt-14 border-t border-border pt-8">
-            <h2
-              class:list={[
-                'text-muted-foreground',
-                themeVoice.labels === 'mono-caps'
-                  ? 'font-mono text-xs tracking-[0.2em] uppercase'
-                  : 'text-sm font-semibold',
-              ]}
-            >
-              {t('post.related')}
-            </h2>
+          <section data-part="post-related" class="mt-14 border-t border-border pt-8">
+            <h2 class:list={['text-muted-foreground', 'ui-heading']}>{t('post.related')}</h2>
             <div class="mt-4 divide-y divide-border">
               {related.map((entry) => (
                 <a href={postHref(entry)} class="group block py-4 first:pt-0">
@@ -382,22 +327,11 @@ const jsonLd = blogPostingJsonLd(
     {
       rendered.toc.length > 0 && (
         <aside
-          class:list={[
-            'hidden xl:sticky xl:top-20 xl:block xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto',
-            themeVoice.density === 'airy' ? 'xl:mt-24' : 'xl:mt-12',
-          ]}
+          data-part="post-toc"
+          class="article-toc hidden xl:sticky xl:top-20 xl:block xl:max-h-[calc(100vh-7rem)] xl:self-start xl:overflow-y-auto"
         >
           <nav aria-label={t('post.onThisPage')}>
-            <p
-              class:list={[
-                'text-muted-foreground',
-                themeVoice.labels === 'mono-caps'
-                  ? 'font-mono text-[11px] tracking-[0.2em] uppercase'
-                  : 'text-xs font-semibold',
-              ]}
-            >
-              {t('post.onThisPage')}
-            </p>
+            <p class:list={['text-muted-foreground', 'ui-heading-sm']}>{t('post.onThisPage')}</p>
             <ul class="mt-4 space-y-2 border-l border-border pl-4 text-sm">
               {rendered.toc.map((entry) => (
                 <li class:list={[entry.depth > 2 && 'pl-3']}>

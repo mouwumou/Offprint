@@ -40,11 +40,11 @@ for (const link of profile.links) {
 }
 ---
 
-<header class="pt-8 sm:pt-12">
+<header data-part="bio-header" class="pt-8 sm:pt-12">
   <div class="flex items-start gap-6 sm:gap-8">
     <div class="min-w-0 flex-1">
       <div class="flex items-center justify-between gap-4">
-        <h1 class="font-serif text-3xl tracking-tight">{name}</h1>
+        <h1 data-part="bio-name" class="font-serif text-3xl tracking-tight">{name}</h1>
         {
           profile.photo && (
             <img
@@ -55,9 +55,21 @@ for (const link of profile.links) {
           )
         }
       </div>
-      {subtitle && <p class="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
-      {tagline && <p class="mt-4 font-serif text-lg leading-snug">{tagline}</p>}
-      <div class="mt-4 space-y-3">
+      {
+        subtitle && (
+          <p data-part="bio-subtitle" class="mt-1 text-sm text-muted-foreground">
+            {subtitle}
+          </p>
+        )
+      }
+      {
+        tagline && (
+          <p data-part="bio-tagline" class="mt-4 font-serif text-lg leading-snug">
+            {tagline}
+          </p>
+        )
+      }
+      <div data-part="bio-text" class="mt-4 space-y-3">
         {bio.map((paragraph) => <p class="font-serif leading-relaxed">{paragraph}</p>)}
       </div>
     </div>
@@ -66,12 +78,16 @@ for (const link of profile.links) {
         <img
           src={profile.photo}
           alt={name}
+          data-part="bio-photo"
+          data-part="bio-photo"
+          data-part="bio-photo"
+          data-part="bio-photo"
           class="hidden h-40 w-40 shrink-0 rounded-md border border-border object-cover sm:block sm:h-44 sm:w-44"
         />
       )
     }
   </div>
-  <p class="mt-4 font-serif text-[15px]">
+  <p data-part="bio-links" class="mt-4 font-serif text-[15px]">
     {
       quicklinks.map((link, index) => (
         <>
