@@ -21,6 +21,7 @@ modules:
   projects: true
   cv: true
 #   publications: { order: file }                  # 同年内顺序：file（默认，按文件里的顺序）| key | title
+#   publications: { detail: false }               # 不生成单篇论文页，标题为纯文字，链接行直达 arXiv/代码/视频
 #   cv: { indexable: false }                       # 简历页不进搜索引擎（noindex + 不进 sitemap + Disallow）
 #   cv: { pdf: assets/cv.pdf, indexable: false }   # 或：CV 直接给 PDF 文件，不生成 HTML 页
 

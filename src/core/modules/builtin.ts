@@ -28,7 +28,14 @@ registerModule({
   id: 'publications',
   // Newest year first always; `order` decides the sequence inside a year:
   // file (as curated in publications.yaml), key, or title.
-  configSchema: moduleToggleWith({ order: z.enum(['file', 'key', 'title']).optional() }),
+  // detail: false — no per-publication pages; titles are plain text and the
+  // link row (arXiv / code / video…) is the whole navigation, as on most
+  // academic homepages. Note that per-paper Highwire meta and the Cite dialog
+  // only exist on those pages.
+  configSchema: moduleToggleWith({
+    order: z.enum(['file', 'key', 'title']).optional(),
+    detail: z.boolean().optional(),
+  }),
   enabledByDefault: true,
   nav: { path: '/publications', labelKey: 'nav.publications' },
   copy: { titleKey: 'pub.title', descriptionKey: 'pub.description' },

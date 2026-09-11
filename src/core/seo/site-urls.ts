@@ -51,8 +51,10 @@ export async function listSiteUrls(): Promise<SiteUrl[]> {
   if (cv.enabled && cv.pdf === undefined && cv.indexable !== false) uniform('/cv')
   if (siteConfig.modules.publications.enabled) {
     uniform('/publications')
-    for (const pub of await provider.listPublications()) {
-      uniform(`/publications/${pub.key}`)
+    if (siteConfig.modules.publications.detail !== false) {
+      for (const pub of await provider.listPublications()) {
+        uniform(`/publications/${pub.key}`)
+      }
     }
   }
 

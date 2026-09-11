@@ -31,6 +31,8 @@ export interface ModuleSetting {
   search?: boolean | undefined
   /** publications: order within a year — as written in the file (default), by key, or by title. */
   order?: 'file' | 'key' | 'title' | undefined
+  /** publications: false renders titles as plain text and builds no per-publication pages. */
+  detail?: boolean | undefined
   /** cv: serve a PDF (assets/… or URL) instead of the HTML page. */
   pdf?: string | undefined
   /** cv: false adds a robots.txt Disallow for the PDF. */

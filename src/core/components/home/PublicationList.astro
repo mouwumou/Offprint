@@ -20,6 +20,10 @@ interface Props {
 const { lang, title, publications } = Astro.props
 const t = useTranslations(lang)
 const prefix = langPrefix(siteConfig, lang)
+// publications.detail: false — plain titles, no per-publication pages.
+const detail = siteConfig.modules.publications.detail !== false
+const Title = detail ? 'a' : 'span'
+const Thumb = detail ? 'a' : 'div'
 const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   resolveLocalized(value, lang, siteConfig.i18n.default)
 ---
@@ -34,11 +38,15 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
       publications.map((pub) => (
         <article class="flex gap-5">
           {pub.thumbnail && (
-            <a
-              href={`${prefix}/publications/${pub.key}`}
+            <Thumb
+              {...(detail
+                ? {
+                    href: `${prefix}/publications/${pub.key}`,
+                    'aria-hidden': 'true',
+                    tabindex: '-1',
+                  }
+                : {})}
               class="hidden shrink-0 sm:block"
-              aria-hidden="true"
-              tabindex="-1"
             >
               <img
                 src={assetUrl(pub.thumbnail)}
@@ -46,15 +54,18 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
                 loading="lazy"
                 class="h-[94px] w-[150px] rounded-sm border border-border object-cover"
               />
-            </a>
+            </Thumb>
           )}
           <div class="min-w-0">
-            <a
-              href={`${prefix}/publications/${pub.key}`}
-              class="font-serif text-[17px] leading-snug text-primary hover:underline"
+            <Title
+              {...(detail ? { href: `${prefix}/publications/${pub.key}` } : {})}
+              class:list={[
+                'font-serif text-[17px] leading-snug',
+                detail ? 'text-primary hover:underline' : 'text-foreground',
+              ]}
             >
               {r(pub.title)}
-            </a>
+            </Title>
             <Authors authors={pub.authors} />
             <p class="text-sm text-muted-foreground">
               <i>{pub.venue}</i>, {pub.year}
@@ -63,7 +74,7 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
             <PublicationLinks
               publication={pub}
               lang={lang}
-              citeHref={`${prefix}/publications/${pub.key}`}
+              citeHref={detail ? `${prefix}/publications/${pub.key}` : undefined}
             />
           </div>
         </article>
