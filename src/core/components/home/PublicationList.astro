@@ -9,8 +9,8 @@ import Authors from '../Authors.astro'
 import PublicationLinks from '../PublicationLinks.astro'
 import PlainSection from './PlainSection.astro'
 
-// Barron-style publication rows (A2): thumbnail left, then title → authors
-// (self bolded) → venue in italics + year + award → a lowercase link row.
+// Publication rows: thumbnail left, then venue · year as the entry's anchor
+// → title → authors (self bolded) → link chips; hairlines between entries.
 interface Props {
   lang: string
   title: string
@@ -33,10 +33,10 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   moreHref={`${prefix}/publications`}
   moreLabel={t('home.allPublications')}
 >
-  <div class="space-y-7">
+  <div class="divide-y divide-border">
     {
       publications.map((pub) => (
-        <article class="flex gap-5">
+        <article class="flex gap-5 py-4 first:pt-0 last:pb-0">
           {pub.thumbnail && (
             <Thumb
               {...(detail
@@ -57,20 +57,20 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
             </Thumb>
           )}
           <div class="min-w-0">
+            <p class="text-[13px] font-semibold text-muted-foreground">
+              {pub.venue}, {pub.year}
+              {pub.award && <span class="text-foreground"> · {pub.award}</span>}
+            </p>
             <Title
               {...(detail ? { href: `${prefix}/publications/${pub.key}` } : {})}
               class:list={[
-                'font-serif text-[17px] leading-snug font-medium',
+                'mt-0.5 block font-serif text-lg leading-snug font-semibold',
                 detail ? 'text-primary hover:underline' : 'text-foreground',
               ]}
             >
               {r(pub.title)}
             </Title>
             <Authors authors={pub.authors} />
-            <p class="text-sm text-muted-foreground">
-              <i>{pub.venue}</i>, {pub.year}
-              {pub.award && <span class="font-medium text-foreground"> · {pub.award}</span>}
-            </p>
             <PublicationLinks
               publication={pub}
               lang={lang}
