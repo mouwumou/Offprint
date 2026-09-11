@@ -1,3 +1,4 @@
+import { existsSync } from 'node:fs'
 import { mkdir, rm, writeFile } from 'node:fs/promises'
 import { afterEach, describe, expect, it } from 'vitest'
 import { themeManifestSchema } from './contract'
@@ -35,18 +36,22 @@ describe('theme resolution', () => {
   })
 
   describe('site-local themes shadow built-ins', () => {
+    // Clean up ONLY what the test created: extensions/themes/ is a real,
+    // user-owned directory (the shipped sample theme lives there), never
+    // wipe it wholesale.
+    const created = 'extensions/themes/mytheme'
+    let parentExisted = true
     afterEach(async () => {
-      await rm('extensions/themes', { recursive: true, force: true })
+      await rm(created, { recursive: true, force: true })
+      if (!parentExisted) await rm('extensions/themes', { recursive: true, force: true })
     })
 
     it('finds a theme dropped into extensions/themes', async () => {
       const { manifest } = resolveTheme('paper')
-      await mkdir('extensions/themes/mytheme', { recursive: true })
+      parentExisted = existsSync('extensions/themes')
+      await mkdir(created, { recursive: true })
       const { voice: _voice, ...rest } = manifest
-      await writeFile(
-        'extensions/themes/mytheme/theme.json',
-        JSON.stringify({ ...rest, name: 'mytheme' }),
-      )
+      await writeFile(`${created}/theme.json`, JSON.stringify({ ...rest, name: 'mytheme' }))
       expect(listThemes()).toContain('mytheme')
       const local = resolveTheme('mytheme')
       expect(local.manifest.name).toBe('mytheme')

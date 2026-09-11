@@ -1,0 +1,53 @@
+{
+  "name": "gutter",
+  "voice": { "labels": "plain", "photo": "plain", "density": "compact" },
+  "typography": { "proseSize": "1.0625rem" },
+  "options": {
+    "showAffiliation": {
+      "type": "boolean",
+      "default": true,
+      "description": "页脚在姓名旁显示单位（content/profile.yaml 的 affiliation）"
+    }
+  },
+  "tokens": {
+    "light": {
+      "background": "#ffffff",
+      "foreground": "#1a1d21",
+      "card": "#ffffff",
+      "card-foreground": "#1a1d21",
+      "primary": "#1f6f50",
+      "primary-foreground": "#ffffff",
+      "secondary": "#f1f3f5",
+      "secondary-foreground": "#343a40",
+      "muted": "#f6f8fa",
+      "muted-foreground": "#4d5760",
+      "accent": "#1f6f50",
+      "accent-foreground": "#ffffff",
+      "border": "#d8dee4",
+      "ring": "#1f6f50",
+      "radius": "2px"
+    },
+    "dark": {
+      "background": "#14181c",
+      "foreground": "#e6e9ec",
+      "card": "#1a1f24",
+      "card-foreground": "#e6e9ec",
+      "primary": "#8fd3b4",
+      "primary-foreground": "#14181c",
+      "secondary": "#21262c",
+      "secondary-foreground": "#c9d1d9",
+      "muted": "#1c2127",
+      "muted-foreground": "#9aa4ae",
+      "accent": "#8fd3b4",
+      "accent-foreground": "#14181c",
+      "border": "#30363d",
+      "ring": "#8fd3b4",
+      "radius": "2px"
+    }
+  },
+  "fonts": {
+    "sans": "Charter, 'Bitstream Charter', 'STIX Two Text', Cambria, Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'Noto Serif SC', SimSun, serif",
+    "serif": "Charter, 'Bitstream Charter', 'STIX Two Text', Cambria, Georgia, 'Times New Roman', 'Songti SC', 'Noto Serif CJK SC', 'Noto Serif SC', SimSun, serif",
+    "mono": "ui-monospace, 'SFMono-Regular', Menlo, Consolas, 'PingFang SC', 'Noto Sans CJK SC', monospace"
+  }
+}
