@@ -4,7 +4,7 @@ import { z } from 'zod'
 // font stacks in theme.json, optional theme.css alongside (font loading and
 // theme-specific styles). Themes carry no JS and no layout forks (layout
 // belongs to the widget layer). Validation happens by RESOLUTION, not by an
-// enum: any directory under src/site/themes/<name> or src/core/themes/<name>
+// enum: any directory under extensions/themes/<name> or src/core/themes/<name>
 // that parses against this schema is a legal theme.
 
 /** The complete token vocabulary. base.css consumes exactly these. */

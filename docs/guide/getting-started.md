@@ -10,7 +10,7 @@
 
 ## 路线 B：Docker 自托管（含"点发布即生效"的 server 模式）
 
-同一份仓库，`docker/` 下两套 compose：静态伺服 + 定时同步，或 server 模式 + 秒级发布。步骤见 [deployment.md](deployment.md) 的 Docker 两节；镜像可以跑在任何容器平台上（VPS、Cloudflare Containers 等）。
+同一份仓库，根目录两套 compose 文件（`compose.static.yaml` / `compose.server.yaml`）：静态伺服 + 定时同步，或 server 模式 + 秒级发布。步骤见 [deployment.md](deployment.md) 的 Docker 两节；镜像可以跑在任何容器平台上（VPS、Cloudflare Containers 等）。
 
 ## 路线 C：本地开发
 

@@ -150,7 +150,7 @@ export const footerSchema = z.strictObject({
 
 // ── theme ───────────────────────
 
-// The theme is resolved by NAME against src/site/themes/ and the
+// The theme is resolved by NAME against extensions/themes/ and the
 // built-ins — the resolver is the validation (unknown names fail the build
 // listing what exists), so no enum here to keep third-party themes possible.
 export const themeSchema = z.strictObject({
@@ -236,7 +236,7 @@ export const seoSchema = z.strictObject({
 /**
  * Built at parse CALL time, not module-load time: the modules
  * and nav schemas come from the registry, which discovers site-local module
- * manifests (src/site/modules/<id>/module.yaml) right before composing.
+ * manifests (extensions/modules/<id>/module.yaml) right before composing.
  */
 export function buildSiteConfigSchema() {
   return z.strictObject({
