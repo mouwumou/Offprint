@@ -4,7 +4,7 @@
 # theme there (a fixture directory, or a built-in / already-installed name),
 # point site.yaml at it, then build and run the e2e suite in the copy.
 #   scripts/theme-check.sh paper                      # built-in
-#   scripts/theme-check.sh gutter e2e/fixtures/themes/gutter   # fixture → extensions/themes/gutter
+#   scripts/theme-check.sh gutter e2e/fixtures/gutter   # fixture → extensions/themes/gutter
 #   scripts/theme-check.sh <name> [fixture] --build-only       # skip the e2e run
 set -euo pipefail
 name="${1:?usage: theme-check.sh <theme> [fixture-dir] [--build-only]}"; shift

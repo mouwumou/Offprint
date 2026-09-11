@@ -83,7 +83,7 @@ theme.css 由构建注入到每一页，且**不在任何 cascade layer 里**—
 [data-part='pub-year-group'] [data-part='pub-row'] { padding: .95rem 0; border-top: 1px solid var(--border); }
 ```
 
-完整文件见 `e2e/fixtures/themes/gutter/theme.css`。
+完整文件见 `e2e/fixtures/gutter/theme.css`。
 
 ## 4. widgets/：主题自带的部件
 
@@ -97,13 +97,13 @@ theme.css 由构建注入到每一页，且**不在任何 cascade layer 里**—
 | `site-header` | `src/core/components/Header.astro`：`{ lang, alternates }` | 每一页 |
 | `site-footer` | `src/core/components/Footer.astro`：`{ lang }` | 每一页 |
 
-部件里的数据一律经 `getProvider()` 取（文章、出版物、项目、CV，作者信息 `getProvider().getProfile()`）；`siteConfig` 只有结构与开关。从主题目录引用核心用相对路径（`../../../../src/core/...`），示例见 `e2e/fixtures/themes/gutter/widgets/site-footer.astro`。
+部件里的数据一律经 `getProvider()` 取（文章、出版物、项目、CV，作者信息 `getProvider().getProfile()`）；`siteConfig` 只有结构与开关。从主题目录引用核心用相对路径（`../../../../src/core/...`），示例见 `e2e/fixtures/gutter/widgets/site-footer.astro`。
 
 ## 5. 验收
 
 ```bash
 pnpm theme:check <name>                      # 内置或已装进 extensions/ 的主题
-pnpm theme:check gutter e2e/fixtures/themes/gutter   # 目录形式的主题
+pnpm theme:check gutter e2e/fixtures/gutter   # 目录形式的主题
 ```
 
 脚本把仓库复制到 `.offprint/theme-check/<name>/`、装上主题、把 site.yaml 指向它，然后 `build:static`、`build:server`、`pnpm e2e`。最常见的翻车点是 **axe 的颜色对比度**（`muted-foreground` 与 `primary` 对 `background` 都要过 AA）和暗色模式漏配。
