@@ -39,7 +39,7 @@ describe('theme resolution', () => {
       await rm('extensions/themes', { recursive: true, force: true })
     })
 
-    it('finds a theme dropped into src/site/themes', async () => {
+    it('finds a theme dropped into extensions/themes', async () => {
       const { manifest } = resolveTheme('paper')
       await mkdir('extensions/themes/mytheme', { recursive: true })
       const { voice: _voice, ...rest } = manifest

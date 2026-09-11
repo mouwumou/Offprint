@@ -207,7 +207,7 @@ describe('module registry', () => {
 })
 
 describe('site-local module manifests', () => {
-  it('discovers src/site/modules/<id>/module.yaml and makes it legal config', async () => {
+  it('discovers extensions/modules/<id>/module.yaml and makes it legal config', async () => {
     const { mkdir, rm, writeFile } = await import('node:fs/promises')
     await mkdir('extensions/modules/reading', { recursive: true })
     await writeFile(
