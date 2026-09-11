@@ -104,13 +104,13 @@ Notion 里维护一个 publications 数据库，sync 导出为 `publications.yam
 | --- | --- | --- |
 | `name` | LocalizedString（必填） | `<title>` 后缀、站名、页脚、feed 作者、结构化数据 |
 | `nameVariants` | string[] | 出版物作者行里加粗你自己（各语言的署名写法） |
-| `role` | LocalizedString | CV 页标题下、paper 主题首页大头区、结构化数据 `jobTitle`（scholar 首页不显示） |
+| `role` | LocalizedString | 首页名字下的一行（与 location 合并）、CV 页标题下、paper 大头区、结构化数据 `jobTitle` |
 | `field` | LocalizedString | 开了站名时的头部副标题、paper 大头区、分享图 |
 | `affiliation` | LocalizedString | 页脚、paper 大头区、结构化数据 `affiliation`（scholar 首页不显示） |
-| `location` | LocalizedString | CV 页、paper 大头区 |
+| `location` | LocalizedString | 首页名字下的一行、CV 页、paper 大头区 |
 | `email` | email | 首页快捷链接、CV 页、paper 大头区、结构化数据 |
 | `photo` | `assets/…` 或 URL | 首页头像、paper 大头图、`og:image` |
-| `tagline` | LocalizedString | paper 大头区、feed 描述、首页分享描述 |
+| `tagline` | LocalizedString | 首页 bio 前的引语、paper 大头区、feed 描述、首页分享描述 |
 | `bio` | LocalizedString[] | 首页头部段落、about 块 |
 | `interests` | LocalizedString[] | about 块标签、结构化数据 `knowsAbout` |
 | `orcid` / `scholar` | string | 结构化数据 `sameAs`（页面上的可见链接放 `links`） |
