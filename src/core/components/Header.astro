@@ -7,7 +7,6 @@ import { pagesForLanguage } from '../content/posts-view'
 import { selfLabel, useTranslations } from '../i18n'
 import { resolveLocalized } from '../schema'
 import type { Alternate } from '../seo/alternates'
-import { themeVoice } from '../theme/current'
 import ThemeToggle from './ThemeToggle'
 
 interface Props {
@@ -63,12 +62,17 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
 ---
 
 <header
+  data-part="site-header"
   class="site-header sticky top-0 z-40 border-b border-border bg-background/85 backdrop-blur-md"
 >
   <div class:list={[container, 'flex h-16 items-center justify-between gap-4']}>
     {
       brandTitle !== null ? (
-        <a href={prefix || '/'} class="group flex shrink-0 items-baseline gap-2.5">
+        <a
+          href={prefix || '/'}
+          data-part="brand"
+          class="group flex shrink-0 items-baseline gap-2.5"
+        >
           <span class="font-serif text-lg font-semibold tracking-tight whitespace-nowrap">
             {brandTitle}
           </span>
@@ -76,9 +80,7 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
             <span
               class:list={[
                 'hidden text-muted-foreground whitespace-nowrap sm:inline',
-                themeVoice.labels === 'mono-caps'
-                  ? 'font-mono text-[10px] tracking-[0.18em] uppercase'
-                  : 'text-xs',
+                'ui-caption',
               ]}
             >
               {brandSubtitle}
@@ -89,7 +91,7 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
         <span />
       )
     }
-    <nav class="flex items-center gap-1 sm:gap-2">
+    <nav data-part="nav" class="flex items-center gap-1 sm:gap-2">
       <!-- Inline links need ~700px with every module on, so they live behind
            lg; below that the disclosure drawer at the end takes over (zero JS,
            zero JavaScript by default — details/summary, no island). -->
@@ -97,13 +99,12 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
         nav.map((item) => (
           <a
             href={item.href}
+            data-part="nav-item"
             aria-current={isActive(item) ? 'page' : undefined}
             class:list={[
               'hidden rounded-md px-2.5 py-1.5 transition-colors lg:px-3',
               inlineNavFits && 'lg:inline-block',
-              themeVoice.labels === 'mono-caps'
-                ? 'font-mono text-xs tracking-[0.12em] uppercase'
-                : 'text-sm',
+              'ui-label',
               isActive(item) ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
             ]}
           >
@@ -118,6 +119,7 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
             <a
               href={`${prefix}/search`}
               aria-label={t('search.title')}
+              data-part="nav-search"
               class="grid size-9 place-items-center rounded-md border border-border font-mono text-xs text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"
             >
               ⌕
@@ -130,9 +132,10 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
             class:list={[
               'ml-1 hidden items-center gap-1 sm:ml-2',
               inlineNavFits && 'lg:flex',
-              themeVoice.labels === 'mono-caps' ? 'font-mono text-xs' : 'text-sm',
+              'ui-meta',
             ]}
             aria-label={t('layout.switchLanguage')}
+            data-part="lang-switch"
           >
             {switcher.map((entry, index) => (
               <>
@@ -156,12 +159,12 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
       }
       {
         config.header.themeToggle && (
-          <div class="ml-1 sm:ml-2">
+          <div data-part="theme-toggle" class="ml-1 sm:ml-2">
             <ThemeToggle client:load label={t('layout.toggleTheme')} />
           </div>
         )
       }
-      <details class:list={['relative ml-1', inlineNavFits && 'lg:hidden']}>
+      <details data-part="nav-drawer" class:list={['relative ml-1', inlineNavFits && 'lg:hidden']}>
         <summary
           aria-label={t('layout.menu')}
           class="grid size-9 cursor-pointer list-none place-items-center rounded-md border border-border text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground [&::-webkit-details-marker]:hidden"
@@ -184,9 +187,7 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
                 aria-current={isActive(item) ? 'page' : undefined}
                 class:list={[
                   'block rounded-md px-3 py-2 transition-colors',
-                  themeVoice.labels === 'mono-caps'
-                    ? 'font-mono text-xs tracking-[0.12em] uppercase'
-                    : 'text-sm',
+                  'ui-label',
                   isActive(item) ? 'text-primary' : 'text-muted-foreground hover:text-foreground',
                 ]}
               >
@@ -199,7 +200,7 @@ const inlineNavFits = !(config.layout.width === 'narrow' && brandTitle !== null)
               <div
                 class:list={[
                   'mt-1 flex items-center gap-1 border-t border-border px-3 pt-2 pb-1',
-                  themeVoice.labels === 'mono-caps' ? 'font-mono text-xs' : 'text-sm',
+                  'ui-meta',
                 ]}
                 aria-label={t('layout.switchLanguage')}
               >

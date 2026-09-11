@@ -32,21 +32,16 @@ const t = useTranslations(lang)
   title={t('search.title')}
   alternates={uniformAlternates(siteConfig, '/search')}
 >
-  <div class:list={[container, themeVoice.density === 'airy' ? 'pt-16 lg:pt-24' : 'pt-8 lg:pt-10']}>
-    <header class="mb-8">
+  <div class:list={[container, 'page-top']}>
+    <header data-part="page-head" class="mb-8">
       {
         themeVoice.labels === 'mono-caps' && (
-          <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">
+          <p data-part="page-kicker" class="kicker">
             {t('search.title')}
           </p>
         )
       }
-      <h1
-        class:list={[
-          'font-serif tracking-tight',
-          themeVoice.density === 'airy' ? 'mt-4 text-4xl sm:text-5xl' : 'text-3xl',
-        ]}
-      >
+      <h1 data-part="page-title" data-part="page-title" class="page-title">
         {t('search.heading')}
       </h1>
     </header>

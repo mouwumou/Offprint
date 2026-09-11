@@ -88,6 +88,658 @@
 }
 
 /* ---------------------------------------------------------------------------
+   Voice presets. BaseLayout stamps the active theme's voice on <html>
+   (data-density / data-labels / data-photo); components carry semantic
+   classes and these rules give them the compact/plain look by default and
+   the airy/mono-caps look under the paper-style attributes. All of this sits
+   in the components layer: a theme's theme.css (unlayered) overrides any of
+   it, and so do utilities on the element.
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* page rhythm */
+  .page-top {
+    @apply pt-8 lg:pt-10;
+  }
+  [data-density='airy'] .page-top {
+    @apply pt-16 lg:pt-24;
+  }
+  .article-top {
+    @apply pt-8 lg:pt-10;
+  }
+  [data-density='airy'] .article-top {
+    @apply pt-14 lg:pt-20;
+  }
+  .page-head {
+    @apply pb-6;
+  }
+  [data-density='airy'] .page-head {
+    @apply pb-10;
+  }
+  .section-gap {
+    @apply mt-8;
+  }
+  [data-density='airy'] .section-gap {
+    @apply mt-12;
+  }
+  .list-tools {
+    @apply mt-6;
+  }
+  [data-density='airy'] .list-tools {
+    @apply mt-10;
+  }
+  .post-row-pad {
+    @apply py-5;
+  }
+  [data-density='airy'] .post-row-pad {
+    @apply py-8;
+  }
+  .site-footer--stack {
+    @apply mt-14;
+  }
+  [data-density='airy'] .site-footer--stack {
+    @apply mt-24;
+  }
+  .site-footer__body {
+    @apply py-7;
+  }
+  [data-density='airy'] .site-footer__body {
+    @apply py-10;
+  }
+  .article-toc {
+    @apply xl:mt-12;
+  }
+  [data-density='airy'] .article-toc {
+    @apply xl:mt-24;
+  }
+
+  /* page & article heads */
+  .page-title {
+    @apply font-serif text-3xl tracking-tight;
+  }
+  [data-density='airy'] .page-title {
+    @apply text-4xl sm:text-5xl;
+  }
+  [data-density='airy'] .kicker + .page-title {
+    @apply mt-4;
+  }
+  .page-lede {
+    @apply mt-2 font-serif text-base leading-relaxed text-muted-foreground;
+  }
+  [data-density='airy'] .page-lede {
+    @apply mt-4 text-lg;
+  }
+  .article-head {
+    @apply border-b border-border pb-6;
+  }
+  [data-density='airy'] .article-head {
+    @apply pb-8;
+  }
+  .article-head--after-link {
+    @apply mt-4;
+  }
+  [data-density='airy'] .article-head--after-link {
+    @apply mt-6;
+  }
+  .article-title {
+    @apply font-serif text-[2rem] leading-[1.15] tracking-tight;
+  }
+  [data-density='airy'] .article-title {
+    @apply text-4xl sm:text-[2.75rem];
+  }
+  .article-head > * + .article-title {
+    @apply mt-2;
+  }
+  [data-density='airy'] .article-head > * + .article-title {
+    @apply mt-3;
+  }
+  .article-lede {
+    @apply mt-2 font-serif text-lg leading-relaxed text-muted-foreground;
+  }
+  [data-density='airy'] .article-lede {
+    @apply mt-4 text-xl;
+  }
+
+  /* label register */
+  .kicker {
+    @apply text-sm text-muted-foreground;
+  }
+  [data-labels='mono-caps'] .kicker {
+    @apply font-mono text-xs tracking-[0.2em] text-primary uppercase;
+  }
+  .ui-label {
+    @apply text-sm;
+  }
+  [data-labels='mono-caps'] .ui-label {
+    @apply font-mono text-xs tracking-[0.12em] uppercase;
+  }
+  .ui-meta {
+    @apply text-sm;
+  }
+  [data-labels='mono-caps'] .ui-meta {
+    @apply font-mono text-xs;
+  }
+  .ui-caption {
+    @apply text-xs;
+  }
+  [data-labels='mono-caps'] .ui-caption {
+    @apply font-mono text-[11px];
+  }
+  .ui-heading {
+    @apply text-sm font-semibold;
+  }
+  [data-labels='mono-caps'] .ui-heading {
+    @apply font-mono text-xs font-normal tracking-[0.2em] uppercase;
+  }
+  .ui-heading-sm {
+    @apply text-xs font-semibold;
+  }
+  [data-labels='mono-caps'] .ui-heading-sm {
+    @apply font-mono text-[11px] font-normal tracking-[0.14em] uppercase;
+  }
+  .section-label {
+    @apply mb-4 font-serif text-lg font-semibold;
+  }
+  [data-labels='mono-caps'] .section-label {
+    @apply mb-6 font-mono text-xs font-normal tracking-[0.2em] text-muted-foreground uppercase;
+  }
+  [data-photo='grayscale-hover'] .hero-photo {
+    @apply grayscale transition-all duration-500;
+  }
+  [data-photo='grayscale-hover'] .group:hover .hero-photo {
+    @apply grayscale-0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Voice presets. BaseLayout stamps the active theme's voice on <html>
+   (data-density / data-labels / data-photo); components carry semantic
+   classes and these rules give them the compact/plain look by default and
+   the airy/mono-caps look under the paper-style attributes. All of this sits
+   in the components layer: a theme's theme.css (unlayered) overrides any of
+   it, and so do utilities on the element.
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* page rhythm */
+  .page-top {
+    @apply pt-8 lg:pt-10;
+  }
+  [data-density='airy'] .page-top {
+    @apply pt-16 lg:pt-24;
+  }
+  .article-top {
+    @apply pt-8 lg:pt-10;
+  }
+  [data-density='airy'] .article-top {
+    @apply pt-14 lg:pt-20;
+  }
+  .page-head {
+    @apply pb-6;
+  }
+  [data-density='airy'] .page-head {
+    @apply pb-10;
+  }
+  .section-gap {
+    @apply mt-8;
+  }
+  [data-density='airy'] .section-gap {
+    @apply mt-12;
+  }
+  .list-tools {
+    @apply mt-6;
+  }
+  [data-density='airy'] .list-tools {
+    @apply mt-10;
+  }
+  .post-row-pad {
+    @apply py-5;
+  }
+  [data-density='airy'] .post-row-pad {
+    @apply py-8;
+  }
+  .site-footer--stack {
+    @apply mt-14;
+  }
+  [data-density='airy'] .site-footer--stack {
+    @apply mt-24;
+  }
+  .site-footer__body {
+    @apply py-7;
+  }
+  [data-density='airy'] .site-footer__body {
+    @apply py-10;
+  }
+  .article-toc {
+    @apply xl:mt-12;
+  }
+  [data-density='airy'] .article-toc {
+    @apply xl:mt-24;
+  }
+
+  /* page & article heads */
+  .page-title {
+    @apply font-serif text-3xl tracking-tight;
+  }
+  [data-density='airy'] .page-title {
+    @apply text-4xl sm:text-5xl;
+  }
+  [data-density='airy'] .kicker + .page-title {
+    @apply mt-4;
+  }
+  .page-lede {
+    @apply mt-2 font-serif text-base leading-relaxed text-muted-foreground;
+  }
+  [data-density='airy'] .page-lede {
+    @apply mt-4 text-lg;
+  }
+  .article-head {
+    @apply border-b border-border pb-6;
+  }
+  [data-density='airy'] .article-head {
+    @apply pb-8;
+  }
+  .article-head--after-link {
+    @apply mt-4;
+  }
+  [data-density='airy'] .article-head--after-link {
+    @apply mt-6;
+  }
+  .article-title {
+    @apply font-serif text-[2rem] leading-[1.15] tracking-tight;
+  }
+  [data-density='airy'] .article-title {
+    @apply text-4xl sm:text-[2.75rem];
+  }
+  .article-head > * + .article-title {
+    @apply mt-2;
+  }
+  [data-density='airy'] .article-head > * + .article-title {
+    @apply mt-3;
+  }
+  .article-lede {
+    @apply mt-2 font-serif text-lg leading-relaxed text-muted-foreground;
+  }
+  [data-density='airy'] .article-lede {
+    @apply mt-4 text-xl;
+  }
+
+  /* label register */
+  .kicker {
+    @apply text-sm text-muted-foreground;
+  }
+  [data-labels='mono-caps'] .kicker {
+    @apply font-mono text-xs tracking-[0.2em] text-primary uppercase;
+  }
+  .ui-label {
+    @apply text-sm;
+  }
+  [data-labels='mono-caps'] .ui-label {
+    @apply font-mono text-xs tracking-[0.12em] uppercase;
+  }
+  .ui-meta {
+    @apply text-sm;
+  }
+  [data-labels='mono-caps'] .ui-meta {
+    @apply font-mono text-xs;
+  }
+  .ui-caption {
+    @apply text-xs;
+  }
+  [data-labels='mono-caps'] .ui-caption {
+    @apply font-mono text-[11px];
+  }
+  .ui-heading {
+    @apply text-sm font-semibold;
+  }
+  [data-labels='mono-caps'] .ui-heading {
+    @apply font-mono text-xs font-normal tracking-[0.2em] uppercase;
+  }
+  .ui-heading-sm {
+    @apply text-xs font-semibold;
+  }
+  [data-labels='mono-caps'] .ui-heading-sm {
+    @apply font-mono text-[11px] font-normal tracking-[0.14em] uppercase;
+  }
+  .section-label {
+    @apply mb-4 font-serif text-lg font-semibold;
+  }
+  [data-labels='mono-caps'] .section-label {
+    @apply mb-6 font-mono text-xs font-normal tracking-[0.2em] text-muted-foreground uppercase;
+  }
+  [data-photo='grayscale-hover'] .hero-photo {
+    @apply grayscale transition-all duration-500;
+  }
+  [data-photo='grayscale-hover'] .group:hover .hero-photo {
+    @apply grayscale-0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Voice presets. BaseLayout stamps the active theme's voice on <html>
+   (data-density / data-labels / data-photo); components carry semantic
+   classes and these rules give them the compact/plain look by default and
+   the airy/mono-caps look under the paper-style attributes. All of this sits
+   in the components layer: a theme's theme.css (unlayered) overrides any of
+   it, and so do utilities on the element.
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* page rhythm */
+  .page-top {
+    @apply pt-8 lg:pt-10;
+  }
+  [data-density='airy'] .page-top {
+    @apply pt-16 lg:pt-24;
+  }
+  .article-top {
+    @apply pt-8 lg:pt-10;
+  }
+  [data-density='airy'] .article-top {
+    @apply pt-14 lg:pt-20;
+  }
+  .page-head {
+    @apply pb-6;
+  }
+  [data-density='airy'] .page-head {
+    @apply pb-10;
+  }
+  .section-gap {
+    @apply mt-8;
+  }
+  [data-density='airy'] .section-gap {
+    @apply mt-12;
+  }
+  .list-tools {
+    @apply mt-6;
+  }
+  [data-density='airy'] .list-tools {
+    @apply mt-10;
+  }
+  .post-row-pad {
+    @apply py-5;
+  }
+  [data-density='airy'] .post-row-pad {
+    @apply py-8;
+  }
+  .site-footer--stack {
+    @apply mt-14;
+  }
+  [data-density='airy'] .site-footer--stack {
+    @apply mt-24;
+  }
+  .site-footer__body {
+    @apply py-7;
+  }
+  [data-density='airy'] .site-footer__body {
+    @apply py-10;
+  }
+  .article-toc {
+    @apply xl:mt-12;
+  }
+  [data-density='airy'] .article-toc {
+    @apply xl:mt-24;
+  }
+
+  /* page & article heads */
+  .page-title {
+    @apply font-serif text-3xl tracking-tight;
+  }
+  [data-density='airy'] .page-title {
+    @apply text-4xl sm:text-5xl;
+  }
+  [data-density='airy'] .kicker + .page-title {
+    @apply mt-4;
+  }
+  .page-lede {
+    @apply mt-2 font-serif text-base leading-relaxed text-muted-foreground;
+  }
+  [data-density='airy'] .page-lede {
+    @apply mt-4 text-lg;
+  }
+  .article-head {
+    @apply border-b border-border pb-6;
+  }
+  [data-density='airy'] .article-head {
+    @apply pb-8;
+  }
+  .article-head--after-link {
+    @apply mt-4;
+  }
+  [data-density='airy'] .article-head--after-link {
+    @apply mt-6;
+  }
+  .article-title {
+    @apply font-serif text-[2rem] leading-[1.15] tracking-tight;
+  }
+  [data-density='airy'] .article-title {
+    @apply text-4xl sm:text-[2.75rem];
+  }
+  .article-head > * + .article-title {
+    @apply mt-2;
+  }
+  [data-density='airy'] .article-head > * + .article-title {
+    @apply mt-3;
+  }
+  .article-lede {
+    @apply mt-2 font-serif text-lg leading-relaxed text-muted-foreground;
+  }
+  [data-density='airy'] .article-lede {
+    @apply mt-4 text-xl;
+  }
+
+  /* label register */
+  .kicker {
+    @apply text-sm text-muted-foreground;
+  }
+  [data-labels='mono-caps'] .kicker {
+    @apply font-mono text-xs tracking-[0.2em] text-primary uppercase;
+  }
+  .ui-label {
+    @apply text-sm;
+  }
+  [data-labels='mono-caps'] .ui-label {
+    @apply font-mono text-xs tracking-[0.12em] uppercase;
+  }
+  .ui-meta {
+    @apply text-sm;
+  }
+  [data-labels='mono-caps'] .ui-meta {
+    @apply font-mono text-xs;
+  }
+  .ui-caption {
+    @apply text-xs;
+  }
+  [data-labels='mono-caps'] .ui-caption {
+    @apply font-mono text-[11px];
+  }
+  .ui-heading {
+    @apply text-sm font-semibold;
+  }
+  [data-labels='mono-caps'] .ui-heading {
+    @apply font-mono text-xs font-normal tracking-[0.2em] uppercase;
+  }
+  .ui-heading-sm {
+    @apply text-xs font-semibold;
+  }
+  [data-labels='mono-caps'] .ui-heading-sm {
+    @apply font-mono text-[11px] font-normal tracking-[0.14em] uppercase;
+  }
+  .section-label {
+    @apply mb-4 font-serif text-lg font-semibold;
+  }
+  [data-labels='mono-caps'] .section-label {
+    @apply mb-6 font-mono text-xs font-normal tracking-[0.2em] text-muted-foreground uppercase;
+  }
+  [data-photo='grayscale-hover'] .hero-photo {
+    @apply grayscale transition-all duration-500;
+  }
+  [data-photo='grayscale-hover'] .group:hover .hero-photo {
+    @apply grayscale-0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Voice presets. BaseLayout stamps the active theme's voice on <html>
+   (data-density / data-labels / data-photo); components carry semantic
+   classes and these rules give them the compact/plain look by default and
+   the airy/mono-caps look under the paper-style attributes. All of this sits
+   in the components layer: a theme's theme.css (unlayered) overrides any of
+   it, and so do utilities on the element.
+   --------------------------------------------------------------------------- */
+@layer components {
+  /* page rhythm */
+  .page-top {
+    @apply pt-8 lg:pt-10;
+  }
+  [data-density='airy'] .page-top {
+    @apply pt-16 lg:pt-24;
+  }
+  .article-top {
+    @apply pt-8 lg:pt-10;
+  }
+  [data-density='airy'] .article-top {
+    @apply pt-14 lg:pt-20;
+  }
+  .page-head {
+    @apply pb-6;
+  }
+  [data-density='airy'] .page-head {
+    @apply pb-10;
+  }
+  .section-gap {
+    @apply mt-8;
+  }
+  [data-density='airy'] .section-gap {
+    @apply mt-12;
+  }
+  .list-tools {
+    @apply mt-6;
+  }
+  [data-density='airy'] .list-tools {
+    @apply mt-10;
+  }
+  .post-row-pad {
+    @apply py-5;
+  }
+  [data-density='airy'] .post-row-pad {
+    @apply py-8;
+  }
+  .site-footer--stack {
+    @apply mt-14;
+  }
+  [data-density='airy'] .site-footer--stack {
+    @apply mt-24;
+  }
+  .site-footer__body {
+    @apply py-7;
+  }
+  [data-density='airy'] .site-footer__body {
+    @apply py-10;
+  }
+  .article-toc {
+    @apply xl:mt-12;
+  }
+  [data-density='airy'] .article-toc {
+    @apply xl:mt-24;
+  }
+
+  /* page & article heads */
+  .page-title {
+    @apply font-serif text-3xl tracking-tight;
+  }
+  [data-density='airy'] .page-title {
+    @apply text-4xl sm:text-5xl;
+  }
+  [data-density='airy'] .kicker + .page-title {
+    @apply mt-4;
+  }
+  .page-lede {
+    @apply mt-2 font-serif text-base leading-relaxed text-muted-foreground;
+  }
+  [data-density='airy'] .page-lede {
+    @apply mt-4 text-lg;
+  }
+  .article-head {
+    @apply border-b border-border pb-6;
+  }
+  [data-density='airy'] .article-head {
+    @apply pb-8;
+  }
+  .article-head--after-link {
+    @apply mt-4;
+  }
+  [data-density='airy'] .article-head--after-link {
+    @apply mt-6;
+  }
+  .article-title {
+    @apply font-serif text-[2rem] leading-[1.15] tracking-tight;
+  }
+  [data-density='airy'] .article-title {
+    @apply text-4xl sm:text-[2.75rem];
+  }
+  .article-head > * + .article-title {
+    @apply mt-2;
+  }
+  [data-density='airy'] .article-head > * + .article-title {
+    @apply mt-3;
+  }
+  .article-lede {
+    @apply mt-2 font-serif text-lg leading-relaxed text-muted-foreground;
+  }
+  [data-density='airy'] .article-lede {
+    @apply mt-4 text-xl;
+  }
+
+  /* label register */
+  .kicker {
+    @apply text-sm text-muted-foreground;
+  }
+  [data-labels='mono-caps'] .kicker {
+    @apply font-mono text-xs tracking-[0.2em] text-primary uppercase;
+  }
+  .ui-label {
+    @apply text-sm;
+  }
+  [data-labels='mono-caps'] .ui-label {
+    @apply font-mono text-xs tracking-[0.12em] uppercase;
+  }
+  .ui-meta {
+    @apply text-sm;
+  }
+  [data-labels='mono-caps'] .ui-meta {
+    @apply font-mono text-xs;
+  }
+  .ui-caption {
+    @apply text-xs;
+  }
+  [data-labels='mono-caps'] .ui-caption {
+    @apply font-mono text-[11px];
+  }
+  .ui-heading {
+    @apply text-sm font-semibold;
+  }
+  [data-labels='mono-caps'] .ui-heading {
+    @apply font-mono text-xs font-normal tracking-[0.2em] uppercase;
+  }
+  .ui-heading-sm {
+    @apply text-xs font-semibold;
+  }
+  [data-labels='mono-caps'] .ui-heading-sm {
+    @apply font-mono text-[11px] font-normal tracking-[0.14em] uppercase;
+  }
+  .section-label {
+    @apply mb-4 font-serif text-lg font-semibold;
+  }
+  [data-labels='mono-caps'] .section-label {
+    @apply mb-6 font-mono text-xs font-normal tracking-[0.2em] text-muted-foreground uppercase;
+  }
+  [data-photo='grayscale-hover'] .hero-photo {
+    @apply grayscale transition-all duration-500;
+  }
+  [data-photo='grayscale-hover'] .group:hover .hero-photo {
+    @apply grayscale-0;
+  }
+}
+
+/* ---------------------------------------------------------------------------
    Prose — typeset article body produced by the markdown pipeline.
    --------------------------------------------------------------------------- */
 .prose {

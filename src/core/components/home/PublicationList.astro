@@ -1,12 +1,10 @@
 ---
 import siteConfig from '../../config/current'
 import { langPrefix } from '../../config/nav'
-import { assetUrl } from '../../content/asset-url'
 import { useTranslations } from '../../i18n'
 import type { Publication } from '../../schema'
-import { resolveLocalized } from '../../schema'
-import Authors from '../Authors.astro'
-import PublicationLinks from '../PublicationLinks.astro'
+import PublicationRowBuiltin from '../PublicationRow.astro'
+import { resolveWidget } from '../../widgets/registry'
 import PlainSection from './PlainSection.astro'
 
 // Barron-style publication rows (A2): thumbnail left, then title → authors
@@ -22,62 +20,25 @@ const t = useTranslations(lang)
 const prefix = langPrefix(siteConfig, lang)
 // publications.detail: false — plain titles, no per-publication pages.
 const detail = siteConfig.modules.publications.detail !== false
-const Title = detail ? 'a' : 'span'
-const Thumb = detail ? 'a' : 'div'
-const r = (value: Parameters<typeof resolveLocalized>[0]) =>
-  resolveLocalized(value, lang, siteConfig.i18n.default)
+const PublicationRow = resolveWidget('publication-row', PublicationRowBuiltin)
 ---
 
 <PlainSection
+  part="publication-list"
   title={title}
   moreHref={`${prefix}/publications`}
   moreLabel={t('home.allPublications')}
 >
-  <div class="space-y-7">
+  <div data-part="pub-list" class="space-y-7">
     {
       publications.map((pub) => (
-        <article class="flex gap-5">
-          {pub.thumbnail && (
-            <Thumb
-              {...(detail
-                ? {
-                    href: `${prefix}/publications/${pub.key}`,
-                    'aria-hidden': 'true',
-                    tabindex: '-1',
-                  }
-                : {})}
-              class="hidden shrink-0 sm:block"
-            >
-              <img
-                src={assetUrl(pub.thumbnail)}
-                alt=""
-                loading="lazy"
-                class="h-[94px] w-[150px] rounded-sm border border-border object-cover"
-              />
-            </Thumb>
-          )}
-          <div class="min-w-0">
-            <Title
-              {...(detail ? { href: `${prefix}/publications/${pub.key}` } : {})}
-              class:list={[
-                'font-serif text-[17px] leading-snug font-medium',
-                detail ? 'text-primary hover:underline' : 'text-foreground',
-              ]}
-            >
-              {r(pub.title)}
-            </Title>
-            <Authors authors={pub.authors} />
-            <p class="text-sm text-muted-foreground">
-              <i>{pub.venue}</i>, {pub.year}
-              {pub.award && <span class="font-medium text-foreground"> · {pub.award}</span>}
-            </p>
-            <PublicationLinks
-              publication={pub}
-              lang={lang}
-              citeHref={detail ? `${prefix}/publications/${pub.key}` : undefined}
-            />
-          </div>
-        </article>
+        <PublicationRow
+          publication={pub}
+          lang={lang}
+          thumbnail
+          cite
+          href={detail ? `${prefix}/publications/${pub.key}` : undefined}
+        />
       ))
     }
   </div>

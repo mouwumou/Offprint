@@ -18,7 +18,7 @@ const bio = profile.bio.map((paragraph) => r(paragraph))
 const interests = profile.interests.map((interest) => r(interest))
 ---
 
-<SectionShell label={title}>
+<SectionShell part="about" label={title}>
   <div class="max-w-2xl space-y-4">
     {bio.map((paragraph) => <p class="font-serif text-lg leading-relaxed">{paragraph}</p>)}
     {

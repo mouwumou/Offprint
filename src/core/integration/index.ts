@@ -54,6 +54,12 @@ export function offprint(): AstroIntegration {
         if (theme.cssPath !== null) {
           injectScript('page-ssr', `import ${JSON.stringify(theme.cssPath)};`)
         }
+        // Widget overrides (extensions/) are collected by src/pages/_widgets.ts
+        // and registered before any page renders — see src/core/widgets/registry.ts.
+        injectScript(
+          'page-ssr',
+          `import ${JSON.stringify(fileURLToPath(new URL('../../pages/_widgets.ts', import.meta.url)))};`,
+        )
 
         if ((process.env.RUNTIME_MODE ?? 'static') !== 'server') return
         injectRoute({

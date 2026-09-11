@@ -17,11 +17,11 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   resolveLocalized(value, lang, siteConfig.i18n.default)
 ---
 
-<PlainSection title={title}>
-  <ul class="space-y-2">
+<PlainSection part="news" title={title}>
+  <ul data-part="news-list" class="space-y-2">
     {
       items.map((item) => (
-        <li class="flex gap-4 font-serif text-[15px] leading-relaxed">
+        <li data-part="news-item" class="flex gap-4 font-serif text-[15px] leading-relaxed">
           <time
             datetime={item.date.toISOString()}
             class="shrink-0 basis-36 text-muted-foreground tabular-nums"

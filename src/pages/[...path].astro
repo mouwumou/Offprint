@@ -7,28 +7,6 @@ import { getProvider } from '../core/content'
 import { renderMarkdown } from '../core/content/markdown'
 import type { Alternate } from '../core/seo/alternates'
 
-// Widget lookup chain: site-level one-off overrides beat the
-// active theme's bundled widgets, which beat the built-ins. Collected here —
-// not in core — because core must not import extensions; the
-// globs are compile-time literals, so ALL themes' widgets are collected and
-// the active theme's are picked at render time.
-const themeWidgetModules = import.meta.glob<{ default: unknown }>(
-  '../../extensions/themes/*/widgets/*.astro',
-  { eager: true },
-)
-const siteWidgetModules = import.meta.glob<{ default: unknown }>(
-  '../../extensions/widgets/*.astro',
-  { eager: true },
-)
-const widgets: Record<string, unknown> = {}
-for (const [path, module] of Object.entries(themeWidgetModules)) {
-  const match = /themes\/([^/]+)\/widgets\/([^/]+)\.astro$/.exec(path)
-  if (match && match[1] === siteConfig.theme.name) widgets[match[2] as string] = module.default
-}
-for (const [path, module] of Object.entries(siteWidgetModules)) {
-  widgets[path.replace(/^.*\/([^/]+)\.astro$/, '$1')] = module.default
-}
-
 // Catch-all for the language homes and standalone pages. One route resolves
 // bare locale paths (/zh) AND page slugs (/about, /zh/about) — two separate
 // dynamic routes were ambiguous in server mode ('/zh' matched
@@ -87,6 +65,6 @@ if (page !== null) {
   page !== null && rendered !== null ? (
     <StandalonePage lang={lang} page={page} rendered={rendered} alternates={alternates} />
   ) : (
-    <HomePage lang={lang} widgets={widgets} />
+    <HomePage lang={lang} />
   )
 }

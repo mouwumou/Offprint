@@ -5,7 +5,6 @@ import { contentHref } from '../../content/asset-url'
 import { cvHref, langPrefix } from '../../config/nav'
 import { useTranslations } from '../../i18n'
 import { resolveLocalized } from '../../schema'
-import { themeVoice } from '../../theme/current'
 
 interface Props {
   lang: string
@@ -30,11 +29,8 @@ const links = profile.links.map((link) => ({ href: contentHref(link.href), label
           <img
             src={profile.photo}
             alt={name}
-            class:list={[
-              'aspect-[4/5] w-full rounded-md border border-border bg-muted object-cover',
-              themeVoice.photo === 'grayscale-hover' &&
-                'grayscale transition-all duration-500 group-hover:grayscale-0',
-            ]}
+            data-part="hero-photo"
+            class="hero-photo aspect-[4/5] w-full rounded-md border border-border bg-muted object-cover"
           />
         </figure>
       )
@@ -42,10 +38,17 @@ const links = profile.links.map((link) => ({ href: contentHref(link.href), label
     <div>
       {
         profile.role && (
-          <p class="font-mono text-xs tracking-[0.2em] text-primary uppercase">{r(profile.role)}</p>
+          <p data-part="page-kicker" class="kicker">
+            {r(profile.role)}
+          </p>
         )
       }
-      <h1 class="mt-3 font-serif text-4xl leading-[1.06] tracking-tight sm:text-5xl">{name}</h1>
+      <h1
+        data-part="hero-name"
+        class="mt-3 font-serif text-4xl leading-[1.06] tracking-tight sm:text-5xl"
+      >
+        {name}
+      </h1>
       {
         profile.field && (
           <p class="mt-3 font-serif text-xl text-muted-foreground">{r(profile.field)}</p>
