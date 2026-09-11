@@ -36,11 +36,11 @@ jobs:
       # Lighthouse thresholds >= 0.95; .offprint/e2e/dist was built by the e2e run.
       - run: pnpm lhci
         if: matrix.node == 22
-      # Theme contract gate: the second built-in theme and an extensions-only
-      # fixture theme (CSS hooks + a theme-carried widget) must pass the whole
-      # e2e suite in an isolated copy of the tree. Only the template repository
+      # Theme contract gate: the second built-in theme and the shipped sample
+      # theme (extensions/themes/gutter: CSS hooks + a theme-carried widget)
+      # must pass the whole e2e suite in an isolated copy of the tree. Only the template repository
       # proves themes; an instance generated from it skips these two runs.
       - run: pnpm theme:check paper
         if: matrix.node == 24 && github.event.repository.is_template
-      - run: pnpm theme:check gutter e2e/fixtures/gutter
+      - run: pnpm theme:check gutter
         if: matrix.node == 24 && github.event.repository.is_template

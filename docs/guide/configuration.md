@@ -32,7 +32,7 @@ title: { en: Hello, zh: 你好 }     # 分别指定
 - **`nav`** —— 导航栏。不写则自动生成（首页 + 开着的模块 + `nav: true` 的独立页面）；写了就完全按列表来，条目可以是模块、独立页面或任意链接。
 - **`layout.width`** —— 全站栏宽，`narrow`（学术窄栏，默认）或 `wide`（配 paper 主题）。全站统一，含导航与页脚。
 - **`header` / `footer`** —— 头尾开关：站名两行、搜索、主题切换、语言切换、RSS；`footer.colophon` 给文字才显示署名行，默认只有 © 年份——模板不会在你的站上给自己署名。默认学术形态是纯导航行（名字已在首页正文里）。
-- **`theme`** —— 外观。`name` 选主题（内置 `scholar` 默认、`paper`，或 `extensions/themes/` 里装的），`accent` 只换主色，`tokens` 逐个覆盖设计变量，`typography.proseSize` 定正文字号（默认 `1.0625rem` 即 17px；中文偏好 `1rem`），`options` 是该主题自己声明的选项。装第三方主题：目录放进 `extensions/themes/`，`theme.name` 指向它；主题能改到什么程度、如何自己做一个，见 [THEMING.md](../THEMING.md)。
+- **`theme`** —— 外观。`name` 选主题（内置 `scholar` 默认、`paper`，或 `extensions/themes/` 里装的，模板自带示例 `gutter`），`accent` 只换主色，`tokens` 逐个覆盖设计变量，`typography.proseSize` 定正文字号（默认 `1.0625rem` 即 17px；中文偏好 `1rem`），`options` 是该主题自己声明的选项。装第三方主题：目录放进 `extensions/themes/`，`theme.name` 指向它；主题能改到什么程度、如何自己做一个，见 [THEMING.md](../THEMING.md)。
 - **`i18n`** —— 默认语言走根路径，其余带 `/zh` 一类前缀。`noindex: [zh]` 让某些语言**不进搜索引擎**：这些页面输出 robots noindex、不进 sitemap、不作为其他语言的 hreflang、robots.txt 里 Disallow；页面本身照常可访问。这挡得住守规矩的爬虫，挡不住存心抓取的。
 - **`comments`** —— giscus，四个参数配齐才开启。
 - **`redirects`** —— 旧路径到新路径的跳转，static 模式生成 meta-refresh 页，server 模式返回真实 3xx。

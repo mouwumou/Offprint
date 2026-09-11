@@ -607,7 +607,13 @@
         "options": {
           "type": "object",
           "description": "当前主题声明的选项（构建时按启用主题精确校验）",
-          "properties": {},
+          "properties": {
+            "showAffiliation": {
+              "type": "boolean",
+              "default": true,
+              "description": "[theme: gutter] 页脚在姓名旁显示单位（content/profile.yaml 的 affiliation）"
+            }
+          },
           "additionalProperties": true
         }
       },

@@ -34,7 +34,7 @@ pnpm build:static   # 产物在 dist/，node scripts/serve-dist.mjs dist 4331 �
 
 ## 下一步
 
-- 想换观感 → [THEMING.md](../THEMING.md)（内置 scholar / paper 两套主题，token 可逐个覆盖）
+- 想换观感 → [THEMING.md](../THEMING.md)（内置 scholar / paper 两套主题，token 可逐个覆盖；`extensions/themes/gutter` 是随模板分发的示例主题，复制它就能做自己的）
 - 想接 Notion → [sync.md](sync.md)
 - 想自托管或要"发布秒级生效" → [deployment.md](deployment.md) 的 Docker 两节
 

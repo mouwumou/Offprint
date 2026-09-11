@@ -30,7 +30,7 @@ offprint/
 ├─ package.json  astro.config.ts  site.yaml  tsconfig.json
 ├─ schema/                   # site.yaml / home.yaml 的编辑器补全 schema（pnpm gen:schema 再生）
 ├─ .env.example
-├─ extensions/               # 装进来的扩展（ADR-022，只读安装）：themes/ widgets/ modules/
+├─ extensions/               # 装进来的扩展（ADR-022，只读安装）：themes/（含示例主题 gutter）widgets/ modules/
 ├─ content/                  # 站点内容（posts/ 由 sync 写入，其余作者手编）
 │  ├─ posts/<urlname>.<lang>.md
 │  ├─ pages/<slug>.<lang>.md # Notion type=Page 的独立页面（About、Now…）
