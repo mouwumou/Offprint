@@ -23,7 +23,7 @@ import RecentPosts from './home/RecentPosts.astro'
 import SelectedPublications from './home/SelectedPublications.astro'
 
 // Widget overrides: the pages layer may pass site-local widget components
-// (from src/site/widgets/<type>.astro) that replace the built-ins below.
+// (from extensions/widgets/<type>.astro) that replace the built-ins below.
 // Each override receives exactly the props of the built-in it replaces.
 type Widgets = Partial<Record<import('../config/schema').HomeSection['type'], unknown>>
 

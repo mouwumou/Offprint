@@ -1,6 +1,6 @@
 # 主题制作规范
 
-主题决定站点的**皮肤**：颜色、圆角、字体，以及主题自带的附加样式。布局与交互不属于主题——那是部件层（`src/site/widgets/`，见 docs/ARCHITECTURE.md §3.1）与编排层（`content/home.yaml` 的 sections、`site.yaml` 的 `nav` / `header` / `footer`）的职责。这个边界是刻意的：主题只要不碰结构，就永远不会因为核心升级而坏掉。
+主题决定站点的**皮肤**：颜色、圆角、字体，以及主题自带的附加样式。布局与交互不属于主题——那是部件层（`extensions/widgets/`，见 docs/ARCHITECTURE.md §3.1）与编排层（`content/home.yaml` 的 sections、`site.yaml` 的 `nav` / `header` / `footer`）的职责。这个边界是刻意的：主题只要不碰结构，就永远不会因为核心升级而坏掉。
 
 ## 1. 一个主题是什么
 
@@ -85,7 +85,7 @@ pnpm lhci                                 # 四类 Lighthouse ≥ 0.95（性能/
 
 | 形态 | 现在 | 拆成 npm 包后 |
 | --- | --- | --- |
-| 站点自有 | `src/site/themes/<name>/` | 不变 |
+| 站点自有 | `extensions/themes/<name>/` | 不变 |
 | 向模板贡献 | PR 到 `src/core/themes/<name>/` | 不变 |
 | npm 包 | — | `offprint-theme-<name>`（解析链加入 node_modules 查找） |
 
