@@ -85,7 +85,7 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
         years.map((year) => (
           <section class:list={[themeVoice.density === 'airy' ? 'mt-12' : 'mt-8']}>
             <h2 class="border-b border-border pb-1.5 font-serif text-2xl font-semibold">{year}</h2>
-            <ol class="mt-4 space-y-5">
+            <ol class="mt-4 space-y-6">
               {publications
                 .filter((pub) => pub.year === year)
                 .map((pub) => (
@@ -93,7 +93,7 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
                     <Title
                       {...(detail ? { href: `${prefix}/publications/${pub.key}` } : {})}
                       class:list={[
-                        'font-serif text-[17px] leading-snug',
+                        'font-serif text-[17px] leading-snug font-medium',
                         detail ? 'text-primary hover:underline' : 'text-foreground',
                       ]}
                     >
@@ -101,7 +101,7 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
                     </Title>
                     <Authors authors={pub.authors} />
                     <p class="text-sm text-muted-foreground">
-                      <i>{pub.venue}</i>, {pub.year} · {pub.type}
+                      <i>{pub.venue}</i>, {pub.year}
                       {pub.award && <span class="font-medium text-foreground"> · {pub.award}</span>}
                     </p>
                     <PublicationLinks publication={pub} lang={lang} />

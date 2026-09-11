@@ -31,13 +31,12 @@ const mono = themeVoice.labels === 'mono-caps'
 const links: { label: string; href: string }[] = []
 for (const { field, key } of fields) {
   const href = publication[field]
-  if (href) links.push({ label: mono ? t(key) : t(key).toLowerCase(), href: contentHref(href) })
+  if (href) links.push({ label: t(key), href: contentHref(href) })
 }
 if (publication.arxiv)
   links.push({ label: 'arXiv', href: `https://arxiv.org/abs/${publication.arxiv}` })
-if (publication.doi)
-  links.push({ label: mono ? 'DOI' : 'doi', href: `https://doi.org/${publication.doi}` })
-if (!mono && citeHref) links.push({ label: t('pub.cite').toLowerCase(), href: citeHref })
+if (publication.doi) links.push({ label: 'DOI', href: `https://doi.org/${publication.doi}` })
+if (!mono && citeHref) links.push({ label: t('pub.cite'), href: citeHref })
 ---
 
 {
@@ -54,15 +53,15 @@ if (!mono && citeHref) links.push({ label: t('pub.cite').toLowerCase(), href: ci
         ))}
       </div>
     ) : (
-      <p class="mt-0.5 text-sm">
-        {links.map((link, index) => (
-          <>
-            {index > 0 && <span class="text-muted-foreground"> / </span>}
-            <a href={link.href} class="text-primary hover:underline">
-              {link.label}
-            </a>
-          </>
+      <div class="mt-2 flex flex-wrap gap-1.5">
+        {links.map((link) => (
+          <a
+            href={link.href}
+            class="rounded-sm border border-border px-1.5 py-px text-xs leading-5 text-muted-foreground transition-colors hover:border-primary hover:text-primary"
+          >
+            {link.label}
+          </a>
         ))}
-      </p>
+      </div>
     ))
 }

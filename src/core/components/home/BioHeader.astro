@@ -20,6 +20,8 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   resolveLocalized(value, lang, siteConfig.i18n.default)
 
 const name = r(profile.name)
+const subtitle = [r(profile.role), r(profile.location)].filter(Boolean).join(' · ')
+const tagline = r(profile.tagline)
 const bio = profile.bio.map((paragraph) => r(paragraph))
 
 const quicklinks: { label: string; href: string; external: boolean }[] = []
@@ -53,6 +55,8 @@ for (const link of profile.links) {
           )
         }
       </div>
+      {subtitle && <p class="mt-1 text-sm text-muted-foreground">{subtitle}</p>}
+      {tagline && <p class="mt-4 font-serif text-lg leading-snug">{tagline}</p>}
       <div class="mt-4 space-y-3">
         {bio.map((paragraph) => <p class="font-serif leading-relaxed">{paragraph}</p>)}
       </div>
@@ -71,7 +75,7 @@ for (const link of profile.links) {
     {
       quicklinks.map((link, index) => (
         <>
-          {index > 0 && <span class="text-muted-foreground"> / </span>}
+          {index > 0 && <span class="text-muted-foreground"> · </span>}
           <a
             href={link.href}
             {...(link.external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}

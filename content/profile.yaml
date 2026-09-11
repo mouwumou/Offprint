@@ -5,13 +5,13 @@
 # 每个字段显示在哪：
 #   name         <title> 后缀、站名、页脚、feed 作者、结构化数据       （必填）
 #   nameVariants 出版物作者行里把你加粗（各种署名写法）
-#   role         CV 页标题下、paper 主题首页大头区、结构化数据 jobTitle   （scholar 首页不显示）
+#   role         首页名字下一行（与 location 合并）、CV 页标题下、paper 大头区、结构化数据 jobTitle
 #   field        开了站名时的头部副标题、paper 大头区、分享图
 #   affiliation  页脚、paper 大头区、结构化数据                          （scholar 首页不显示）
-#   location     CV 页、paper 大头区
+#   location     首页名字下一行、CV 页、paper 大头区
 #   email        首页快捷链接、CV 页、paper 大头区
 #   photo        首页头像 / paper 大头图 / og:image
-#   tagline      paper 大头区、feed 描述、首页分享描述
+#   tagline      首页 bio 前的引语、paper 大头区、feed 描述、首页分享描述
 #   bio          首页头部段落、about 块
 #   interests    about 块标签、结构化数据 knowsAbout
 #   orcid/scholar 结构化数据 sameAs（页面上的链接放 links）

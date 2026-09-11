@@ -33,7 +33,7 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   moreHref={`${prefix}/publications`}
   moreLabel={t('home.allPublications')}
 >
-  <div class="space-y-6">
+  <div class="space-y-7">
     {
       publications.map((pub) => (
         <article class="flex gap-5">
@@ -60,7 +60,7 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
             <Title
               {...(detail ? { href: `${prefix}/publications/${pub.key}` } : {})}
               class:list={[
-                'font-serif text-[17px] leading-snug',
+                'font-serif text-[17px] leading-snug font-medium',
                 detail ? 'text-primary hover:underline' : 'text-foreground',
               ]}
             >
