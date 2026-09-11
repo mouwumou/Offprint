@@ -81,8 +81,8 @@ offprint/
 三级定制阶梯：
 
 1. **配置与内容**：`site.yaml` 字段（结构与开关，ADR-021）、`content/profile.yaml` 的作者信息（ADR-028）与 `content/home.yaml` 的首页排布，够用则到此为止。
-2. **部件覆盖**：`extensions/widgets/<section-type>.astro` 替换同名内置首页部件；启用主题包自带的 `widgets/` 居中间优先级（查找链：站点散件 > 主题 > 内置，ADR-022）。收集点在 pages 层（`src/pages/[...path].astro` 的 `import.meta.glob`，编译期字面量收集全部主题的部件、渲染期按启用主题过滤）；覆盖组件收到与内置部件完全相同的 props（内置实现在 `src/core/components/home/`，即 props 契约）。
-3. **主题**：`theme.name` 解析目录式主题（ADR-018/022，规范见 `docs/THEMING.md`）：`extensions/themes/<name>/` 优先于内置 `src/core/themes/<name>/`；token 与字体栈来自 theme.json（BaseLayout 注入），字体加载与主题特有样式来自 theme.css（integration 注入）；主题声明的选项在 site.yaml `theme.options` 填值（构建期校验 + 编辑器补全）。
+2. **部件覆盖**：`extensions/widgets/<name>.astro` 替换同名内置部件——首页各节，以及 `publication-row` `post-row` `site-header` `site-footer`（ADR-032）；启用主题包自带的 `widgets/` 居中间优先级（查找链：站点散件 > 主题 > 内置，ADR-022）。机制是核心的部件注册表 `src/core/widgets/registry.ts`：`src/pages/_widgets.ts` 用编译期 glob 收集全部主题的部件、按启用主题过滤后注册（integration 的 page-ssr 脚本保证在任何渲染前完成），组件用 `resolveWidget(name, Builtin)` 取覆盖或内置；覆盖组件收到与内置完全相同的 props（内置实现即契约，清单见 `docs/THEMING.md` §4）。
+3. **主题**：`theme.name` 解析目录式主题（ADR-018/022，规范见 `docs/THEMING.md`）：`extensions/themes/<name>/` 优先于内置 `src/core/themes/<name>/`；token 与字体栈来自 theme.json（BaseLayout 注入，并把腔调打在 `<html>` 的 data-* 上），字体加载与主题特有样式来自 theme.css（integration 注入，不在 cascade layer 内，可覆盖核心的任何样式）；核心组件带稳定的 `data-part` 挂钩与按腔调切换的预设类（ADR-032）；主题声明的选项在 site.yaml `theme.options` 填值（构建期校验 + 编辑器补全）。
 
 ### 3.2 模块注册（ADR-019）
 

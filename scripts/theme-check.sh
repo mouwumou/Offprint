@@ -28,5 +28,5 @@ echo "[theme-check] $name → $work"
 pnpm build:static >/dev/null
 echo "[theme-check] static build ok"
 if [ "$build_only" = 1 ]; then exit 0; fi
-pnpm build:server >/dev/null && echo "[theme-check] server build ok"
+ASTRO_OUT_DIR=.offprint/server pnpm build:server >/dev/null && echo "[theme-check] server build ok"
 pnpm e2e

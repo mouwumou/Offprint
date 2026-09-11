@@ -108,4 +108,4 @@ P5-1 与 P5-2 因 ADR-018/019 于 2026-08-24 提前启动，并行推进，任�
 - [x] ADR-028 作者信息从 site.yaml 移入 `content/profile.yaml`，经 provider 提供；site.yaml 不再含内容（2026-09-09）
 - [x] ADR-029 根目录整理：生成物进 `.offprint/`、社区文件进 `.github/`、e2e 配置进 `e2e/`、手写文件豁免格式门禁；同期修实例 CI 暴露的图片溢出、缺摘要、搜索用例超时（2026-09-09）
 - [x] ADR-030 分支模型：dev 工作分支 + main 发布快照（`pnpm release:main`），main 不含 CLAUDE.md 与 docs/dev/（2026-09-09）
-- [ ] 主题契约 v2：语义挂钩 + token 扩容 → 部件契约扩到出版物行/文章行/头尾 → voice 从核心枚举变预设；验收 = 一个只靠 extensions/ 实现的第三主题（al-folio 式\"左栏年份\"出版物排布，2026-09-11 对比稿的方案 C）跑通全部 e2e
+- [x] 主题契约 v2（ADR-032，2026-09-11）：部件注册表覆盖首页各节 + 出版物行/文章行/站点头尾；69 个 `data-part` 挂钩；density/labels 预设进 CSS；`pnpm theme:check`；示例主题 gutter（方案 C，零 src）与 paper 在 CI 固定跑全套 e2e

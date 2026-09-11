@@ -192,3 +192,9 @@
 **决定**：`compose.static.yaml`、`compose.server.yaml` 移到仓库根目录（Dockerfile 与 Caddyfile 留在 `docker/`，`context: .`）——`.env` 与 compose 同目录，`pnpm sync` 与 Docker 读同一份，不靠任何参数或包装脚本。`.env.example` 只列真实存在、注明谁在读的键，按"站点 / Notion 同步 / Docker 静态 / Docker server / 高级"分组；`RUNTIME_MODE` 不再出现（构建期由 npm 脚本传入）。文档要求部署前用 `docker compose -f … config | grep NOTION_DB` 确认 `.env` 被读到。
 **后果**：根目录多两个 compose 文件，换来零配置正确性；实例升级脚本会把旧的 `docker/compose.*.yaml` 删掉。GitHub Pages 路径与本地构建仍不读 `.env`。首次带凭据验证（2026-09-10）随即暴露并修掉了第二个问题：静态同步容器里 `content/posts` 来自镜像层，overlayfs 不允许重命名这类目录（`EXDEV`），原子切换改为在 `EXDEV` 时回退到复制加删除；两套 compose 均从冷启动验证到首篇文章上线。
 
+## ADR-032 主题契约 v2：部件注册表、样式挂钩、腔调预设化，验收即"零 src 改动的主题跑通全套 e2e" — 已定
+
+**背景**：v1 主题只能换肤——15 个色彩 token、字体、正文字号，再在核心预置的两种人格（`labels` / `density` / `photo` 枚举）里二选一，外加覆盖首页 9 个部件。核心组件里有 72 处按腔调分支的样式，327 处 Tailwind 工具类而语义类只有一个，主题 CSS 无处可挂；页面骨架（头尾、出版物行、文章行）完全由核心决定。维护者要求主题"有更高的自由度和设计，而不只是普通样式"（2026-09-11）。
+**决定**：①**部件注册表**（`src/core/widgets/registry.ts`）：一条查找链"站点散件 > 主题部件 > 内置"覆盖首页各节与 `publication-row` `post-row` `site-header` `site-footer`；页面层 `src/pages/_widgets.ts` 用编译期 glob 收集、经 integration 的 page-ssr 脚本在任何渲染前注册，核心不 import extensions；非法部件名构建报错。②**样式挂钩**：每个部件根与关键子元素带稳定的 `data-part`（69 个），首页各节带 `data-section`，`<html>` 带 `data-theme-name` 与三个腔调值；挂钩名是契约，改名走 ADR；Tailwind 类名不是契约。③**腔调预设化**：按 density/labels 切换的样式改为语义类（`page-top` `article-head` `kicker` `ui-label` …）在 base.css 的 components layer 里按 `[data-density]` / `[data-labels]` 定义；组件里只剩 15 处结构性分支。theme.css 不在 layer 内，天然覆盖一切，因此允许结构性覆盖（v1 禁止）。④**验收**：`scripts/theme-check.sh` 复制仓库、装主题、跑双构建与全套 e2e；示例主题 `e2e/fixtures/themes/gutter`（只用挂钩把出版物页改成年份左栏排布，并自带页脚部件）与内置 `paper` 在 CI 固定过关。
+**后果**：`publication-list` 首页节从此跟随主题腔调（此前不分语域）；两套内置主题在 8 页截图上像素级或亚像素级一致。文章页头、CV 各段尚未部件化，先用挂钩。npm 分发形态不变。
+

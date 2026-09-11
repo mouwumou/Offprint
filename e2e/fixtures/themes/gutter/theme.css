@@ -1,0 +1,34 @@
+/* gutter — a résumé-style publications list built ONLY from the theme
+   contract: the year sits in a left column, entries are separated by
+   hairlines, titles carry more weight. Every selector below is a documented
+   hook (data-part); nothing here touches src/. */
+[data-part='pub-year-group'] {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  column-gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+[data-part='pub-year-group'] > [data-part='pub-year'] {
+  border: 0;
+  padding: 0.95rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+[data-part='pub-year-group'] > [data-part='pub-list'] {
+  margin-top: 0;
+}
+[data-part='pub-year-group'] [data-part='pub-row'] {
+  margin: 0;
+  padding: 0.95rem 0;
+  border-top: 1px solid var(--border);
+}
+[data-part='pub-title'] {
+  font-weight: 600;
+  font-size: 18px;
+}
+@media (max-width: 640px) {
+  [data-part='pub-year-group'] {
+    grid-template-columns: 1fr;
+  }
+}
