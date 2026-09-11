@@ -55,7 +55,7 @@ header:
 # ── 外观：内置主题 scholar（默认，学术白底）| paper（杂志纸面风，配 hero 排布）；
 #    安装的主题放 extensions/themes/<name>/（docs/THEMING.md，只读，一切可调项在这里配）
 # theme:
-#   name: paper
+#   name: paper                 # 内置 scholar（默认）/ paper，或 extensions/themes/ 里装的（自带示例 gutter）
 #   accent: '#1756a9'           # 只换主色
 #   tokens: { radius: 0px }     # 逐个覆盖设计变量
 #   typography: { proseSize: 1rem }   # 正文字号（默认 1.0625rem = 17px）

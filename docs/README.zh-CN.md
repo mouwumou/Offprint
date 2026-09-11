@@ -21,7 +21,7 @@ Offprint 把学术首页、博客、出版物、项目与 CV 放进同一个站�
 - 站内搜索（pagefind）、深浅色主题、giscus 评论、旧链接跳转；
 - 零 JS 默认：只有主题切换、Cite、搜索这类真正交互的部分才带脚本。
 
-主题、页面部件与模块都可插拔：内置 `scholar`（学术白底，默认）与 `paper`（杂志纸面风）两套主题，第三方主题装进 `extensions/` 即用，所有可调项都在一份 `site.yaml` 里。
+主题、页面部件与模块都可插拔：内置 `scholar`（学术白底，默认）与 `paper`（杂志纸面风）两套主题，第三方主题装进 `extensions/` 即用，所有可调项都在一份 `site.yaml` 里。示例主题 `gutter` 随模板放在 `extensions/themes/`，附逐文件说明，复制它就能做自己的主题（[docs/THEMING.md](THEMING.md)）。
 
 ## 快速开始
 

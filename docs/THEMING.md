@@ -8,18 +8,32 @@
 | 2. 样式 | `theme.css` + **样式挂钩** | 任何部件的任何样式，包括布局——挂钩是稳定的 `data-part` 名与预设类，不是工具类名 |
 | 3. 部件 | `widgets/<name>.astro` | 整个替换某个部件（首页各节、出版物行、文章行、站点头尾），props 与内置相同 |
 
+示例主题 **`extensions/themes/gutter/`** 随模板分发，三层各演示一遍，附逐文件说明的 [README](../extensions/themes/gutter/README.md)；做自己的主题最快的路是复制它（§1）。
+
 验收只有一条：`pnpm theme:check <name> [目录]` 把仓库复制一份、装上你的主题、跑双模式构建与全套 e2e（双模式 HTML 一致、无障碍、手机视口、子路径）。模板仓库的 CI 对内置的 `paper` 和示例主题 `gutter` 固定跑这条；由模板生成的实例仓库不跑（实例只验证自己启用的主题），想在实例里验收自定义主题就本地跑一次。
 
 ## 1. 目录与安装
 
 ```
 extensions/themes/<name>/   # 安装的主题（只读：升级 = 整目录替换）
+extensions/themes/gutter/   # 随模板分发的示例主题（复制它起步，不要直接改它）
 src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 ```
 
 同名时 `extensions/` 优先。没有注册表、没有枚举：**放进目录、通过校验，就是合法主题**。`site.yaml` 里 `theme: { name: <name> }` 即启用；名字解析不到时构建失败并列出可用主题。
 
 **只读原则**：使用者永远不编辑主题目录——一切可调项在 site.yaml：`theme.accent` / `theme.tokens` / `theme.typography`（通用覆盖）与 `theme.options`（主题自定义选项）；想改某个部件，在 `extensions/widgets/` 放同名文件压过它。
+
+### 从示例主题起步
+
+```bash
+cp -r extensions/themes/gutter extensions/themes/mine   # 1. 复制
+sed -i 's/"name": "gutter"/"name": "mine"/' extensions/themes/mine/theme.json   # 2. 目录名与 name 必须一致
+#    3. site.yaml → theme: { name: mine }；改颜色字体腔调，不要的层删文件即可
+pnpm theme:check mine                                   # 4. 验收
+```
+
+老实例（从模板生成时还没有这个目录）从模板仓库 `main` 分支复制 `extensions/themes/gutter/` 过来即可；升级脚本不碰 `extensions/`。
 
 ## 2. theme.json
 
@@ -50,7 +64,7 @@ src/core/themes/<name>/     # 内置主题（向模板仓库 PR 贡献）
 }
 ```
 
-部件里经 `themeOptions`（`src/core/theme/current.ts`）读取解析后的值。
+部件里经 `themeOptions`（`src/core/theme/current.ts`）读取解析后的值。示例主题声明了一条 `showAffiliation`，它的页脚部件按此决定显不显示单位——声明、取值、读取三处对着看最清楚。
 
 ## 3. theme.css 与样式挂钩
 
@@ -83,7 +97,7 @@ theme.css 由构建注入到每一页，且**不在任何 cascade layer 里**—
 [data-part='pub-year-group'] [data-part='pub-row'] { padding: .95rem 0; border-top: 1px solid var(--border); }
 ```
 
-完整文件见 `e2e/fixtures/gutter/theme.css`。
+完整文件见 `extensions/themes/gutter/theme.css`，头部注释列出了主题 CSS 允许用的两类选择器。
 
 ## 4. widgets/：主题自带的部件
 
@@ -97,13 +111,13 @@ theme.css 由构建注入到每一页，且**不在任何 cascade layer 里**—
 | `site-header` | `src/core/components/Header.astro`：`{ lang, alternates }` | 每一页 |
 | `site-footer` | `src/core/components/Footer.astro`：`{ lang }` | 每一页 |
 
-部件里的数据一律经 `getProvider()` 取（文章、出版物、项目、CV，作者信息 `getProvider().getProfile()`）；`siteConfig` 只有结构与开关。从主题目录引用核心用相对路径（`../../../../src/core/...`），示例见 `e2e/fixtures/gutter/widgets/site-footer.astro`。
+部件里的数据一律经 `getProvider()` 取（文章、出版物、项目、CV，作者信息 `getProvider().getProfile()`）；`siteConfig` 只有结构与开关。从主题目录引用核心用相对路径（`../../../../src/core/...`），完整示例见 `extensions/themes/gutter/widgets/site-footer.astro`（读选项、经 provider 取资料、保留挂钩）。
 
 ## 5. 验收
 
 ```bash
-pnpm theme:check <name>                      # 内置或已装进 extensions/ 的主题
-pnpm theme:check gutter e2e/fixtures/gutter   # 目录形式的主题
+pnpm theme:check <name>                 # 内置、或已装进 extensions/themes/ 的主题（含示例 gutter）
+pnpm theme:check <name> path/to/theme   # 还没装进来的目录：先复制到 extensions/themes/<name> 再跑
 ```
 
 脚本把仓库复制到 `.offprint/theme-check/<name>/`、装上主题、把 site.yaml 指向它，然后 `build:static`、`build:server`、`pnpm e2e`。最常见的翻车点是 **axe 的颜色对比度**（`muted-foreground` 与 `primary` 对 `background` 都要过 AA）和暗色模式漏配。
@@ -112,7 +126,7 @@ pnpm theme:check gutter e2e/fixtures/gutter   # 目录形式的主题
 
 | 形态 | 现在 |
 | --- | --- |
-| 站点自有 | `extensions/themes/<name>/` |
+| 站点自有 | `extensions/themes/<name>/`（示例：`gutter`） |
 | 向模板贡献 | PR 到 `src/core/themes/<name>/`，CI 自动跑 theme:check |
 | npm 包 | 计划中：`offprint-theme-<name>`，解析链加入 node_modules 查找 |
 

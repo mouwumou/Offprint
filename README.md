@@ -21,7 +21,7 @@ Academic details are defaults, not add-ons:
 - site search (pagefind), light/dark theme, giscus comments, legacy-URL redirects;
 - zero JavaScript by default — only truly interactive parts (theme toggle, Cite, search) ship scripts.
 
-Themes, page widgets and modules are pluggable: two built-in themes (`scholar`, the academic default, and `paper`, a magazine feel), third-party themes drop into `extensions/`, and every knob lives in one `site.yaml`.
+Themes, page widgets and modules are pluggable: two built-in themes (`scholar`, the academic default, and `paper`, a magazine feel), third-party themes drop into `extensions/`, and every knob lives in one `site.yaml`. A sample theme, `gutter`, ships in `extensions/themes/` with a per-file walkthrough; copy it to start your own ([docs/THEMING.md](docs/THEMING.md)).
 
 ## Quick start
 
