@@ -264,3 +264,15 @@ describe('modules.blog.search / modules.cv.indexable', () => {
     expect(config.modules.cv).toMatchObject({ enabled: true, indexable: false })
   })
 })
+
+describe('modules.publications.detail', () => {
+  it('accepts detail: false alongside order', async () => {
+    const { defineConfig } = await import('./define-config')
+    const config = defineConfig({ modules: { publications: { detail: false, order: 'file' } } })
+    expect(config.modules.publications).toMatchObject({
+      enabled: true,
+      detail: false,
+      order: 'file',
+    })
+  })
+})

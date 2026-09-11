@@ -173,6 +173,9 @@
                 "order": {
                   "type": "string",
                   "enum": ["file", "key", "title"]
+                },
+                "detail": {
+                  "type": "boolean"
                 }
               },
               "additionalProperties": false

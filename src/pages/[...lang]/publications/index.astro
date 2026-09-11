@@ -33,6 +33,9 @@ if (
 const t = useTranslations(lang)
 const copy = moduleCopy(siteConfig, 'publications', lang)
 const prefix = langPrefix(siteConfig, lang)
+// publications.detail: false — plain titles, no per-publication pages.
+const detail = siteConfig.modules.publications.detail !== false
+const Title = detail ? 'a' : 'span'
 const publications = await getProvider().listPublications()
 const years = [...new Set(publications.map((pub) => pub.year))].sort((a, b) => b - a)
 const r = (value: Parameters<typeof resolveLocalized>[0]) =>
@@ -87,12 +90,15 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
                 .filter((pub) => pub.year === year)
                 .map((pub) => (
                   <li>
-                    <a
-                      href={`${prefix}/publications/${pub.key}`}
-                      class="font-serif text-[17px] leading-snug text-primary hover:underline"
+                    <Title
+                      {...(detail ? { href: `${prefix}/publications/${pub.key}` } : {})}
+                      class:list={[
+                        'font-serif text-[17px] leading-snug',
+                        detail ? 'text-primary hover:underline' : 'text-foreground',
+                      ]}
                     >
                       {r(pub.title)}
-                    </a>
+                    </Title>
                     <Authors authors={pub.authors} />
                     <p class="text-sm text-muted-foreground">
                       <i>{pub.venue}</i>, {pub.year} · {pub.type}
@@ -129,12 +135,12 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
                       )}
                     </div>
                     <h3 class="mt-1.5 font-serif text-xl leading-snug">
-                      <a
-                        href={`${prefix}/publications/${pub.key}`}
-                        class="transition-colors hover:text-primary"
+                      <Title
+                        {...(detail ? { href: `${prefix}/publications/${pub.key}` } : {})}
+                        class:list={[detail && 'transition-colors hover:text-primary']}
                       >
                         {r(pub.title)}
-                      </a>
+                      </Title>
                     </h3>
                     <Authors authors={pub.authors} />
                     <PublicationLinks publication={pub} lang={lang} />

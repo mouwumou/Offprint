@@ -16,6 +16,8 @@ interface Props {
 
 const { lang, title, selected, rest } = Astro.props
 const prefix = langPrefix(siteConfig, lang)
+const detail = siteConfig.modules.publications.detail !== false
+const Title = detail ? 'a' : 'span'
 const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   resolveLocalized(value, lang, siteConfig.i18n.default)
 ---
@@ -32,12 +34,12 @@ const r = (value: Parameters<typeof resolveLocalized>[0]) =>
             </span>
           </div>
           <h3 class="mt-1.5 font-serif text-xl leading-snug">
-            <a
-              href={`${prefix}/publications/${pub.key}`}
-              class="transition-colors hover:text-primary"
+            <Title
+              {...(detail ? { href: `${prefix}/publications/${pub.key}` } : {})}
+              class:list={[detail && 'transition-colors hover:text-primary']}
             >
               {r(pub.title)}
-            </a>
+            </Title>
           </h3>
           <Authors authors={pub.authors} />
           <PublicationLinks publication={pub} lang={lang} />
