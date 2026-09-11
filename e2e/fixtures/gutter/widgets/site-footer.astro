@@ -1,7 +1,10 @@
 ---
 // A theme-carried widget: replaces the built-in site footer. Same props as
 // the built-in (src/core/components/Footer.astro); data comes from the
-// provider like everywhere else.
+// provider like everywhere else. The relative imports assume the theme's
+// installed depth (extensions/themes/<name>/widgets/); the fixture sits at
+// the same depth (e2e/fixtures/<name>/widgets/) so `astro check` resolves
+// them too.
 import { getProvider } from '../../../../src/core/content'
 import siteConfig from '../../../../src/core/config/current'
 import { resolveLocalized } from '../../../../src/core/schema'

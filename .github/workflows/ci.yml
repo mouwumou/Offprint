@@ -41,5 +41,5 @@ jobs:
       # e2e suite in an isolated copy of the tree.
       - run: pnpm theme:check paper
         if: matrix.node == 24
-      - run: pnpm theme:check gutter e2e/fixtures/themes/gutter
+      - run: pnpm theme:check gutter e2e/fixtures/gutter
         if: matrix.node == 24
