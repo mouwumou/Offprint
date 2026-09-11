@@ -1,0 +1,79 @@
+---
+// gutter's own site footer — a theme-carried widget (docs/THEMING.md §4).
+//
+// What a theme widget must do:
+//   • take the same props as the built-in it replaces
+//     (here src/core/components/Footer.astro: `{ lang }`);
+//   • read data through the provider, never from files or site.yaml;
+//   • import core by relative path from the installed depth
+//     (extensions/themes/<name>/widgets/ → ../../../../src/core/…);
+//   • keep the `data-part` hooks of the built-in so theme.css and site
+//     overrides can still target it;
+//   • read its theme options (declared in theme.json, valued in site.yaml
+//     `theme.options`) through `themeOptions`.
+import siteConfig from '../../../../src/core/config/current'
+import { container } from '../../../../src/core/config/layout'
+import { getProvider } from '../../../../src/core/content'
+import { contentHref } from '../../../../src/core/content/asset-url'
+import { resolveLocalized } from '../../../../src/core/schema'
+import { themeOptions } from '../../../../src/core/theme/current'
+
+interface Props {
+  lang: string
+}
+
+const { lang } = Astro.props
+const fallback = siteConfig.i18n.default
+const profile = await getProvider().getProfile()
+const name = resolveLocalized(profile.name, lang, fallback)
+const affiliation = themeOptions.showAffiliation
+  ? resolveLocalized(profile.affiliation, lang, fallback)
+  : ''
+const links = profile.links.map((link) => ({
+  href: contentHref(link.href),
+  label: resolveLocalized(link.label, lang, fallback),
+}))
+const year = new Date().getFullYear()
+---
+
+{
+  siteConfig.footer.enabled && (
+    <footer data-part="site-footer" class="mt-12 border-t border-border">
+      <div
+        class:list={[
+          container,
+          'flex flex-wrap items-baseline justify-between gap-x-6 gap-y-2 py-5 text-sm',
+        ]}
+      >
+        <p>
+          <span data-part="footer-name" class="font-serif">
+            {name}
+          </span>
+          {affiliation && (
+            <span data-part="footer-affiliation" class="text-muted-foreground">
+              {' '}
+              · {affiliation}
+            </span>
+          )}
+        </p>
+        <p class="flex flex-wrap items-baseline gap-x-4 gap-y-1">
+          <span data-part="footer-links" class="flex flex-wrap gap-x-4 gap-y-1">
+            {links.map((link) => (
+              <a
+                href={link.href}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="text-muted-foreground transition-colors hover:text-primary"
+              >
+                {link.label}
+              </a>
+            ))}
+          </span>
+          <span data-part="footer-colophon" class="text-muted-foreground">
+            © {year}
+          </span>
+        </p>
+      </div>
+    </footer>
+  )
+}

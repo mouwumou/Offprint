@@ -208,7 +208,11 @@ describe('module registry', () => {
 
 describe('site-local module manifests', () => {
   it('discovers extensions/modules/<id>/module.yaml and makes it legal config', async () => {
+    const { existsSync } = await import('node:fs')
     const { mkdir, rm, writeFile } = await import('node:fs/promises')
+    // Clean up ONLY what the test creates: extensions/modules/ is a real,
+    // user-owned directory on an instance — never wipe it wholesale.
+    const parentExisted = existsSync('extensions/modules')
     await mkdir('extensions/modules/reading', { recursive: true })
     await writeFile(
       'extensions/modules/reading/module.yaml',
@@ -231,7 +235,8 @@ describe('site-local module manifests', () => {
       expect(resolveNav(config, 'zh', [])).toEqual([{ href: '/zh/reading', label: '在读' }])
       expect(moduleCopy(config, 'reading', 'en').title).toBe('Reading list')
     } finally {
-      await rm('extensions/modules', { recursive: true, force: true })
+      await rm('extensions/modules/reading', { recursive: true, force: true })
+      if (!parentExisted) await rm('extensions/modules', { recursive: true, force: true })
     }
   })
 })

@@ -1,0 +1,55 @@
+/* gutter — the sample theme shipped with the template (docs/THEMING.md).
+ *
+ * This file is injected into every page when the theme is enabled and sits
+ * OUTSIDE every cascade layer, so plain selectors here beat the core styles
+ * and the Tailwind utilities without extra specificity or !important.
+ *
+ * Only two kinds of selector are part of the theme contract and safe to use:
+ *   1. `[data-part='…']` hooks on every widget root and key child;
+ *   2. the preset classes the core switches by voice (`.page-title`,
+ *      `.kicker`, `.ui-label`, `.section-gap`, …).
+ * Tailwind class names (`mt-4`, `text-sm`) are implementation detail: do not
+ * select on them.
+ *
+ * Colors and radii come from theme.json and are already available as CSS
+ * variables (`var(--border)`, `var(--muted-foreground)`, …) — do not repeat
+ * them here. Font FILES are loaded from here when a theme ships its own
+ * (e.g. `@import '@fontsource-variable/inter';`); gutter uses system
+ * Charter and needs none.
+ */
+
+/* Publications page: résumé-style layout — the year in a left column,
+ * entries separated by hairlines, titles carrying more weight. Purely a
+ * restyling of the built-in markup through its hooks; no widget needed. */
+[data-part='pub-year-group'] {
+  display: grid;
+  grid-template-columns: 5.5rem 1fr;
+  column-gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+[data-part='pub-year-group'] > [data-part='pub-year'] {
+  border: 0;
+  padding: 0.95rem 0 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+[data-part='pub-year-group'] > [data-part='pub-list'] {
+  margin-top: 0;
+}
+[data-part='pub-year-group'] [data-part='pub-row'] {
+  margin: 0;
+  padding: 0.95rem 0;
+  border-top: 1px solid var(--border);
+}
+[data-part='pub-title'] {
+  font-weight: 600;
+  font-size: 18px;
+}
+
+/* Phones: the year column would squeeze the entries — stack instead. */
+@media (max-width: 640px) {
+  [data-part='pub-year-group'] {
+    grid-template-columns: 1fr;
+  }
+}
