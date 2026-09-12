@@ -2,15 +2,7 @@
 // title, internal .md links become site routes, links that leave docs/ become
 // GitHub links. Chinese pages are the root locale; docs/en/** is the English
 // locale. Run before `astro build --root website` (pnpm docs:build).
-import {
-  cpSync,
-  mkdirSync,
-  readdirSync,
-  readFileSync,
-  rmSync,
-  statSync,
-  writeFileSync,
-} from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs'
 import { dirname, join, posix, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -35,6 +27,16 @@ function walk(dir) {
     if (statSync(full).isDirectory()) {
       if (name !== 'dev') out.push(...walk(full))
     } else if (name.endsWith('.md')) out.push(full)
+  }
+  return out
+}
+
+function walkAll(dir) {
+  const out = []
+  for (const name of readdirSync(dir)) {
+    const full = join(dir, name)
+    if (statSync(full).isDirectory()) out.push(...walkAll(full))
+    else out.push(full)
   }
   return out
 }
@@ -78,6 +80,17 @@ for (const p of pages) {
   mkdirSync(dirname(out), { recursive: true })
   writeFileSync(out, adapt(readFileSync(join(docsDir, p), 'utf8'), p))
 }
-// Landing pages are authored in website/pages/ (not derived from docs/).
-cpSync(join(here, 'pages'), outDir, { recursive: true })
+// Landing pages are authored in website/pages/ (not derived from docs/). Their
+// root-absolute links (`/guide/…`, `link: /en/`) get the base too: Starlight
+// does not prefix hero actions or Markdown links itself.
+for (const file of walkAll(join(here, 'pages'))) {
+  const rel = relative(join(here, 'pages'), file)
+  const out = join(outDir, rel)
+  mkdirSync(dirname(out), { recursive: true })
+  const text = readFileSync(file, 'utf8').replace(
+    /(\]\(|link: )\/(?!\/)/g,
+    (_m, prefix) => `${prefix}${base}/`,
+  )
+  writeFileSync(out, text)
+}
 console.log(`[docs] ${pages.length} pages → ${relative(root, outDir)} (base ${base})`)
