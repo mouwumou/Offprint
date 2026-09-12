@@ -32,7 +32,10 @@
     "check:live": "node scripts/check-live.mjs",
     "gen:schema": "tsx scripts/gen-config-schema.ts",
     "release:main": "bash scripts/release-main.sh",
-    "theme:check": "bash scripts/theme-check.sh"
+    "theme:check": "bash scripts/theme-check.sh",
+    "docs:collect": "node website/collect.mjs",
+    "docs:dev": "pnpm docs:collect && astro dev --root website",
+    "docs:build": "pnpm docs:collect && astro build --root website"
   },
   "pnpm": {
     "onlyBuiltDependencies": [
@@ -60,7 +63,7 @@
     "@resvg/resvg-js": "^2.6.2",
     "@shikijs/rehype": "^4.4.3",
     "@tailwindcss/vite": "^4.3.3",
-    "astro": "^7.2.4",
+    "astro": "^7.3.2",
     "chokidar": "^5.0.0",
     "gray-matter": "^4.0.3",
     "hast-util-to-string": "^3.0.1",
@@ -88,6 +91,7 @@
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@astrojs/starlight": "^0.42.0",
     "@axe-core/playwright": "^4.13.0",
     "@elog/cli": "1.0.0-beta.2",
     "@elog/plugin-from-notion": "1.0.0-beta.2",

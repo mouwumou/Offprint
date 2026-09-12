@@ -198,3 +198,12 @@
 **决定**：①**部件注册表**（`src/core/widgets/registry.ts`）：一条查找链"站点散件 > 主题部件 > 内置"覆盖首页各节与 `publication-row` `post-row` `site-header` `site-footer`；页面层 `src/pages/_widgets.ts` 用编译期 glob 收集、经 integration 的 page-ssr 脚本在任何渲染前注册，核心不 import extensions；非法部件名构建报错。②**样式挂钩**：每个部件根与关键子元素带稳定的 `data-part`（69 个），首页各节带 `data-section`，`<html>` 带 `data-theme-name` 与三个腔调值；挂钩名是契约，改名走 ADR；Tailwind 类名不是契约。③**腔调预设化**：按 density/labels 切换的样式改为语义类（`page-top` `article-head` `kicker` `ui-label` …）在 base.css 的 components layer 里按 `[data-density]` / `[data-labels]` 定义；组件里只剩 15 处结构性分支。theme.css 不在 layer 内，天然覆盖一切，因此允许结构性覆盖（v1 禁止）。④**验收**：`scripts/theme-check.sh` 复制仓库、装主题、跑双构建与全套 e2e；示例主题 `extensions/themes/gutter`（随模板分发；只用挂钩把出版物页改成年份左栏排布，自带页脚部件、一条选项声明与逐文件说明的 README）与内置 `paper` 在模板仓库的 CI 固定过关（实例仓库不跑这两条：`is_template` 为假时跳过，实例的 CI 只验证自己启用的主题）。
 **后果**：`publication-list` 首页节从此跟随主题腔调（此前不分语域）；两套内置主题在 8 页截图上像素级或亚像素级一致。文章页头、CV 各段尚未部件化，先用挂钩。npm 分发形态不变。
 
+## ADR-033：文档站（`website/`，Starlight）
+
+**状态**：已定（2026-09-12）
+
+**背景**：`docs/` 里的 Markdown 只能在 GitHub 上读，没有搜索、没有中英切换，对第一次接触的人不友好；使用指南要面向国际用户，需要英文版并排出现。
+
+**决定**：① 文档源只有一份：`docs/**/*.md` 是中文根语言，`docs/en/**` 是英文翻译（暂只覆盖使用指南与主题制作，缺页时站点回落到中文并提示）。② 文档站是 `website/` 下的 Starlight 项目，不含任何文档正文：`website/collect.mjs` 在构建前把 `docs/` 复制进生成目录（gitignored），H1 变成 frontmatter 标题，`.md` 内链改成站内路由，指向 `docs/` 之外的链接改成 GitHub 链接；两个落地页在 `website/pages/`。③ 发布在 demo 同一个 Pages 站的 `/docs/` 子路径下；`deploy-pages.yml` 与 CI 里的文档构建都以 `is_template` 为门，实例不跑；升级脚本不同步 `website/`。
+
+**后果**：Astro 随 Starlight 的 peer 要求升到 7.3；实例仓库从模板生成时会带上 `website/`，无害可删，已写进快速开始；设计文档暂无英文版。

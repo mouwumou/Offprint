@@ -1,0 +1,40 @@
+---
+title: Offprint
+description: 在 Notion 里写、随处部署的学术个人网站。
+template: splash
+editUrl: false
+hero:
+  tagline: 在 Notion 里写、随处部署的学术个人网站：GitHub Pages 上的纯静态站，或容器里按下"发布"几秒即上线的服务端渲染站。
+  actions:
+    - text: 快速开始
+      link: /guide/getting-started/
+      icon: right-arrow
+    - text: 在线 demo
+      link: https://mouwumou.github.io/Offprint/
+      icon: external
+      variant: minimal
+    - text: GitHub
+      link: https://github.com/mouwumou/Offprint
+      icon: github
+      variant: minimal
+---
+
+import { Card, CardGrid } from '@astrojs/starlight/components'
+
+<CardGrid stagger>
+  <Card title="从模板到上线" icon="rocket">
+    生成仓库、推送一次，站点就在 GitHub Pages 上了。本机和 Docker
+    两条路也各只有三行命令。[快速开始](/guide/getting-started/)
+  </Card>
+  <Card title="在 Notion 里写" icon="pencil">
+    一个数据库、几列固定的属性，NotionNext 的库可以原样接上。[数据库模板](/guide/notion-template/) ·
+    [同步](/guide/sync/)
+  </Card>
+  <Card title="一份配置管全站" icon="setting">
+    `site.yaml` 管长什么样，`content/`
+    管显示什么，编辑器有补全和即时报错。[配置体系](/guide/configuration/)
+  </Card>
+  <Card title="主题是一个目录" icon="puzzle">
+    颜色 token、稳定的样式挂钩、可整个替换的部件，随模板附带示例主题。[主题制作](/theming/)
+  </Card>
+</CardGrid>
