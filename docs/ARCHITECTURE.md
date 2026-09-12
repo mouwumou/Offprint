@@ -56,7 +56,8 @@ offprint/
 │  └─ layouts/
 ├─ compose.static.yaml  compose.server.yaml   # 根目录：Compose 从 compose 文件所在目录读 .env
 ├─ docker/                   # web.Dockerfile sync.Dockerfile site.Dockerfile Caddyfile
-├─ docs/
+├─ docs/                     # 文档源：中文为根语言，docs/en/ 是英文翻译
+├─ website/                  # 文档站（Starlight，ADR-033）：collect.mjs 复制 docs/ 后构建，发布在 demo 站的 /docs/ 下，仅模板仓库
 ├─ .github/workflows/        # ci.yml sync.yml deploy-pages.yml
 ├─ e2e/                      # Playwright 与 Lighthouse 配置 + 各 spec（冒烟、双模式一致性、子路径、axe、手机视口）；构建产物进 .offprint/
 └─ scripts/                  # build-static.sh（sync → build → 原子切换）、serve-dist.mjs、check-live.mjs（线上验证）、upgrade-from-template.sh（实例升级）、gen-config-schema.ts

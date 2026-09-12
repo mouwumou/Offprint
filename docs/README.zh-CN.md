@@ -8,7 +8,7 @@
 <p align="center">
   <a href="https://mouwumou.github.io/Offprint/"><strong>在线 demo</strong></a> ·
   <a href="https://github.com/mouwumou/Offprint/generate"><strong>Use this template</strong></a> ·
-  <a href="README.md">文档</a> ·
+  <a href="https://mouwumou.github.io/Offprint/docs/">文档</a> ·
   <a href="../README.md">English</a>
 </p>
 
@@ -37,7 +37,7 @@
 | --- | --- |
 | **页面** | 首页由 `content/home.yaml` 里排好顺序的块拼成；博客有分类、标签、系列、相关文章与目录；出版物按年份分组，带 Cite 弹窗（BibTeX、APA、MLA、Chicago），单篇论文页可开可关；项目；JSON Resume 格式的 CV，自带打印样式，也可以直接指向你的 PDF；About、Now 这类独立页面。关掉任何模块，它就从导航、路由和打包里一起消失。 |
 | **写作** | Notion → elog → Markdown，或者手写 Markdown。KaTeX 公式、Shiki 代码高亮、`[@key]` 引用与参考文献、提示框、封面图。Notion 里的图片会下载进 `content/assets/`，文章不依赖 Notion 会过期的图片链接。 |
-| **可发现性** | canonical、Open Graph、JSON-LD、Highwire Press meta；自动生成 OG 图；RSS、Atom、JSON 三种 feed；sitemap；基于 pagefind 的站内搜索，不依赖外部服务；旧链接跳转；按语言设置 `noindex`。 |
+| **可发现性** | canonical、Open Graph、JSON-LD、Highwire Press meta；自动生成 OG 图；RSS、Atom、JSON 三种 feed；sitemap；基于 pagefind 的站内搜索，不依赖外部服务；旧链接跳转；按语言设置 `noindex`；可选的访问统计，Umami、Plausible 或 GoatCounter，默认关闭。 |
 | **语言** | 中英双语路由，默认语言走根路径，每个页面两种语言都可达，带 `hreflang`；内容字段既可以写 `{ en, zh }`，也可以只写一个字符串。 |
 | **外观** | 内置两套主题（`scholar` 学术默认、`paper` 杂志纸面风）和一套随模板分发的示例主题（`gutter`），深浅色模式，所有可调项都在一份 `site.yaml` 里。主题就是一个目录：`theme.json` 放 token，`theme.css` 通过稳定的 `data-part` 挂钩改任何样式，`widgets/` 整个替换部件。 |
 | **运行时** | Astro 7。默认零 JavaScript，只有主题切换、Cite 弹窗和搜索是 island。CI 跑双模式 HTML 一致性、子路径部署、axe 无障碍、手机视口，以及四项都不低于 0.95 的 Lighthouse。 |
@@ -47,8 +47,7 @@
 ### 路线 A：GitHub Pages，什么都不用装
 
 1. 点 **Use this template** 生成你的仓库。付费版 GitHub 私有仓库也能部署。
-2. 在新仓库打开 *Settings → Pages*，把 *Source* 设为 **GitHub Actions**。
-3. 推送一次，或等第一次工作流跑完。站点在 `https://<user>.github.io/<repo>/`。工作流会自动识别地址，子路径也不用配；自定义域名就设置仓库变量 `SITE_URL`。
+2. 等第一次工作流跑完，两三分钟。站点在 `https://<user>.github.io/<repo>/`：工作流会自动为仓库开启 Pages 并识别地址，子路径也不用配。自定义域名在 *Settings → Pages* 里设，下一次运行自动取得。
 
 ### 路线 B：本机
 
@@ -74,7 +73,7 @@ docker compose -f compose.server.yaml up -d --build   # server 模式：按请�
 | 想改什么 | 改哪里 |
 | --- | --- |
 | 你是谁：姓名、职衔、机构、头像、简介、链接 | `content/profile.yaml` |
-| 开哪些模块、导航、主题、语言、评论、跳转 | `site.yaml` |
+| 开哪些模块、导航、主题、语言、评论、统计、跳转 | `site.yaml` |
 | 首页有哪些块、什么顺序 | `content/home.yaml` |
 | 出版物、项目、CV、近况 | `content/publications.yaml`、`projects.yaml`、`cv.yaml`、`news.yaml` |
 | 独立页面（About、Now……） | `content/pages/<slug>.<lang>.md` |
@@ -88,7 +87,7 @@ docker compose -f compose.server.yaml up -d --build   # server 模式：按请�
 - **GitHub Pages：** 把同样两个值加为仓库 Secrets，再设置仓库变量 `SYNC_ENABLED=true`。Actions 每 30 分钟同步一次，内容有变化就提交并重新部署。
 - **server 模式：** 同步边车按间隔轮询，或者 Notion 的 webhook 直接打到站点；两种方式都让页面在下一次请求时重新渲染，发布后几秒可见。
 
-Notion 数据库怎么建、webhook 怎么握手，见[同步指南](guide/sync.md)。
+Notion 数据库怎么建见 [Notion 数据库模板](guide/notion-template.md)，NotionNext 的库可以原样接上；三种同步方式与 webhook 握手见[同步指南](guide/sync.md)。
 
 ## 主题
 
@@ -145,7 +144,7 @@ flowchart LR
 
 ## 文档
 
-从 [docs/README.md](README.md) 进入：[快速开始](guide/getting-started.md) · [配置体系](guide/configuration.md) · [Notion 同步](guide/sync.md) · [部署](guide/deployment.md) · [主题](THEMING.md) · [内容契约](CONTENT-CONTRACT.md)。`site.yaml`、`content/home.yaml` 与 `.env.example` 每个键都有行内注释。
+文档站 **https://mouwumou.github.io/Offprint/docs/** 带搜索与中英文切换；同一份 Markdown 在 [docs/](README.md)：[快速开始](guide/getting-started.md) · [配置体系](guide/configuration.md) · [Notion 数据库模板](guide/notion-template.md) · [Notion 同步](guide/sync.md) · [部署](guide/deployment.md) · [主题](THEMING.md) · [内容契约](CONTENT-CONTRACT.md)。`site.yaml`、`content/home.yaml` 与 `.env.example` 每个键都有行内注释。
 
 ## 状态
 
@@ -153,7 +152,14 @@ flowchart LR
 
 ## 贡献与安全
 
-欢迎中英文的 issue 与 PR，流程与代码约束见 [CONTRIBUTING.md](../.github/CONTRIBUTING.md)。安全漏洞请走 [SECURITY.md](../.github/SECURITY.md) 的私密渠道，不要开公开 issue。
+提问和「用 Offprint 搭了站」的展示请到 [Discussions](https://github.com/mouwumou/Offprint/discussions)。欢迎中英文的 issue 与 PR，流程与代码约束见 [CONTRIBUTING.md](../.github/CONTRIBUTING.md)。安全漏洞请走 [SECURITY.md](../.github/SECURITY.md) 的私密渠道，不要开公开 issue。
+
+## 致谢
+
+- [NotionNext](https://github.com/tangly1024/NotionNext) 证明了 Notion 侧的体验是产品的一半。它的数据库约定（`type`、`status`、`slug`、`category`、`summary`）就是 Offprint 读取的列，所以 NotionNext 的数据库可以原样接上。Offprint 的起因也正是维护者的 NotionNext 站点需要一个 serverless 平台之外的家。
+- [elog](https://elog.1874.cool) 是 `pnpm sync` 背后的 Notion 到 Markdown 同步工具。
+- [al-folio](https://github.com/alshedivat/al-folio) 定义了学术主页该有什么：按年分组、带链接和 Cite 弹窗的出版物、近况、项目、数据驱动的 CV。
+- 基于 [Astro](https://astro.build) 构建；文档站用 [Starlight](https://starlight.astro.build)。
 
 ## 许可
 

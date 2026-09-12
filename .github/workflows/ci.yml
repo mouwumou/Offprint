@@ -30,6 +30,9 @@ jobs:
       - run: pnpm sync validate
       - run: pnpm build:static
       - run: pnpm build:server
+      # Documentation site (website/, Starlight over docs/): template repository only.
+      - run: pnpm docs:build
+        if: matrix.node == 22 && github.event.repository.is_template
       - run: pnpm exec playwright install --with-deps chromium
       # Includes the dual-mode HTML parity suite and the axe audit.
       - run: pnpm e2e

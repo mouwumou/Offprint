@@ -1,12 +1,15 @@
 # 文档索引
 
+这些文档也发布为网站：**https://mouwumou.github.io/Offprint/docs/**，带搜索与中英文切换（英文版在 `docs/en/`，暂只覆盖使用指南与主题制作）。
+
 ## 使用文档（搭你自己的站，从这里开始）
 
 | 文档 | 内容 |
 | --- | --- |
 | [guide/getting-started.md](guide/getting-started.md) | 从模板到上线：生成仓库、本地跑起来、替换成你的信息 |
 | [guide/configuration.md](guide/configuration.md) | 配置体系：`site.yaml`（结构与开关）、`content/profile.yaml`（你是谁）与其余内容文件、编辑器补全 |
-| [guide/sync.md](guide/sync.md) | Notion 写作、elog 同步：从建库到"点发布即上线" |
+| [guide/notion-template.md](guide/notion-template.md) | Notion 数据库模板：列定义、新建或复制、沿用 NotionNext 的库 |
+| [guide/sync.md](guide/sync.md) | Notion 写作、elog 同步：本机、GitHub Actions 定时、server 模式秒级发布 |
 | [guide/deployment.md](guide/deployment.md) | 部署：GitHub Pages、Docker（static 与 server，任何容器平台）、其他静态托管 |
 | [THEMING.md](THEMING.md) | 主题：换主题、调 token、从示例主题 `gutter` 起步制作与分发你自己的主题 |
 | [../content/README.md](../content/README.md) | `content/` 目录里每个文件是什么、谁来写 |
@@ -15,7 +18,7 @@
 
 | 文档 | 内容 |
 | --- | --- |
-| [DECISIONS.md](DECISIONS.md) | 架构决策记录（ADR-001–032）：每个"为什么这样做"的出处 |
+| [DECISIONS.md](DECISIONS.md) | 架构决策记录（ADR-001–033）：每个"为什么这样做"的出处 |
 | [ARCHITECTURE.md](ARCHITECTURE.md) | 分层、双运行模式、仓库结构、包边界 |
 | [CONTENT-CONTRACT.md](CONTENT-CONTRACT.md) | 内容契约：所有集合的 front-matter / YAML schema，工具无关 |
 | [DYNAMIC-PUBLISHING.md](DYNAMIC-PUBLISHING.md) | server 模式发布链设计：`ContentStore`/`ContentProvider`、原子切换、revalidate |

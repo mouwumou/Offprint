@@ -3,6 +3,9 @@ dist/
 .astro/
 node_modules/
 coverage/
+website/src/content/
+website/dist/
+website/.astro/
 pnpm-lock.yaml
 content/
 

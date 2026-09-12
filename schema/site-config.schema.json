@@ -705,6 +705,61 @@
       },
       "additionalProperties": false
     },
+    "analytics": {
+      "default": {},
+      "type": "object",
+      "properties": {
+        "umami": {
+          "type": "object",
+          "properties": {
+            "websiteId": {
+              "type": "string",
+              "minLength": 1
+            },
+            "src": {
+              "default": "https://cloud.umami.is/script.js",
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": ["websiteId"],
+          "additionalProperties": false
+        },
+        "plausible": {
+          "type": "object",
+          "properties": {
+            "domain": {
+              "type": "string",
+              "minLength": 1
+            },
+            "src": {
+              "default": "https://plausible.io/js/script.js",
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": ["domain"],
+          "additionalProperties": false
+        },
+        "goatcounter": {
+          "type": "object",
+          "properties": {
+            "code": {
+              "type": "string",
+              "pattern": "^[a-z0-9-]+$"
+            },
+            "src": {
+              "default": "https://gc.zgo.at/count.js",
+              "type": "string",
+              "format": "uri"
+            }
+          },
+          "required": ["code"],
+          "additionalProperties": false
+        }
+      },
+      "additionalProperties": false
+    },
     "redirects": {
       "default": {},
       "type": "object",

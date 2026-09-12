@@ -44,6 +44,11 @@ jobs:
       - run: pnpm build:static
         env:
           SITE_URL: ${{ vars.SITE_URL || steps.pages.outputs.base_url }}
+      # Documentation site, published under <site>/docs/ — template repository only.
+      - run: pnpm docs:build && rm -rf dist/docs && cp -r website/dist dist/docs
+        if: github.event.repository.is_template
+        env:
+          DOCS_SITE_URL: ${{ vars.SITE_URL || steps.pages.outputs.base_url }}
       - uses: actions/upload-pages-artifact@v3
         with:
           path: dist

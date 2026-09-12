@@ -1,5 +1,9 @@
 # build output
 dist/
+# documentation site: generated content + build (source of truth is docs/)
+website/src/content/docs/
+website/dist/
+website/.astro/
 # e2e / Lighthouse builds, reports, sync scratch (never committed)
 .offprint/
 # generated types

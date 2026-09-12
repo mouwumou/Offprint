@@ -79,6 +79,12 @@ i18n:
 #   category: Announcements
 #   categoryId: …
 
+# ── 站点统计：可选，默认没有。配了哪个就注入哪个的脚本，只在正式构建里注入 ──────
+# analytics:
+#   umami: { websiteId: 'xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx' }   # src 默认 cloud.umami.is，自托管就加 src
+#   plausible: { domain: example.com }                             # src 默认 plausible.io
+#   goatcounter: { code: mysite }                                  # 即 https://mysite.goatcounter.com
+
 # ── 旧站跳转：旧路径 → 新路径（或 { destination, status }）────────────────────
 redirects:
   /posts/example: /blog/publishing-from-notion

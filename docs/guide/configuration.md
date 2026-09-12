@@ -4,7 +4,7 @@ Offprint 的配置只经**文本文件**，没有交互式向导，也没有后�
 
 | 层 | 文件 | 管什么 |
 | --- | --- | --- |
-| 站点 | 根目录 `site.yaml` | 站点**长什么样**：个人资料、模块开关、导航、头尾、主题、语言、评论、跳转 |
+| 站点 | 根目录 `site.yaml` | 站点**长什么样**：模块开关、导航、头尾、主题、语言、评论、统计、跳转 |
 | 内容 | `content/` | **你是谁**在 `content/profile.yaml`；页面里**显示什么**：出版物、项目、CV、独立页面、近况；首页**怎么排**在 `content/home.yaml` |
 | 扩展 | `extensions/` | **装进来**的第三方主题与部件（只读安装，可调项全部回到 `site.yaml` 配） |
 
@@ -35,6 +35,7 @@ title: { en: Hello, zh: 你好 }     # 分别指定
 - **`theme`** —— 外观。`name` 选主题（内置 `scholar` 默认、`paper`，或 `extensions/themes/` 里装的，模板自带示例 `gutter`），`accent` 只换主色，`tokens` 逐个覆盖设计变量，`typography.proseSize` 定正文字号（默认 `1.0625rem` 即 17px；中文偏好 `1rem`），`options` 是该主题自己声明的选项。装第三方主题：目录放进 `extensions/themes/`，`theme.name` 指向它；主题能改到什么程度、如何自己做一个，见 [THEMING.md](../THEMING.md)。
 - **`i18n`** —— 默认语言走根路径，其余带 `/zh` 一类前缀。`noindex: [zh]` 让某些语言**不进搜索引擎**：这些页面输出 robots noindex、不进 sitemap、不作为其他语言的 hreflang、robots.txt 里 Disallow；页面本身照常可访问。这挡得住守规矩的爬虫，挡不住存心抓取的。
 - **`comments`** —— giscus，四个参数配齐才开启。
+- **`analytics`** —— 访问统计，默认没有。三种隐私友好的方案任选其一：`umami: { websiteId }`（默认 Umami Cloud，自托管加 `src`）、`plausible: { domain }`（默认 plausible.io，自托管加 `src`）、`goatcounter: { code }`。脚本只在正式构建里注入，`pnpm dev` 不会上报；这是零 JS 默认之外唯一的可选例外。
 - **`redirects`** —— 旧路径到新路径的跳转，static 模式生成 meta-refresh 页，server 模式返回真实 3xx。
 
 ## `content/` 目录
@@ -48,7 +49,7 @@ title: { en: Hello, zh: 你好 }     # 分别指定
 | `cv.yaml` | CV，JSON Resume 格式加双语/教学等扩展；驱动 CV 页与 PDF 导出 | 你 |
 | `news.yaml` | 首页"近况"条目（可选） | 你 |
 | `pages/*.md` | 独立页面（about、now…），markdown + front-matter | 你 |
-| `posts/*.md` | 博客文章 | **同步管线独占**——开了同步后不要手改 |
+| `posts/*.md` | 博客文章 | **同步管线独占**——开了同步后不要手改；Notion 侧的数据库怎么建见 [notion-template.md](notion-template.md) |
 | `assets/` | 图片等静态资源，站内以 `assets/…` 引用 | 你；同步也会把 Notion 图片物化进来 |
 | `manifest.json` | 同步产物，server 模式的更新信号 | 同步管线独占 |
 
