@@ -23,6 +23,12 @@
 
 **子路径**：项目页默认地址是子路径部署。构建会从 `SITE_URL` 的路径派生 Astro `base`，站内链接、feed、sitemap、搜索结果全部自动带前缀。配了自定义域名后地址回到域名根，前缀自动消失。
 
+**自定义域名**：**Settings → Pages → Custom domain** 填域名，按 GitHub 的提示在 DNS 加 CNAME（子域名）或 A/AAAA 记录（根域名），勾上 Enforce HTTPS。工作流下一次运行时取得的地址就是这个域名，不需要 CNAME 文件，也不需要改仓库。
+
+**私有仓库**：付费版 GitHub 的私有仓库可以正常发布 Pages，站点公开、源码不公开。免费版需要仓库公开。
+
+**模板自己的仓库**还会在同一个站点的 `/docs/` 下发布文档站（`website/` 目录）。这一步只在模板仓库运行，实例不会跑，也不需要 `website/`。
+
 ## Docker：静态自托管
 
 `compose.static.yaml`（在仓库根目录），两个服务：`web`（Caddy 伺服构建产物）与 `sync`（按 `SYNC_INTERVAL` 秒轮询：同步 → 构建 → 原子切换产物目录）。没有 Notion 凭据时退化为只构建仓库里已提交的内容。
@@ -64,4 +70,14 @@ pnpm check:live https://你的站点地址/     # 与 SITE_URL 完全一致，�
 ```
 
 它从线上 sitemap 出发抓取每一页，检查页面引用的每个内部链接都在部署前缀之内且可达，并确认 robots.txt 与 feed 存在（开了站内搜索时还查搜索索引）。内容无关，任何实例都能跑；模板自己的 demo 就是这样验收的。
+
+## 排错
+
+| 现象 | 原因与处理 |
+| --- | --- |
+| 首页能开，其他页 404 或没有样式 | 构建时的 `SITE_URL` 与实际地址不一致，多半是手动设的仓库变量带错了子路径；删掉变量让工作流自动取得，或改成与 Pages 页显示的地址完全一致 |
+| 自定义域名生效后旧地址打不开 | 正常，GitHub 不会把 `user.github.io/repo` 转到新域名；把外部链接更新到新域名即可 |
+| Docker 里 `.env` 没被读到 | Compose 只从 compose 文件所在目录读 `.env`，两个 compose 文件都在仓库根目录，`.env` 也要在根目录；用 `docker compose -f … config` 看变量是否展开 |
+| server 模式一直显示"同步中" | 首次同步没有落地：看 `docker compose logs sync`，通常是 Notion 凭据或数据库未分享 |
+| Lighthouse 或 `check:live` 在自托管站报错 | 反向代理没有转发 `/pagefind/`、`/rss.xml` 这类静态路径，或缓存了旧版本 |
 
