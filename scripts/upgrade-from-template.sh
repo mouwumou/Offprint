@@ -13,7 +13,7 @@ rsync -a --delete \
   --exclude '/.env' --exclude '/.env.*' --exclude '/.lighthouseci/' --exclude '/test-results/' --exclude '/playwright-report/' \
   --exclude '/site.yaml' --exclude '/content/' --exclude '/extensions/' \
   --exclude '/README.md' --exclude '/docs/README.zh-CN.md' --exclude '/CLAUDE.md' --exclude '/docs/dev/' \
-  --exclude '/.github/CONTRIBUTING.md' --exclude '/.github/CODE_OF_CONDUCT.md' --exclude '/.github/SECURITY.md' \
+  --exclude '/.github/screenshots/' --exclude '/.github/CONTRIBUTING.md' --exclude '/.github/CODE_OF_CONDUCT.md' --exclude '/.github/SECURITY.md' \
   "$template/" ./
 sha=$(git -C "$template" rev-parse --short HEAD)
 echo "synced template-owned files from Offprint@$sha; review with: git status"

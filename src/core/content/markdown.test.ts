@@ -90,7 +90,7 @@ describe('renderMarkdown', () => {
     expect(latin.wordCount).toBe(5)
     expect(latin.readingTimeMinutes).toBe(1)
 
-    const zh = await renderMarkdown('抽印本是一个学术个人网站系统。')
+    const zh = await renderMarkdown('这个站是一个学术个人网站系统。')
     expect(zh.wordCount).toBe(14)
   })
 
