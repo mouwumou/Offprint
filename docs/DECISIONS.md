@@ -7,7 +7,7 @@
 ## ADR-001 项目名与包命名 — 已定
 
 **背景**：需要一个学术语境、简短、npm 可用的名字。
-**决定**：项目名 **Offprint**（中文：抽印本）。仓库 `offprint`；npm scope `@offprint`：`@offprint/core`、`@offprint/sync`；CLI `create-offprint`；同步命令 `offprint-sync`。
+**决定**：项目名 **Offprint**。中文不另起名：早期用过「抽印本」，2026-09-12 起中英文统一只叫 Offprint。仓库 `offprint`；npm scope `@offprint`：`@offprint/core`、`@offprint/sync`；CLI `create-offprint`；同步命令 `offprint-sync`。
 **后果**：npm 上 `offprint` 未被占用（2026-08-22 核查）；GitHub 存在同名小组织，不影响。
 
 ## ADR-002 内容契约工具无关 — 已定

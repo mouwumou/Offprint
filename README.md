@@ -1,63 +1,159 @@
-# Offprint
+<h1 align="center">Offprint</h1>
 
-> Offprint (抽印本) — an open-source, pluggable, easy-to-deploy academic personal website: homepage, blog, publications, projects and CV in one site.
+<p align="center">
+  An academic personal website you write in Notion and deploy anywhere:<br>
+  a static site on GitHub Pages, or a server-rendered container that goes live the moment you press <em>publish</em>.
+</p>
 
-[中文说明](docs/README.zh-CN.md)
+<p align="center">
+  <a href="https://mouwumou.github.io/Offprint/"><strong>Live demo</strong></a> ·
+  <a href="https://github.com/mouwumou/Offprint/generate"><strong>Use this template</strong></a> ·
+  <a href="docs/README.md">Documentation</a> ·
+  <a href="docs/README.zh-CN.md">中文</a>
+</p>
 
-[![Use this template](https://img.shields.io/badge/GitHub-Use_this_template-2ea44f?logo=github)](https://github.com/mouwumou/Offprint/generate)
+<p align="center">
+  <a href="https://github.com/mouwumou/Offprint/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/mouwumou/Offprint/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+  <img alt="License: MIT" src="https://img.shields.io/badge/license-MIT-blue">
+  <img alt="Astro 7" src="https://img.shields.io/badge/Astro-7-ff5d01?logo=astro&logoColor=white">
+  <img alt="Node 22+" src="https://img.shields.io/badge/node-%E2%89%A5%2022-339933?logo=node.js&logoColor=white">
+</p>
 
-Offprint does two things most static site generators do not:
+<p align="center">
+  <a href="https://mouwumou.github.io/Offprint/"><img src=".github/screenshots/scholar-home.png" alt="Home page of the demo site in the default scholar theme" width="820"></a>
+</p>
 
-- **Write elsewhere, publish here.** Blog posts are written in Notion (or any tool that can emit the documented markdown contract), converted by [elog](https://elog.1874.cool), and consumed by the site. The site depends on no editor and never calls Notion at runtime.
-- **One codebase, two runtimes.** The same template compiles to a fully static site (GitHub Pages, any static host) or runs server-rendered in a container (Docker on a VPS, Cloudflare Containers — any host with a real runtime and a persistent volume), where "publish in Notion" goes live within seconds. Both modes emit identical HTML.
+## Why Offprint
 
-Academic details are defaults, not add-ons:
+Most academic site generators make you choose: write Markdown and manage a repository, or write in a CMS and accept its hosting. Offprint separates writing, content and hosting so each can be swapped without touching the others.
 
-- Bilingual routing and content fields (English / Chinese), default language at the root path;
-- publication list with a Cite dialog (BibTeX / APA / MLA / Chicago) and Highwire Press meta tags for Google Scholar;
-- KaTeX math, Shiki code highlighting, in-text citations with a reference list;
-- a CV page driven by JSON Resume, with PDF export;
-- canonical / OpenGraph / JSON-LD, RSS / Atom / JSON feeds, sitemap, generated OG images;
-- site search (pagefind), light/dark theme, giscus comments, legacy-URL redirects;
-- zero JavaScript by default — only truly interactive parts (theme toggle, Cite, search) ship scripts.
+- **Write where you already write.** Blog posts come from a Notion database through [elog](https://elog.1874.cool) and land in your repository as plain Markdown with a documented front-matter contract. Markdown written by hand goes through the same door. The site never calls Notion at build or run time, so nothing breaks when Notion is slow, changes, or is gone.
+- **Deploy on whatever you have.** One codebase builds a fully static site (a GitHub Pages workflow is included) or runs as a Node server in a container (Docker Compose files are included), where "publish in Notion" is live within seconds. Both modes produce identical HTML, and CI proves it on every commit. There are no serverless adapters and no platform-specific files to maintain.
+- **Academic by default.** A publication list with a Cite dialog and the Highwire Press meta tags Google Scholar reads, `[@key]` citations rendered into a reference list, KaTeX, a CV from JSON Resume, English and Chinese as first-class languages, and zero JavaScript unless a component truly needs it.
 
-Themes, page widgets and modules are pluggable: two built-in themes (`scholar`, the academic default, and `paper`, a magazine feel), third-party themes drop into `extensions/`, and every knob lives in one `site.yaml`. A sample theme, `gutter`, ships in `extensions/themes/` with a per-file walkthrough; copy it to start your own ([docs/THEMING.md](docs/THEMING.md)).
+## What you get
+
+| | |
+| --- | --- |
+| **Pages** | A home page assembled from blocks you order in `content/home.yaml`; a blog with categories, tags, series, related posts and a table of contents; publications grouped by year with a Cite dialog (BibTeX, APA, MLA, Chicago) and optional per-paper pages; projects; a CV from JSON Resume with a print stylesheet, or a link straight to your PDF; standalone pages such as About and Now. Switch any module off and it leaves the navigation, the routes and the bundle. |
+| **Writing** | Notion → elog → Markdown, or Markdown by hand. KaTeX math, Shiki code highlighting, `[@key]` citations with a reference list, callout blocks, cover images. Images from Notion are downloaded into `content/assets/`, so posts never depend on Notion's expiring URLs. |
+| **Findability** | Canonical, Open Graph, JSON-LD and Highwire Press meta; generated OG images; RSS, Atom and JSON feeds; sitemap; site search with pagefind and no external service; redirects for old URLs; per-language `noindex`. |
+| **Languages** | English and Chinese routing with the default language at the root path, every page reachable in both, `hreflang` alternates, and content fields written as `{ en, zh }` or a single string. |
+| **Appearance** | Two built-in themes (`scholar`, the academic default, and `paper`, a magazine feel), a shipped sample theme (`gutter`), light and dark mode, and one `site.yaml` for every knob. A theme is a plain directory: tokens in `theme.json`, restyling through stable `data-part` hooks in `theme.css`, whole widgets replaceable. |
+| **Runtime** | Astro 7. Zero JavaScript by default; islands only for the theme toggle, the Cite dialog and search. CI runs a dual-mode HTML parity check, a sub-path deployment check, an axe accessibility audit, a phone-viewport check and Lighthouse with a 0.95 threshold in every category. |
 
 ## Quick start
 
+### Path A: GitHub Pages, nothing to install
+
+1. Click **Use this template** and create your repository. A private repository works on paid GitHub plans.
+2. In the new repository open *Settings → Pages* and set *Source* to **GitHub Actions**.
+3. Push, or wait for the first workflow run. Your site is at `https://<user>.github.io/<repo>/`. The workflow detects the URL, sub-path included; for a custom domain set the `SITE_URL` repository variable.
+
+### Path B: on your machine
+
 ```bash
 pnpm install
-pnpm dev            # http://localhost:4321 with the sample content
-pnpm build:static   # fully static build → dist/
+pnpm dev             # http://localhost:4321 with the sample content
+pnpm build:static    # static site → dist/
+pnpm build:server    # server bundle (Node adapter) → dist/
 ```
 
-Change three things and it is your site: `content/profile.yaml` (who you are), `site.yaml` (which modules, which theme), the rest of `content/` (publications, projects, CV, standalone pages, home-page layout), and the blog (drop markdown into `content/posts/`, or connect Notion). Step-by-step in [docs/guide/getting-started.md](docs/guide/getting-started.md).
+### Path C: Docker, static or server
 
-## Use as a template
+```bash
+cp .env.example .env                            # SITE_URL, plus NOTION_TOKEN / NOTION_DB if you sync
+docker compose -f compose.static.yaml up -d --build   # Caddy serves the build; a sidecar re-syncs, rebuilds and swaps releases
+docker compose -f compose.server.yaml up -d --build   # server mode: renders per request; Notion webhook or polling keeps it fresh
+```
 
-This repository is a **public template**: it ships sample content, builds self-sufficiently, and its CI and demo deploy use only `GITHUB_TOKEN` — **it holds no secrets and never will**. Your site is an **instance repository** generated from it: click "Use this template" above (cleaner than a fork — no development history).
+Any host with a container runtime and a persistent volume works: a VPS, Cloudflare Containers, a home server. Details, custom domains and verification in the [deployment guide](docs/guide/deployment.md).
 
-Everything an instance may need, all in your own repository's Settings, all optional:
+## Make it yours
+
+| You want to change | Edit |
+| --- | --- |
+| Who you are: name, title, affiliation, photo, bio, links | `content/profile.yaml` |
+| Which modules exist, navigation, theme, languages, comments, redirects | `site.yaml` |
+| The blocks on the home page and their order | `content/home.yaml` |
+| Publications, projects, CV, news | `content/publications.yaml`, `projects.yaml`, `cv.yaml`, `news.yaml` |
+| Standalone pages (About, Now, …) | `content/pages/<slug>.<lang>.md` |
+| Blog posts | Notion through sync, or `content/posts/<urlname>.<lang>.md` |
+
+Every file is validated against a schema at build time: a typo fails the build and names the line. The `schema/` directory holds JSON Schemas, so a `$schema` comment gives you completion and inline errors in VS Code. Step by step in the [getting-started guide](docs/guide/getting-started.md); every option in the [configuration guide](docs/guide/configuration.md).
+
+### Publishing from Notion
+
+- **Locally:** put `NOTION_TOKEN` and `NOTION_DB` in `.env` and run `pnpm sync`. Posts are normalised, validated and swapped into `content/posts/` atomically.
+- **GitHub Pages:** add the same two values as repository secrets and set the repository variable `SYNC_ENABLED=true`. Actions syncs every 30 minutes, commits changed content and redeploys.
+- **Server mode:** the sync sidecar polls on an interval, or Notion's webhook hits the site directly; either way pages re-render on the next request, seconds after you publish.
+
+The [sync guide](docs/guide/sync.md) covers the Notion database setup and the webhook handshake.
+
+## Themes
+
+<p align="center">
+  <img src=".github/screenshots/scholar-home.png" alt="scholar theme" width="32%">
+  <img src=".github/screenshots/paper-home.png" alt="paper theme" width="32%">
+  <img src=".github/screenshots/gutter-home.png" alt="gutter theme" width="32%">
+</p>
+<p align="center"><sub><code>scholar</code> (default) · <code>paper</code> · <code>gutter</code> (the shipped sample, which also restyles the publications page)</sub></p>
+
+A theme is a directory under `extensions/themes/` with three optional layers: `theme.json` (colour tokens for light and dark, font stacks, voice presets, the theme's own options), `theme.css` (restyle anything through stable `data-part` hooks, no Tailwind class names involved) and `widgets/` (replace a whole part, such as the publication row or the footer, with the same props as the built-in). The sample theme in `extensions/themes/gutter/` demonstrates all three with a per-file README; copy it, rename it, and run `pnpm theme:check <name>` to prove your theme against both builds and the full e2e suite. Full contract in [docs/THEMING.md](docs/THEMING.md).
+
+## How it works
+
+```mermaid
+flowchart LR
+  N[Notion database] -->|elog| S[sync: normalise, validate, swap atomically]
+  H[Markdown by hand] --> C
+  S --> C[content/ · Markdown + YAML, schema-validated]
+  C --> P[ContentProvider]
+  P -->|pnpm build:static| D[dist/ · static HTML]
+  P -->|pnpm build:server| R[Node server · renders per request]
+```
+
+Four rules keep the two runtimes from drifting apart: pages read content only through the provider, never from the filesystem; every collection is validated by one schema at build time and at request time; a module switched off produces no route, no navigation entry and no bundle; and only the sync layer knows Notion exists. Design documents: [architecture](docs/ARCHITECTURE.md), [architecture decisions](docs/DECISIONS.md), [content contract](docs/CONTENT-CONTRACT.md), [server-mode publishing](docs/DYNAMIC-PUBLISHING.md).
+
+## Template and instance
+
+This repository is a **public template**. It ships sample content, builds on its own, and its CI and demo deploy use only `GITHUB_TOKEN`: it holds no secrets and never will. Your site is an **instance repository** generated from it with *Use this template*, which is cleaner than a fork because it carries no development history. Everything an instance may need lives in your own repository's settings, and all of it is optional:
 
 | Kind | Name | When |
 | --- | --- | --- |
-| Variable | `SITE_URL` | Detected automatically on GitHub Pages (sub-paths like `user.github.io/repo` included); set it on other platforms |
+| Variable | `SITE_URL` | Detected automatically on GitHub Pages, sub-paths included; set it for a custom domain or another platform |
 | Variable | `SYNC_ENABLED=true` | To let Actions sync from Notion every 30 minutes |
 | Secret | `NOTION_TOKEN`, `NOTION_DB` | Same |
 
-With nothing set, a push yields a GitHub Pages static site; the sync workflow shows as skipped. Self-hosted secrets (Docker, static or server mode) live only in a local `.env` on the server.
+With nothing set, a push yields a static site on GitHub Pages and the sync workflow shows as skipped. Self-hosted secrets live only in the server's local `.env`. To pick up later template releases, run `scripts/upgrade-from-template.sh` from a checkout of this repository's `main`; it never touches your content, configuration or extensions.
+
+## Commands
+
+| Command | What it does |
+| --- | --- |
+| `pnpm dev` | Development server with the sample content |
+| `pnpm build:static` / `pnpm build:server` | Static site / server bundle |
+| `pnpm sync` | Notion → `content/` (needs `.env`); `pnpm sync validate` checks `content/` only |
+| `pnpm test` | Unit tests: schemas, store, provider, Markdown pipeline |
+| `pnpm e2e` | Playwright: smoke, dual-mode parity, sub-path, accessibility, phone viewport |
+| `pnpm lhci` | Lighthouse CI, desktop preset, 0.95 thresholds |
+| `pnpm theme:check <name>` | Both builds plus the whole e2e suite against one theme |
+| `pnpm gen:schema` | Regenerate the JSON Schemas used for editor completion |
+| `pnpm check:live <url>` | Crawl a deployed site's sitemap and report broken pages |
+
+Requirements: Node 22 or newer and pnpm.
 
 ## Documentation
 
-Start at [docs/README.md](docs/README.md). The guides are currently written in Chinese: [getting started](docs/guide/getting-started.md) · [configuration](docs/guide/configuration.md) · [Notion sync](docs/guide/sync.md) · [deployment](docs/guide/deployment.md) · [theming](docs/THEMING.md) · [content contract](docs/CONTENT-CONTRACT.md). Design documents (architecture, ADRs, the publishing chain) share the same index; `site.yaml` and `.env.example` carry inline comments.
+Start at [docs/README.md](docs/README.md). The guides are currently written in Chinese: [getting started](docs/guide/getting-started.md) · [configuration](docs/guide/configuration.md) · [Notion sync](docs/guide/sync.md) · [deployment](docs/guide/deployment.md) · [theming](docs/THEMING.md) · [content contract](docs/CONTENT-CONTRACT.md). `site.yaml`, `content/home.yaml` and `.env.example` carry inline comments for every key.
 
 ## Status
 
-All core features are complete and gated by dual-mode HTML parity e2e, a sub-path deployment e2e, accessibility (axe) and Lighthouse thresholds; the open-source release is being finalised. Development happens on the `dev` branch; `main` is a clean release snapshot without the working documents. Task list: [ROADMAP on dev](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/ROADMAP.md).
+All core features are complete and gated in CI by the dual-mode parity, sub-path, accessibility, phone-viewport and Lighthouse checks, plus the theme gate for `paper` and `gutter`. Development happens on the `dev` branch; `main` is a clean release snapshot without the working documents. Task list: [ROADMAP on dev](https://github.com/mouwumou/Offprint/blob/dev/docs/dev/ROADMAP.md).
 
-## Contributing & security
+## Contributing and security
 
-Issues and pull requests are welcome, in English or Chinese — see [CONTRIBUTING.md](.github/CONTRIBUTING.md) for the workflow and the code constraints. Report vulnerabilities privately as described in [SECURITY.md](.github/SECURITY.md), not in a public issue.
+Issues and pull requests are welcome in English or Chinese; see [CONTRIBUTING.md](.github/CONTRIBUTING.md) for the workflow and the code constraints. Report vulnerabilities privately as described in [SECURITY.md](.github/SECURITY.md), not in a public issue.
 
 ## License
 
