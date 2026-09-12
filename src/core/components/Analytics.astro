@@ -1,0 +1,11 @@
+---
+// Site analytics from site.yaml `analytics`: the one opt-in exception to the
+// zero-JS default. Production builds only, so `pnpm dev` never reports visits;
+// both runtime modes are production builds, so their HTML stays identical.
+import config from '../config/current'
+import { analyticsScripts } from '../seo/analytics'
+
+const scripts = import.meta.env.PROD ? analyticsScripts(config.analytics) : []
+---
+
+{scripts.map((script) => <script is:inline src={script.src} {...script.attrs} />)}

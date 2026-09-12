@@ -224,6 +224,37 @@ export const commentsSchema = z
     { message: 'comments.enabled requires repo, repoId, category, and categoryId' },
   )
 
+// ── analytics ────────────────────────────────────────────────────────────────
+
+/**
+ * Site analytics, off by default. Each provider is one small object; the
+ * matching script tag is injected into <head> of production builds only
+ * (the one opt-in exception to the zero-JS default). Usually one is set.
+ */
+export const analyticsSchema = z.strictObject({
+  /** Umami (cloud or self-hosted); `src` is the tracker script URL. */
+  umami: z
+    .strictObject({
+      websiteId: z.string().min(1),
+      src: z.url().default('https://cloud.umami.is/script.js'),
+    })
+    .optional(),
+  /** Plausible (plausible.io or self-hosted). */
+  plausible: z
+    .strictObject({
+      domain: z.string().min(1),
+      src: z.url().default('https://plausible.io/js/script.js'),
+    })
+    .optional(),
+  /** GoatCounter: `code` is the subdomain of <code>.goatcounter.com. */
+  goatcounter: z
+    .strictObject({
+      code: z.string().regex(/^[a-z0-9-]+$/, 'expected the goatcounter site code'),
+      src: z.url().default('https://gc.zgo.at/count.js'),
+    })
+    .optional(),
+})
+
 // ── seo ──────────────────────────────────────────────────────────────────────
 
 export const seoSchema = z.strictObject({
@@ -252,6 +283,7 @@ export function buildSiteConfigSchema() {
     seo: seoSchema.prefault({}),
     runtime: runtimeSchema.prefault({}),
     comments: commentsSchema.prefault({}),
+    analytics: analyticsSchema.prefault({}),
     /** Old URL → new URL; formerly the standalone redirects.yaml. */
     redirects: redirectsSchema.prefault({}),
   })
