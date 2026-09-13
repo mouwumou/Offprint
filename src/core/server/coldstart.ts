@@ -14,9 +14,14 @@ export async function coldStartResponse(pathname: string): Promise<Response | nu
     return null
   const store = getStore()
   const manifest = await store.manifest().catch(() => null)
-  // Hand-written content ships without a manifest (docs/CONTENT-CONTRACT.md §1) —
-  // any posts on disk also count as ready.
-  if (manifest !== null || (await store.list('posts')).length > 0) {
+  // Hand-written content ships without a manifest (docs/CONTENT-CONTRACT.md §1):
+  // posts on disk, or a profile alone (a site with the blog switched off),
+  // count as ready. Only a truly empty volume waits for the first sync.
+  if (
+    manifest !== null ||
+    (await store.list('posts')).length > 0 ||
+    (await store.read('profile.yaml')) !== null
+  ) {
     contentReady = true
     return null
   }
