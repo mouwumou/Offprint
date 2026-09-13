@@ -1,5 +1,11 @@
 import type { APIRoute } from 'astro'
-import { checkNotionSignature, checkSecret, createRateLimiter, json } from '../guard'
+import {
+  checkNotionSignature,
+  checkSecret,
+  createRateLimiter,
+  json,
+  readBodyLimited,
+} from '../guard'
 import { runSyncProcess, syncFlight } from '../sync-state'
 
 const allow = createRateLimiter(6)
@@ -20,10 +26,8 @@ export const POST: APIRoute = async ({ request }) => {
   // flood cannot spin the body read or the token log line.
   if (!allow()) return json({ error: 'rate limited' }, 429)
 
-  const declared = Number(request.headers.get('content-length') ?? 0)
-  if (declared > MAX_BODY) return json({ error: 'payload too large' }, 413)
-  const rawBody = await request.text()
-  if (rawBody.length > MAX_BODY) return json({ error: 'payload too large' }, 413)
+  const rawBody = await readBodyLimited(request, MAX_BODY)
+  if (rawBody === null) return json({ error: 'payload too large' }, 413)
 
   // Notion's one-time subscription handshake comes BEFORE any secret exists
   // (the verification_token IS the future signing secret), so it cannot be

@@ -102,3 +102,27 @@ export function createSingleFlight<T>(
     last: () => last,
   }
 }
+
+/**
+ * Read a request body up to `limit` bytes; null when it is larger. Reads the
+ * stream chunk by chunk, so a chunked request without Content-Length cannot
+ * buffer past the cap either (Content-Length alone is advisory).
+ */
+export async function readBodyLimited(request: Request, limit: number): Promise<string | null> {
+  if (Number(request.headers.get('content-length') ?? 0) > limit) return null
+  const reader = request.body?.getReader()
+  if (reader === undefined) return ''
+  const chunks: Uint8Array[] = []
+  let size = 0
+  for (;;) {
+    const { done, value } = await reader.read()
+    if (done) break
+    size += value.byteLength
+    if (size > limit) {
+      await reader.cancel().catch(() => {})
+      return null
+    }
+    chunks.push(value)
+  }
+  return new TextDecoder().decode(Buffer.concat(chunks))
+}
