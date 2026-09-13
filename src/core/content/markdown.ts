@@ -204,9 +204,11 @@ export interface RenderOptions {
  */
 export function joinBrokenTableRows(markdown: string): string {
   const out: string[] = []
+  const lines = markdown.split('\n')
   let fence: string | null = null
   let open: string | null = null
-  for (const line of markdown.split('\n')) {
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i] ?? ''
     const fenceMatch = /^\s*(`{3,}|~{3,})/.exec(line)
     if (fenceMatch) {
       if (fence === null) fence = fenceMatch[1] ?? null
@@ -218,16 +220,28 @@ export function joinBrokenTableRows(markdown: string): string {
     }
     const trimmed = line.trim()
     if (open !== null) {
-      open = `${open} ${trimmed}`
-      if (trimmed.endsWith('|') || trimmed === '') {
+      if (trimmed === '' || trimmed.startsWith('|')) {
+        // The broken row ended without its closing pipe; this line is a new row or a break.
         out.push(open)
         open = null
+      } else {
+        open = `${open} ${trimmed}`
+        if (trimmed.endsWith('|')) {
+          out.push(open)
+          open = null
+        }
+        continue
       }
-      continue
     }
     if (trimmed.startsWith('|') && !trimmed.endsWith('|') && trimmed.length > 1) {
-      open = line
-      continue
+      // A row is only "broken" when its continuation follows on the next line.
+      // A next line that is blank or itself a row means this row merely omits
+      // the trailing pipe, which GFM allows — leave it alone.
+      const next = lines[i + 1]?.trim() ?? ''
+      if (next !== '' && !next.startsWith('|')) {
+        open = line
+        continue
+      }
     }
     out.push(line)
   }

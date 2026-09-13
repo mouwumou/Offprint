@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import { checkSecret, createRateLimiter, createSingleFlight } from './guard'
+import { checkSecret, createRateLimiter, createSingleFlight, readBodyLimited } from './guard'
 
 describe('checkSecret', () => {
   const original = process.env['REVALIDATE_SECRET']
@@ -109,5 +109,30 @@ describe('checkNotionSignature', () => {
         body,
       ),
     ).toBeNull()
+  })
+})
+
+describe('readBodyLimited', () => {
+  function chunked(chunks: string[]): Request {
+    const encoder = new TextEncoder()
+    const body = new ReadableStream<Uint8Array>({
+      start(controller) {
+        for (const chunk of chunks) controller.enqueue(encoder.encode(chunk))
+        controller.close()
+      },
+    })
+    // No Content-Length: exactly the request shape the header check cannot see.
+    return new Request('http://x', { method: 'POST', body, duplex: 'half' } as RequestInit)
+  }
+
+  it('returns small bodies and rejects oversized ones, chunked or declared', async () => {
+    expect(await readBodyLimited(chunked(['{"a":', '1}']), 64)).toBe('{"a":1}')
+    expect(
+      await readBodyLimited(chunked(Array.from({ length: 10 }, () => 'x'.repeat(10))), 64),
+    ).toBeNull()
+    expect(
+      await readBodyLimited(new Request('http://x', { method: 'POST', body: 'x'.repeat(100) }), 64),
+    ).toBeNull()
+    expect(await readBodyLimited(new Request('http://x'), 64)).toBe('')
   })
 })

@@ -36,3 +36,13 @@ First stable release: the template, its documentation and its deployment paths a
 ### Documentation
 
 - Bilingual documentation site (Starlight) at `/docs/` of the demo site, built from `docs/`; guides in English and Chinese, a Notion database template guide, troubleshooting sections.
+
+### Fixed (pre-release audit)
+
+- Sync: two Notion documents resolving to the same slug and language are reported as an error and the first is kept, instead of the second silently overwriting it.
+- Server mode: the webhook endpoint reads its body as a stream and stops at 64 KiB, so requests without `Content-Length` can no longer buffer past the cap.
+- Server mode: a hand-written site with no posts and no manifest (blog switched off) is ready immediately instead of serving the "syncing" page forever.
+- Docker: container start seeds `pages/` and the YAML files by replacement, so deletions in the repository reach the content volume; `assets/` drops only files the image seeded earlier and no longer ships.
+- Markdown: GFM tables that omit the trailing pipe render as tables again; only rows whose continuation follows on the next line are joined.
+- Config: `i18n.noindex` refuses the default language with a clear message; hiding it used to empty the server-mode sitemap while the static sitemap ignored it.
+- Server mode: the content version now includes `profile.yaml`, so feed ETags and cached OG images refresh after a profile edit between syncs.

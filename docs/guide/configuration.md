@@ -33,7 +33,7 @@ title: { en: Hello, zh: 你好 }     # 分别指定
 - **`layout.width`** —— 全站栏宽，`narrow`（学术窄栏，默认）或 `wide`（配 paper 主题）。全站统一，含导航与页脚。
 - **`header` / `footer`** —— 头尾开关：站名两行、搜索、主题切换、语言切换、RSS；`footer.colophon` 给文字才显示署名行，默认只有 © 年份——模板不会在你的站上给自己署名。默认学术形态是纯导航行（名字已在首页正文里）。
 - **`theme`** —— 外观。`name` 选主题（内置 `scholar` 默认、`paper`，或 `extensions/themes/` 里装的，模板自带示例 `gutter`），`accent` 只换主色，`tokens` 逐个覆盖设计变量，`typography.proseSize` 定正文字号（默认 `1.0625rem` 即 17px；中文偏好 `1rem`），`options` 是该主题自己声明的选项。装第三方主题：目录放进 `extensions/themes/`，`theme.name` 指向它；主题能改到什么程度、如何自己做一个，见 [THEMING.md](../THEMING.md)。
-- **`i18n`** —— 默认语言走根路径，其余带 `/zh` 一类前缀。`noindex: [zh]` 让某些语言**不进搜索引擎**：这些页面输出 robots noindex、不进 sitemap、不作为其他语言的 hreflang、robots.txt 里 Disallow；页面本身照常可访问。这挡得住守规矩的爬虫，挡不住存心抓取的。
+- **`i18n`** —— 默认语言走根路径，其余带 `/zh` 一类前缀。`noindex: [zh]` 让某些语言**不进搜索引擎**：这些页面输出 robots noindex、不进 sitemap、不作为其他语言的 hreflang、robots.txt 里 Disallow；页面本身照常可访问。这挡得住守规矩的爬虫，挡不住存心抓取的。默认语言不能放进 `noindex`：它在根路径上，没有前缀可以用来隐藏；想隐藏它就把另一种语言设为默认。
 - **`comments`** —— giscus，四个参数配齐才开启。
 - **`analytics`** —— 访问统计，默认没有。三种隐私友好的方案任选其一：`umami: { websiteId }`（默认 Umami Cloud，自托管加 `src`）、`plausible: { domain }`（默认 plausible.io，自托管加 `src`）、`goatcounter: { code }`。脚本只在正式构建里注入，`pnpm dev` 不会上报；这是零 JS 默认之外唯一的可选例外。
 - **`redirects`** —— 旧路径到新路径的跳转，static 模式生成 meta-refresh 页，server 模式返回真实 3xx。

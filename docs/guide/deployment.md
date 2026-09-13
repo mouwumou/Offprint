@@ -51,7 +51,7 @@ docker compose -f compose.server.yaml config | grep REVALIDATE_SECRET   # 确认
 docker compose -f compose.server.yaml up -d --build
 ```
 
-运行模式在构建期就固定进了产物（`pnpm build:server`），启动进程时不必再设 `RUNTIME_MODE`。首次冷启动内容卷为空时，站点返回一个双语的"同步中"页（503），首次同步落地后自动恢复。之后把 Notion webhook 指向 `https://<你的域名>/api/sync` 即得秒级发布（握手流程见 [sync.md](sync.md)）。
+运行模式在构建期就固定进了产物（`pnpm build:server`），启动进程时不必再设 `RUNTIME_MODE`。容器每次启动都用镜像里的内容播种内容卷：`pages/` 和各 yaml 以镜像为准，仓库里删掉的文件在卷里也会消失；`assets/` 与同步共用，只删镜像上次播种过、这次不再有的文件，同步下载的图片保留；`posts/` 与 `manifest.json` 归同步，只在卷为空时播种一次。首次冷启动内容卷为空时，站点返回一个双语的"同步中"页（503），首次同步落地后自动恢复。之后把 Notion webhook 指向 `https://<你的域名>/api/sync` 即得秒级发布（握手流程见 [sync.md](sync.md)）。
 
 同一镜像可部署到任何有持久卷和常驻进程的容器平台（VPS、Cloudflare Containers、Fly.io 等；除 Docker 本地与远程测试机外未逐一实测）。**不支持 serverless 平台**：没有持久磁盘、函数有超时、多实例各自为政，server 模式的内容卷、同步子进程与进程内缓存都无从谈起。
 

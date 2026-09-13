@@ -128,7 +128,7 @@ export interface ContentProvider {
   getProfile(): Promise<Profile>              // content/profile.yaml；缺失即报错（ADR-028）
   /** 失效缓存；不传参数则全部失效 */
   revalidate(keys?: string[]): Promise<void>
-  /** 当前内容版本（manifest hash），用于 ETag / 304 */
+  /** 当前内容版本（manifest 哈希，并混入 manifest 不追踪的 profile.yaml 内容），用于 ETag / 304 与 OG 图缓存 */
   version(): Promise<string>
 }
 ```

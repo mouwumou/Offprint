@@ -247,6 +247,12 @@ describe('i18n.noindex', () => {
     expect(defineConfig({ i18n: { noindex: ['zh'] } }).i18n.noindex).toEqual(['zh'])
     expect(() => defineConfig({ i18n: { noindex: ['fr'] } })).toThrow(/noindex/)
   })
+
+  it('refuses to hide the default language (it has no prefix to hide by)', async () => {
+    const { defineConfig } = await import('./define-config')
+    expect(() => defineConfig({ i18n: { noindex: ['en'] } })).toThrow(/default language/)
+    expect(defineConfig({ i18n: { default: 'zh', noindex: ['en'] } }).i18n.noindex).toEqual(['en'])
+  })
 })
 
 describe('modules.blog options', () => {
