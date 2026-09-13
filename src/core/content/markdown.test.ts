@@ -197,6 +197,16 @@ describe('Notion export tolerance', () => {
     expect(html).toContain('层数 number of layers')
   })
 
+  it('leaves GFM tables that omit the trailing pipe intact', async () => {
+    const md = '| a | b\n| --- | ---\n| 1 | 2\n\nafter\n'
+    expect(joinBrokenTableRows(md)).toBe(md)
+    const { html } = await renderMarkdown(md)
+    expect(html).toContain('<table>')
+    expect(html).toContain('<td>2</td>')
+    // A lone pipe-led line before a blank line is not a broken row either.
+    expect(joinBrokenTableRows('| just this\n\nnext\n')).toBe('| just this\n\nnext\n')
+  })
+
   it('leaves pipes inside fenced code alone', () => {
     const md = '```\n| a\n| b\n```\n'
     expect(joinBrokenTableRows(md)).toBe(md)
