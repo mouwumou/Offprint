@@ -69,7 +69,7 @@ header:
 i18n:
   default: en
   locales: [en, zh]
-#   noindex: [zh]               # 这些语言不进搜索引擎（robots noindex + 不进 sitemap + Disallow）
+#   noindex: [zh]               # 这些语言不进搜索引擎（robots noindex + 不进 sitemap + Disallow）；默认语言不能在此列
 
 # ── 评论（giscus）：四个参数配齐才会开启 ──────────────────────────────────────
 # comments:

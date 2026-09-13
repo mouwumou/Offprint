@@ -188,6 +188,13 @@ export const i18nSchema = z
     message: 'i18n.noindex entries must be listed in i18n.locales',
     path: ['noindex'],
   })
+  // The default locale lives at the root path, so it has no prefix to hide
+  // by; hiding it would have to hide every page. Ask for a different default.
+  .refine((value) => !value.noindex.includes(value.default), {
+    message:
+      'i18n.noindex cannot include the default language (it lives at the root path) — make another locale the default instead',
+    path: ['noindex'],
+  })
 
 // ── runtime ──────────────────────────────────────────────
 
