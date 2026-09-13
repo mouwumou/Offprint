@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { createRequire } from 'node:module'
-import { mkdir, readFile, rm } from 'node:fs/promises'
+import { mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { diffManifests, manifestSchema, type Manifest } from '../core/schema'
 import { atomicSwitch } from './atomic'
@@ -9,7 +9,7 @@ import { materializeImages } from './images'
 import { acquireSyncLock } from './lock'
 import { buildManifest } from './manifest'
 import { notifyRevalidate } from './notify'
-import { stageDocuments } from './stage'
+import { stageDocuments, type SyncSummary } from './stage'
 
 export type { SyncSummary } from './stage'
 
