@@ -1,11 +1,12 @@
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises'
 import { tmpdir } from 'node:os'
 import { join } from 'node:path'
-import { afterEach, beforeEach, describe, expect, it } from 'vitest'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { atomicSwitch } from './atomic'
 import { detectLang } from './lang-detect'
 import { buildManifest } from './manifest'
 import { normalizeDoc } from './normalize'
+import { stageDocuments } from './stage'
 import { validateContent } from './validate'
 
 // A raw elog export in the exact shape observed (NotionNext database).
@@ -172,6 +173,37 @@ describe('acquireSyncLock (cross-process mutex)', () => {
       const stolen = await acquireSyncLock(root)
       await stolen()
     } finally {
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+})
+
+describe('stageDocuments', () => {
+  it('reports a second document that resolves to the same file instead of overwriting the first', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const root = await mkdtemp(join(tmpdir(), 'offprint-stage-'))
+    const rawDir = join(root, 'raw')
+    await mkdir(rawDir)
+    const doc = (title: string): string =>
+      `---\ntitle: ${title}\ntype: Post\nslug: same-slug\ndate: '2024-01-01 00:00:00'\nupdated: '2024-01-01 00:00:00'\n---\n\nEnglish body with plenty of latin characters to detect the language.\n`
+    await writeFile(join(rawDir, 'a.md'), doc('First'))
+    await writeFile(join(rawDir, 'b.md'), doc('Second'))
+    try {
+      const summary = await stageDocuments({
+        rawDir,
+        staging: root,
+        defaultLang: 'en',
+        includePages: false,
+      })
+      expect(summary.posts).toBe(1)
+      expect(summary.errors).toHaveLength(1)
+      expect(summary.errors[0]?.path).toBe('raw/b.md')
+      expect(summary.errors[0]?.issues[0]).toMatch(/duplicate posts\/same-slug\.en\.md/)
+      expect(await readFile(join(root, 'posts', 'same-slug.en.md'), 'utf8')).toContain(
+        'title: First',
+      )
+    } finally {
+      warn.mockRestore()
       await rm(root, { recursive: true, force: true })
     }
   })

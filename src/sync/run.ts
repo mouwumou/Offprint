@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process'
 import { createRequire } from 'node:module'
-import { mkdir, readdir, readFile, rm, writeFile } from 'node:fs/promises'
+import { mkdir, readFile, rm } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import { diffManifests, manifestSchema, type Manifest } from '../core/schema'
 import { atomicSwitch } from './atomic'
@@ -8,15 +8,10 @@ import { elogConfigSource } from './elog-config'
 import { materializeImages } from './images'
 import { acquireSyncLock } from './lock'
 import { buildManifest } from './manifest'
-import { normalizeDoc } from './normalize'
 import { notifyRevalidate } from './notify'
+import { stageDocuments } from './stage'
 
-export interface SyncSummary {
-  posts: number
-  pages: number
-  skipped: number
-  errors: { path: string; issues: string[] }[]
-}
+export type { SyncSummary } from './stage'
 
 function elogVersion(): string {
   try {
@@ -94,26 +89,7 @@ async function syncPass(
   // explicit opt-in — by default those docs are skipped and locally edited
   // pages/ are never touched.
   const includePages = process.env['SYNC_PAGES'] === 'true'
-  const summary: SyncSummary = { posts: 0, pages: 0, skipped: 0, errors: [] }
-  await mkdir(join(staging, 'posts'), { recursive: true })
-  if (includePages) await mkdir(join(staging, 'pages'), { recursive: true })
-
-  for (const name of (await readdir(rawDir)).filter((file) => file.endsWith('.md')).sort()) {
-    const raw = await readFile(join(rawDir, name), 'utf8')
-    const normalized = normalizeDoc(raw, name, defaultLang)
-    if (normalized.kind === 'skipped' || (normalized.kind === 'page' && !includePages)) {
-      summary.skipped += 1
-      continue
-    }
-    if (normalized.kind === 'invalid') {
-      summary.errors.push({ path: `raw/${name}`, issues: normalized.issues })
-      console.warn(`✗ ${name}: ${normalized.issues[0] ?? 'invalid'}`)
-      continue
-    }
-    for (const warning of normalized.warnings) console.warn(`⚠ ${name}: ${warning}`)
-    await writeFile(join(staging, normalized.filename), normalized.content)
-    summary[normalized.kind === 'post' ? 'posts' : 'pages'] += 1
-  }
+  const summary = await stageDocuments({ rawDir, staging, defaultLang, includePages })
 
   // Notion's signed image URLs expire — materialize them into content/assets
   // and rewrite the staged markdown before the manifest hashes it.
