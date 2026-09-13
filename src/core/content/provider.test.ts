@@ -251,6 +251,19 @@ describe('createProvider · cache & revalidate', () => {
     expect(version).toMatch(/^[0-9a-f]{64}$/)
   })
 
+  it('rolls the version when profile.yaml changes between syncs', async () => {
+    // profile.yaml is author-owned and never enters the sync manifest; a
+    // constant version here left feed ETags and cached OG images stale.
+    await writeManifest()
+    await writeFile(join(root, 'profile.yaml'), 'name: One\n')
+    const before = await provider.version()
+    await writeFile(join(root, 'profile.yaml'), 'name: Two\n')
+    const after = await provider.version()
+    expect(after).toMatch(/^[0-9a-f]{64}$/)
+    expect(after).not.toBe(before)
+    expect((await provider.getProfile()).name).toBe('Two')
+  })
+
   it('fingerprints the content when there is no manifest', async () => {
     // A constant version here froze the server search index and feed ETags.
     const before = await provider.version()

@@ -99,6 +99,9 @@ const titleText = (title: unknown): string =>
       ? String(Object.values(title as Record<string, unknown>)[0] ?? '')
       : ''
 
+/** Files outside the sync manifest whose bytes still belong in the content version. */
+const UNTRACKED = ['profile.yaml'] as const
+
 export function createProvider(store: ContentStore, options: ProviderOptions = {}): ContentProvider {
   const publicationOrder = options.publicationOrder ?? 'file'
   // undefined = not loaded yet; null = store has no manifest.
@@ -124,7 +127,7 @@ export function createProvider(store: ContentStore, options: ProviderOptions = {
         hash.update((await store.read(path)) ?? '')
       }
     }
-    for (const file of ['publications.yaml', 'projects.yaml', 'cv.yaml', 'news.yaml']) {
+    for (const file of ['publications.yaml', 'projects.yaml', 'cv.yaml', 'news.yaml', ...UNTRACKED]) {
       hash.update(file)
       hash.update((await store.read(file)) ?? '')
     }
@@ -317,7 +320,14 @@ export function createProvider(store: ContentStore, options: ProviderOptions = {
     async version() {
       const manifest = await getManifest()
       if (manifest === null) return computeFallbackVersion()
-      return createHash('sha256').update(JSON.stringify(manifest)).digest('hex')
+      const hash = createHash('sha256').update(JSON.stringify(manifest))
+      // Author-owned files the sync manifest never tracks: an edit between
+      // syncs must still roll feed ETags and the OG image cache.
+      for (const file of UNTRACKED) {
+        hash.update(file)
+        hash.update((await store.read(file)) ?? '')
+      }
+      return hash.digest('hex')
     },
   }
 }
