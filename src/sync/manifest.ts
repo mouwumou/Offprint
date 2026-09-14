@@ -25,6 +25,7 @@ export async function buildManifest(
   root: string,
   tool: { name: string; version: string },
   errors: { path: string; issues: string[] }[] = [],
+  previous: Manifest | null = null,
 ): Promise<Manifest> {
   const entries: Manifest['entries'] = {}
   for (const dir of COLLECTION_DIRS) {
@@ -49,14 +50,38 @@ export async function buildManifest(
   for (const name of YAML_FILES) {
     try {
       const raw = await readFile(join(root, name), 'utf8')
-      entries[name.replace(/\.yaml$/, '')] = {
+      const key = name.replace(/\.yaml$/, '')
+      const hash = createHash('sha256').update(raw).digest('hex')
+      // YAML files carry no date of their own: keep the previous manifest's
+      // date while the bytes are unchanged, so an untouched file never looks
+      // updated (that made every sync a new commit).
+      const before = previous?.entries[key]
+      entries[key] = {
         path: name,
-        hash: createHash('sha256').update(raw).digest('hex'),
-        updated: generatedAt.slice(0, 10),
+        hash,
+        updated:
+          before !== undefined && before.hash === hash ? before.updated : generatedAt.slice(0, 10),
       }
     } catch {
       /* optional collection */
     }
   }
   return { generatedAt, tool, entries, ...(errors.length > 0 ? { errors } : {}) }
+}
+
+/**
+ * Same content state: identical entries (path, hash, date) and identical
+ * errors. `generatedAt` and the tool are deliberately ignored — they describe
+ * the run, not the content. Used to make a sync with nothing new a no-op.
+ */
+export function sameContent(previous: Manifest | null | undefined, next: Manifest): boolean {
+  if (!previous) return false
+  const canonical = (manifest: Manifest): string =>
+    JSON.stringify([
+      Object.keys(manifest.entries)
+        .sort()
+        .map((key) => [key, manifest.entries[key]]),
+      manifest.errors ?? [],
+    ])
+  return canonical(previous) === canonical(next)
 }

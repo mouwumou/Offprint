@@ -3,6 +3,8 @@ import { join } from 'node:path'
 import { normalizeDoc } from './normalize'
 
 export interface SyncSummary {
+  /** false when the run found nothing new and left content/ untouched. */
+  changed?: boolean
   posts: number
   pages: number
   skipped: number

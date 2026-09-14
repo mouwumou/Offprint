@@ -35,7 +35,13 @@ What the sync does and does not do:
 
 ## Automatic sync in GitHub Actions (static sites)
 
-In the **instance** repository (not the template), add the variable `SYNC_ENABLED=true` under **Settings → Variables** and the secrets `NOTION_TOKEN` and `NOTION_DB`. The `Sync from Notion` workflow then runs every 30 minutes, and on demand from the Actions tab: fetch → sync → commit `content/` if anything changed → trigger the Pages deployment. From pressing publish to the live site is usually under five minutes.
+In the **instance** repository (not the template), add the variable `SYNC_ENABLED=true` under **Settings → Variables** and the secrets `NOTION_TOKEN` and `NOTION_DB`. The `Sync from Notion` workflow then runs hourly; to publish right away, press **Run workflow** on the Actions tab. Each run:
+
+1. First asks Notion whether anything was edited since the previous run (one query, no install). If nothing was, it finishes within seconds and does nothing.
+2. Only then installs dependencies and syncs. The sync is idempotent: when the export matches the repository byte for byte, no file is written and there is nothing to commit.
+3. Commits `content/` only when the content really changed, with a summary in the message (posts added, updated, removed), rebases onto the latest `main` before pushing, and then triggers the Pages deployment.
+
+From pressing publish to the live site is usually under five minutes. To change the cadence, edit the `cron` line in `.github/workflows/sync.yml`.
 
 Without that variable the workflow shows as skipped; the template repository itself is in that state. With automatic sync on, run `git pull --rebase` before pushing from your machine, because the workflow commits content on its own.
 

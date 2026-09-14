@@ -1,13 +1,16 @@
-# The GitHub Actions form of sync, for sites without a server: schedule/dispatch → elog → normalize → commit content/ → explicit
-# workflow_dispatch of the deploy workflows. The push alone cannot retrigger
-# them: events caused by GITHUB_TOKEN never start new workflow runs — the
-# documented exception is dispatching via the API, which is what we do below.
-# Publishing latency = build time (1–3 min).
+# The GitHub Actions form of sync, for sites without a server:
+# schedule/dispatch → (cheap Notion pre-check) → elog → normalize → commit
+# content/ → explicit workflow_dispatch of the deploy workflow. The push alone
+# cannot retrigger it: events caused by GITHUB_TOKEN never start new workflow
+# runs — the documented exception is dispatching via the API, which is what
+# we do below. Publishing latency = build time (1–3 min) after the sync.
 name: Sync from Notion
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    # Hourly. Change this line for another cadence; "Run workflow" on the
+    # Actions tab publishes right away regardless of the schedule.
+    - cron: '0 * * * *'
   workflow_dispatch:
   repository_dispatch:
     types: [notion-sync]
@@ -29,21 +32,57 @@ jobs:
     # Unset, every scheduled run shows as skipped instead of a red failure.
     if: ${{ vars.SYNC_ENABLED == 'true' }}
     runs-on: ubuntu-latest
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_DB: ${{ secrets.NOTION_DB }}
     steps:
       - uses: actions/checkout@v4
+      # Scheduled runs first ask Notion whether anything was edited since the
+      # previous run (one query, no install): a quiet hour costs seconds, not
+      # minutes. Manual and dispatched runs always sync; any doubt (first run,
+      # API error) also means a full sync.
+      - name: Anything edited in Notion since the last run?
+        id: precheck
+        if: github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -u
+          full() { echo "$1 — running the full sync"; echo "sync=true" >> "$GITHUB_OUTPUT"; exit 0; }
+          last=$(gh api "repos/$GITHUB_REPOSITORY/actions/workflows/sync.yml/runs?status=success&per_page=1" \
+            --jq '.workflow_runs[0].run_started_at // empty' 2>/dev/null || true)
+          [ -n "$last" ] || full "no previous successful run"
+          # Notion reports last_edited_time to the minute: look back a little further than the previous run.
+          since=$(date -u -d "@$(( $(date -u -d "$last" +%s) - 300 ))" +%Y-%m-%dT%H:%M:%SZ)
+          body=$(printf '{"page_size":1,"filter":{"timestamp":"last_edited_time","last_edited_time":{"after":"%s"}}}' "$since")
+          code=$(curl -sS -m 20 -o precheck.json -w '%{http_code}' -X POST \
+            "https://api.notion.com/v1/databases/$NOTION_DB/query" \
+            -H "Authorization: Bearer $NOTION_TOKEN" -H "Notion-Version: 2022-06-28" \
+            -H "Content-Type: application/json" -d "$body") || full "Notion query failed"
+          [ "$code" = "200" ] || full "Notion answered HTTP $code"
+          if [ "$(jq '.results | length' precheck.json)" = "0" ]; then
+            echo "nothing edited in Notion since $since — skipping this run"
+            echo "sync=false" >> "$GITHUB_OUTPUT"
+          else
+            full "edits in Notion since $since"
+          fi
+          rm -f precheck.json
       - uses: pnpm/action-setup@v4
+        if: steps.precheck.outputs.sync != 'false'
       - uses: actions/setup-node@v4
+        if: steps.precheck.outputs.sync != 'false'
         with:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+        if: steps.precheck.outputs.sync != 'false'
       - run: pnpm sync
+        if: steps.precheck.outputs.sync != 'false'
         env:
-          NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
-          NOTION_DB: ${{ secrets.NOTION_DB }}
           DEFAULT_LANG: en
       - name: Commit content changes
         id: commit
+        if: steps.precheck.outputs.sync != 'false'
         run: |
           git config user.name "offprint-sync[bot]"
           git config user.email "noreply@example.com"
@@ -51,11 +90,29 @@ jobs:
           if git diff --cached --quiet; then
             echo "content unchanged"
             echo "pushed=false" >> "$GITHUB_OUTPUT"
-          else
-            git commit -m "chore(content): sync from Notion"
-            git push
-            echo "pushed=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
+          # "1 added, 2 updated, 1 removed" from the staged posts and pages.
+          status=$(git diff --cached --name-status -- content/posts content/pages)
+          added=$(printf '%s\n' "$status" | grep -c '^A' || true)
+          updated=$(printf '%s\n' "$status" | grep -c '^M' || true)
+          removed=$(printf '%s\n' "$status" | grep -c '^D' || true)
+          summary=""
+          [ "$added" != 0 ] && summary="$summary, $added added"
+          [ "$updated" != 0 ] && summary="$summary, $updated updated"
+          [ "$removed" != 0 ] && summary="$summary, $removed removed"
+          summary=${summary#, }
+          git commit -m "chore(content): sync from Notion${summary:+ — $summary}"
+          # The sync runs unattended next to the author's own pushes: rebase
+          # onto whatever landed meanwhile, then push; retry a couple of times.
+          for attempt in 1 2 3; do
+            if git pull --rebase origin "$GITHUB_REF_NAME" && git push; then
+              echo "pushed=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            [ "$attempt" = 3 ] && exit 1
+            sleep 15
+          done
       - name: Trigger deploys
         if: steps.commit.outputs.pushed == 'true'
         env:

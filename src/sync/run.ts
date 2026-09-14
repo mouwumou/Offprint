@@ -7,7 +7,7 @@ import { atomicSwitch } from './atomic'
 import { elogConfigSource } from './elog-config'
 import { materializeImages } from './images'
 import { acquireSyncLock } from './lock'
-import { buildManifest } from './manifest'
+import { buildManifest, sameContent } from './manifest'
 import { notifyRevalidate } from './notify'
 import { stageDocuments, type SyncSummary } from './stage'
 
@@ -104,22 +104,8 @@ async function syncPass(
     )
   }
 
-  const manifest = await buildManifest(
-    staging,
-    { name: 'elog', version: elogVersion() },
-    summary.errors,
-  )
-  // Author-owned collections (pages/ unless opted in, plus every YAML) live
-  // in the content dir, not staging — merge their entries so the manifest
-  // describes the whole content state.
-  const liveManifest = await buildManifest(contentDir, manifest.tool)
-  for (const [key, entry] of Object.entries(liveManifest.entries)) {
-    if (key.startsWith('posts/')) continue
-    if (includePages && key.startsWith('pages/')) continue
-    manifest.entries[key] = entry
-  }
-
-  // Previous manifest → diff for targeted revalidation (notify).
+  // Previous manifest: the no-change check, YAML dates to carry over, and the
+  // diff for targeted revalidation (notify).
   let previous: Manifest | null = null
   try {
     previous = manifestSchema.parse(
@@ -129,6 +115,30 @@ async function syncPass(
     /* first sync or hand-written content without a manifest */
   }
 
+  const manifest = await buildManifest(
+    staging,
+    { name: 'elog', version: elogVersion() },
+    summary.errors,
+    previous,
+  )
+  // Author-owned collections (pages/ unless opted in, plus every YAML) live
+  // in the content dir, not staging — merge their entries so the manifest
+  // describes the whole content state.
+  const liveManifest = await buildManifest(contentDir, manifest.tool, [], previous)
+  for (const [key, entry] of Object.entries(liveManifest.entries)) {
+    if (key.startsWith('posts/')) continue
+    if (includePages && key.startsWith('pages/')) continue
+    manifest.entries[key] = entry
+  }
+
+  // Nothing new: leave content/ exactly as it is. A rewritten manifest with a
+  // fresh timestamp was enough to make every scheduled run a commit and a
+  // deployment.
+  if (sameContent(previous, manifest)) {
+    console.log('no changes since the last sync — content left untouched')
+    return { ...summary, changed: false }
+  }
+
   await atomicSwitch(contentDir, staging, includePages ? ['posts', 'pages'] : ['posts'], manifest)
 
   const diff = diffManifests(previous, manifest)
@@ -136,5 +146,5 @@ async function syncPass(
   // An empty diff must NOT notify: notifyRevalidate([]) posts {} which the
   // endpoint reads as "revalidate everything" — the inverse of intent.
   if (changed.length > 0) await notifyRevalidate(changed)
-  return summary
+  return { ...summary, changed: true }
 }

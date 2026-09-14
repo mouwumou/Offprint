@@ -31,7 +31,7 @@
 
 ## Docker：静态自托管
 
-`compose.static.yaml`（在仓库根目录），两个服务：`web`（Caddy 伺服构建产物）与 `sync`（按 `SYNC_INTERVAL` 秒轮询：同步 → 构建 → 原子切换产物目录）。没有 Notion 凭据时退化为只构建仓库里已提交的内容。
+`compose.static.yaml`（在仓库根目录），两个服务：`web`（Caddy 伺服构建产物）与 `sync`（按 `SYNC_INTERVAL` 秒轮询：同步 → 构建 → 原子切换产物目录；内容和当前发布的一样时跳过构建）。没有 Notion 凭据时退化为只构建仓库里已提交的内容。
 
 ```bash
 cp .env.example .env          # 填 SITE_URL、NOTION_TOKEN、NOTION_DB

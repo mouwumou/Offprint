@@ -1,5 +1,5 @@
 // offprint-sync CLI: `pnpm sync [validate|manifest]` (docs/DYNAMIC-PUBLISHING.md §4).
-import { writeFile } from 'node:fs/promises'
+import { readFile, writeFile } from 'node:fs/promises'
 
 // .env for local runs; explicitly exported variables take precedence.
 try {
@@ -8,7 +8,8 @@ try {
   /* no .env present (CI passes real env) */
 }
 import { join, resolve } from 'node:path'
-import { buildManifest } from './manifest'
+import { manifestSchema, type Manifest } from '../core/schema'
+import { buildManifest, sameContent } from './manifest'
 import { runSync } from './run'
 import { validateContent } from './validate'
 
@@ -23,6 +24,7 @@ switch (command) {
       `synced ${summary.posts} post(s), ${summary.pages} page(s); ` +
         `skipped ${summary.skipped}; ${summary.errors.length} error(s)`,
     )
+    if (summary.changed === false) console.log('no changes — nothing written')
     if (summary.errors.length > 0) process.exitCode = 0 // errors recorded, not fatal
     break
   }
@@ -42,7 +44,24 @@ switch (command) {
   }
   case 'manifest': {
     // Hand-written content support (docs/CONTENT-CONTRACT.md §1).
-    const manifest = await buildManifest(contentDir, { name: 'offprint-sync', version: '0.0.0' })
+    let previous: Manifest | null = null
+    try {
+      previous = manifestSchema.parse(
+        JSON.parse(await readFile(join(contentDir, 'manifest.json'), 'utf8')),
+      )
+    } catch {
+      /* none yet */
+    }
+    const manifest = await buildManifest(
+      contentDir,
+      { name: 'offprint-sync', version: '0.0.0' },
+      [],
+      previous,
+    )
+    if (sameContent(previous, manifest)) {
+      console.log('manifest.json unchanged')
+      break
+    }
     await writeFile(join(contentDir, 'manifest.json'), `${JSON.stringify(manifest, null, 2)}\n`)
     console.log(`manifest.json written (${Object.keys(manifest.entries).length} entries)`)
     break
