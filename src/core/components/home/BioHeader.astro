@@ -50,7 +50,7 @@ for (const link of profile.links) {
           profile.photo && (
             <span class="photo-frame w-24 shrink-0 sm:hidden">
               <img
-                src={profile.photo}
+                src={contentHref(profile.photo)}
                 alt={name}
                 class="profile-photo rounded-md border border-border"
               />
@@ -80,7 +80,7 @@ for (const link of profile.links) {
       profile.photo && (
         <span data-part="bio-photo-frame" class="photo-frame hidden w-40 shrink-0 sm:block sm:w-44">
           <img
-            src={profile.photo}
+            src={contentHref(profile.photo)}
             alt={name}
             data-part="bio-photo"
             class="profile-photo rounded-md border border-border"

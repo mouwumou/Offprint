@@ -27,7 +27,7 @@ const links = profile.links.map((link) => ({ href: contentHref(link.href), label
       profile.photo && (
         <figure data-part="hero-photo-frame" class="photo-frame group relative max-w-[220px]">
           <img
-            src={profile.photo}
+            src={contentHref(profile.photo)}
             alt={name}
             data-part="hero-photo"
             class="hero-photo profile-photo rounded-md border border-border bg-muted"
