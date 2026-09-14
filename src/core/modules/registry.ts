@@ -16,14 +16,14 @@ import { localizedString, type LocalizedString } from '../schema/localized'
 const copyShape = {
   /** Landing-page heading override. */
   title: localizedString.optional(),
-  /** Landing-page intro override. */
-  description: localizedString.optional(),
+  /** Landing-page intro override; false shows none (the built-ins default to none). */
+  description: z.union([z.literal(false), localizedString]).optional(),
 }
 
 export interface ModuleSetting {
   enabled: boolean
   title?: z.output<typeof localizedString> | undefined
-  description?: z.output<typeof localizedString> | undefined
+  description?: false | z.output<typeof localizedString> | undefined
   colophon?: false | z.output<typeof localizedString> | undefined
   /** blog: false hides the related-posts block under each post. */
   related?: boolean | undefined
