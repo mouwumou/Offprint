@@ -11,13 +11,21 @@
 # ──────────────────────────────────────────────────────────────────────────────
 
 # ── 模块开关：false = 页面、导航、打包一起消失 ────────────────────────────────
-# 也可以写成对象来覆盖落地页文案，例如：
-#   blog: { title: { en: Field notes, zh: 田野笔记 }, colophon: false, related: false, search: false }
+# 也可以写成对象来覆盖落地页文案。默认只有标题（Writing / Publications / Projects），没有介绍句；
+# 写 description 才有，description: false 明确不要。例如：
+#   blog: { title: { en: Field notes, zh: 田野笔记 }, description: false, colophon: false, related: false, search: false }
 #   （colophon 是文末"后记"框：默认不显示，给一段双语文字才出现；related 是"相关文章"块；search: false 整个去掉站内搜索）
 modules:
-  blog: true
+  blog:
+    title: { en: 'Notes, in public', zh: 公开的笔记 }
+    description:
+      en: Research notes, engineering write-ups, and reading lists — drafted in Notion and published straight to markdown.
+      zh: 研究笔记、工程记录与阅读清单 —— 在 Notion 中写作，直接以 markdown 发布。
   pages: true
-  publications: true
+  publications:
+    description:
+      en: Journal and conference papers, preprints, and workshop contributions.
+      zh: 期刊与会议论文、预印本与研讨会报告。
   projects: true
   cv: true
 #   publications: { order: file }                  # 同年内顺序：file（默认，按文件里的顺序）| key | title

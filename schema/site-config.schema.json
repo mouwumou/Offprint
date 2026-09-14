@@ -35,16 +35,24 @@
                 "description": {
                   "anyOf": [
                     {
-                      "type": "string"
+                      "type": "boolean",
+                      "const": false
                     },
                     {
-                      "type": "object",
-                      "propertyNames": {
-                        "type": "string"
-                      },
-                      "additionalProperties": {
-                        "type": "string"
-                      }
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      ]
                     }
                   ]
                 },
@@ -111,16 +119,24 @@
                 "description": {
                   "anyOf": [
                     {
-                      "type": "string"
+                      "type": "boolean",
+                      "const": false
                     },
                     {
-                      "type": "object",
-                      "propertyNames": {
-                        "type": "string"
-                      },
-                      "additionalProperties": {
-                        "type": "string"
-                      }
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      ]
                     }
                   ]
                 }
@@ -157,16 +173,24 @@
                 "description": {
                   "anyOf": [
                     {
-                      "type": "string"
+                      "type": "boolean",
+                      "const": false
                     },
                     {
-                      "type": "object",
-                      "propertyNames": {
-                        "type": "string"
-                      },
-                      "additionalProperties": {
-                        "type": "string"
-                      }
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      ]
                     }
                   ]
                 },
@@ -210,16 +234,24 @@
                 "description": {
                   "anyOf": [
                     {
-                      "type": "string"
+                      "type": "boolean",
+                      "const": false
                     },
                     {
-                      "type": "object",
-                      "propertyNames": {
-                        "type": "string"
-                      },
-                      "additionalProperties": {
-                        "type": "string"
-                      }
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      ]
                     }
                   ]
                 }
@@ -256,16 +288,24 @@
                 "description": {
                   "anyOf": [
                     {
-                      "type": "string"
+                      "type": "boolean",
+                      "const": false
                     },
                     {
-                      "type": "object",
-                      "propertyNames": {
-                        "type": "string"
-                      },
-                      "additionalProperties": {
-                        "type": "string"
-                      }
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      ]
                     }
                   ]
                 }
@@ -302,16 +342,24 @@
                 "description": {
                   "anyOf": [
                     {
-                      "type": "string"
+                      "type": "boolean",
+                      "const": false
                     },
                     {
-                      "type": "object",
-                      "propertyNames": {
-                        "type": "string"
-                      },
-                      "additionalProperties": {
-                        "type": "string"
-                      }
+                      "anyOf": [
+                        {
+                          "type": "string"
+                        },
+                        {
+                          "type": "object",
+                          "propertyNames": {
+                            "type": "string"
+                          },
+                          "additionalProperties": {
+                            "type": "string"
+                          }
+                        }
+                      ]
                     }
                   ]
                 },

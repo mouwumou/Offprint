@@ -44,7 +44,6 @@ const postHref = (post: { urlname: string; lang: string }) =>
 
 const PostRow = resolveWidget('post-row', PostRowBuiltin)
 const copy = moduleCopy(config, 'blog', lang)
-const intro = `${copy.description ?? ''} ${all.length} ${t('blog.postsCount')}`
 const updatedPosts =
   activeTag === undefined && activeCategory === undefined
     ? recentlyUpdated(await provider.listPosts(), lang)
@@ -60,12 +59,16 @@ const updatedPosts =
         </p>
       )
     }
-    <h1 data-part="page-title" data-part="page-title" class="page-title">
+    <h1 data-part="page-title" class="page-title">
       {copy.title}
     </h1>
-    <p data-part="page-lede" data-part="page-lede" class="page-lede">
-      {intro}
-    </p>
+    {
+      copy.description && (
+        <p data-part="page-lede" class="page-lede">
+          {copy.description}
+        </p>
+      )
+    }
   </header>
 
   <!-- Tag filter: state carried by the URL path, no client state -->

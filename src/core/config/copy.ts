@@ -22,8 +22,10 @@ export function moduleCopy(
     resolveLocalized(defaults?.title, lang, config.i18n.default) ??
     module
   const description =
-    resolveLocalized(setting?.description, lang, config.i18n.default) ??
-    (defaults?.descriptionKey !== undefined ? t(defaults.descriptionKey) : undefined) ??
-    resolveLocalized(defaults?.description, lang, config.i18n.default)
+    setting?.description === false
+      ? undefined
+      : (resolveLocalized(setting?.description, lang, config.i18n.default) ??
+        (defaults?.descriptionKey !== undefined ? t(defaults.descriptionKey) : undefined) ??
+        resolveLocalized(defaults?.description, lang, config.i18n.default))
   return { title, description }
 }

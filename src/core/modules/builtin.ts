@@ -11,7 +11,7 @@ registerModule({
   configSchema: moduleToggleWithColophon,
   enabledByDefault: true,
   nav: { path: '/blog', labelKey: 'nav.writing' },
-  copy: { titleKey: 'blog.title', descriptionKey: 'blog.description' },
+  copy: { titleKey: 'blog.title' },
   collections: ['posts'],
 })
 
@@ -38,7 +38,7 @@ registerModule({
   }),
   enabledByDefault: true,
   nav: { path: '/publications', labelKey: 'nav.publications' },
-  copy: { titleKey: 'pub.title', descriptionKey: 'pub.description' },
+  copy: { titleKey: 'pub.title' },
   collections: ['publications.yaml'],
 })
 
@@ -46,7 +46,7 @@ registerModule({
   id: 'projects',
   enabledByDefault: true,
   nav: { path: '/projects', labelKey: 'nav.projects' },
-  copy: { titleKey: 'projects.title', descriptionKey: 'projects.description' },
+  copy: { titleKey: 'projects.title' },
   collections: ['projects.yaml'],
 })
 

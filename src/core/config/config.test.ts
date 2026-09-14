@@ -241,6 +241,31 @@ describe('site-local module manifests', () => {
   })
 })
 
+describe('module landing copy', () => {
+  it('defaults to a bare neutral title, takes overrides, and accepts description: false', async () => {
+    const { moduleCopy } = await import('./copy')
+    expect(moduleCopy(defineConfig({}), 'blog', 'en')).toEqual({
+      title: 'Writing',
+      description: undefined,
+    })
+    expect(moduleCopy(defineConfig({}), 'publications', 'zh').title).toBe('论文')
+    const custom = defineConfig({
+      modules: {
+        blog: { title: { en: 'Field notes', zh: '田野笔记' }, description: 'Short notes.' },
+      },
+    })
+    expect(moduleCopy(custom, 'blog', 'zh')).toEqual({
+      title: '田野笔记',
+      description: 'Short notes.',
+    })
+    const off = defineConfig({ modules: { publications: { description: false } } })
+    expect(moduleCopy(off, 'publications', 'en')).toEqual({
+      title: 'Publications',
+      description: undefined,
+    })
+  })
+})
+
 describe('i18n.noindex', () => {
   it('accepts listed locales and rejects unknown ones', async () => {
     const { defineConfig } = await import('./define-config')
