@@ -4,7 +4,7 @@ import { join } from 'node:path'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { atomicSwitch } from './atomic'
 import { detectLang } from './lang-detect'
-import { buildManifest } from './manifest'
+import { buildManifest, sameContent } from './manifest'
 import { normalizeDoc } from './normalize'
 import { stageDocuments } from './stage'
 import { validateContent } from './validate'
@@ -116,6 +116,43 @@ describe('manifest + atomic switch', () => {
     expect(written.entries['posts/fresh.en']).toBeTruthy()
     await expect(readFile(join(content, 'posts', 'stale.en.md'))).rejects.toThrow()
     expect(await readFile(join(content, 'posts', 'fresh.en.md'), 'utf8')).toContain('Fresh')
+  })
+
+  it('is idempotent: unchanged content keeps its dates and compares equal', async () => {
+    const content = join(root, 'content')
+    await mkdir(join(content, 'posts'), { recursive: true })
+    await writeFile(
+      join(content, 'posts', 'a.en.md'),
+      `---\ntitle: A\nurlname: a\nlang: en\ndate: 2025-01-01\nupdated: 2025-01-02\n---\n\nBody.\n`,
+    )
+    await writeFile(join(content, 'publications.yaml'), '- key: p1\n  title: One\n  year: 2024\n')
+    const tool = { name: 'elog', version: 'test' }
+    const first = {
+      ...(await buildManifest(content, tool)),
+      generatedAt: '2020-01-01T00:00:00.000Z',
+    }
+    first.entries['publications']!.updated = '2020-01-01'
+
+    // Same bytes: YAML keeps the earlier date, and the manifests count as the same content.
+    const again = await buildManifest(content, tool, [], first)
+    expect(again.entries['publications']?.updated).toBe('2020-01-01')
+    expect(sameContent(first, again)).toBe(true)
+    expect(sameContent(null, again)).toBe(false)
+
+    // A real edit: the date moves and the content differs.
+    await writeFile(join(content, 'publications.yaml'), '- key: p1\n  title: Two\n  year: 2024\n')
+    const edited = await buildManifest(content, tool, [], first)
+    expect(edited.entries['publications']?.updated).toBe(new Date().toISOString().slice(0, 10))
+    expect(sameContent(first, edited)).toBe(false)
+
+    // Errors are part of the content state too.
+    const withError = await buildManifest(
+      content,
+      tool,
+      [{ path: 'raw/x.md', issues: ['bad'] }],
+      first,
+    )
+    expect(sameContent(first, withError)).toBe(false)
   })
 
   it('validateContent reports schema and filename problems', async () => {
