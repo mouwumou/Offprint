@@ -1,5 +1,5 @@
 import { execSync, spawn, type ChildProcess } from 'node:child_process'
-import { copyFileSync, cpSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { BASE_SERVER, BASE_STATIC } from './lib/paths'
@@ -23,19 +23,23 @@ const SERVER_DIR = BASE_SERVER
 // crawl builds from a copy of content/ whose photo points at a local file.
 const CONTENT_DIR = resolve(BASE_STATIC, '..', 'base-content')
 
+// Content-agnostic: an instance may ship no images and no photo line at all,
+// so the fixture brings its own 1×1 PNG and adds the field when it is absent.
+const ONE_PIXEL_PNG = Buffer.from(
+  'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
+  'base64',
+)
+
 function prepareContent(): void {
   rmSync(CONTENT_DIR, { recursive: true, force: true })
   cpSync('content', CONTENT_DIR, { recursive: true })
-  copyFileSync(
-    join('content', 'assets', 'cover-notion.png'),
-    join(CONTENT_DIR, 'assets', 'e2e-photo.png'),
-  )
+  mkdirSync(join(CONTENT_DIR, 'assets'), { recursive: true })
+  writeFileSync(join(CONTENT_DIR, 'assets', 'e2e-photo.png'), ONE_PIXEL_PNG)
   const profilePath = join(CONTENT_DIR, 'profile.yaml')
-  const profile = readFileSync(profilePath, 'utf8').replace(
-    /^photo:.*$/m,
-    'photo: assets/e2e-photo.png',
-  )
-  expect(profile).toContain('photo: assets/e2e-photo.png')
+  const original = readFileSync(profilePath, 'utf8')
+  const profile = /^photo:/m.test(original)
+    ? original.replace(/^photo:.*$/m, 'photo: assets/e2e-photo.png')
+    : `${original.trimEnd()}\nphoto: assets/e2e-photo.png\n`
   writeFileSync(profilePath, profile)
 }
 
