@@ -48,6 +48,8 @@ First stable release: the template, its documentation and its deployment paths a
 - Server mode: the content version now includes `profile.yaml`, so feed ETags and cached OG images refresh after a profile edit between syncs.
 - Sync is idempotent: a run that finds nothing new writes no file (the manifest's timestamp used to change every time, turning every scheduled run into a commit and a deployment); YAML entries keep their date until their bytes change.
 - The static Docker loop skips the build when the content matches the current release.
+- Landing and tag/category pages always carry a meta description: the author's when set, otherwise a neutral "<title> by <name>" (a bare title had cost the Lighthouse SEO score).
+- KaTeX no longer warns about CJK characters inside math or `\\` line breaks in display mode; other strict-mode warnings still reach the build log.
 - Module landing pages default to a bare title (Writing / Publications / Projects, 文章 / 论文 / 项目) with no introduction; the sample-voiced sentences and the "N posts and counting" line are gone from the defaults (the demo keeps its own through `site.yaml`), and `modules.<id>.description: false` switches an introduction off explicitly.
 - The profile photo path goes through the same URL rule as every other content field: a repository-local `assets/…` photo now renders on `/zh/` and under a deployment sub-path, in the page, the Open Graph image and the JSON-LD (it was written verbatim, so `/zh/assets/photo.png` 404ed).
 - The profile photo is no longer forced into a square (bio header) or 4:5 (hero): it keeps its own proportions between 4:3 and 5:7 and is cropped only beyond that range; themes can widen the range through two CSS variables.
