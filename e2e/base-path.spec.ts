@@ -1,6 +1,6 @@
 import { execSync, spawn, type ChildProcess } from 'node:child_process'
-import { existsSync, readFileSync } from 'node:fs'
-import { join } from 'node:path'
+import { copyFileSync, cpSync, existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { join, resolve } from 'node:path'
 import { expect, test } from '@playwright/test'
 import { BASE_SERVER, BASE_STATIC } from './lib/paths'
 import { discoverRedirects, discoverRoutes } from './lib/routes'
@@ -18,6 +18,26 @@ const STATIC_ORIGIN = `http://127.0.0.1:${STATIC_PORT}`
 const SERVER_ORIGIN = `http://127.0.0.1:${SERVER_PORT}`
 const STATIC_DIR = BASE_STATIC
 const SERVER_DIR = BASE_SERVER
+// The sample profile photo is an external URL; a repository-local one
+// (`assets/…`) is the case that must carry the base on every page, so the
+// crawl builds from a copy of content/ whose photo points at a local file.
+const CONTENT_DIR = resolve(BASE_STATIC, '..', 'base-content')
+
+function prepareContent(): void {
+  rmSync(CONTENT_DIR, { recursive: true, force: true })
+  cpSync('content', CONTENT_DIR, { recursive: true })
+  copyFileSync(
+    join('content', 'assets', 'cover-notion.png'),
+    join(CONTENT_DIR, 'assets', 'e2e-photo.png'),
+  )
+  const profilePath = join(CONTENT_DIR, 'profile.yaml')
+  const profile = readFileSync(profilePath, 'utf8').replace(
+    /^photo:.*$/m,
+    'photo: assets/e2e-photo.png',
+  )
+  expect(profile).toContain('photo: assets/e2e-photo.png')
+  writeFileSync(profilePath, profile)
+}
 
 let staticServer: ChildProcess
 let nodeServer: ChildProcess
@@ -42,6 +62,16 @@ function referencedUrls(html: string): string[] {
   return [...urls].filter((url) => url !== '')
 }
 
+/** `assets/x`, `../y`: a URL that resolves differently on every page. */
+function isBareRelative(url: string): boolean {
+  return !/^(?:[a-z][a-z0-9+.-]*:|\/|#)/i.test(url)
+}
+
+/** href/src values only (meta content= carries plain strings, not URLs). */
+function linkedUrls(html: string): string[] {
+  return [...html.matchAll(/\b(?:href|src)="([^"]+)"/g)].map((match) => match[1] ?? '')
+}
+
 /** Root-relative paths and absolute URLs on our own origin; null for the rest. */
 function internalPath(url: string, origin: string): string | null {
   if (url.startsWith('//')) return null
@@ -57,7 +87,11 @@ async function crawlUnderBase(origin: string): Promise<void> {
   for (const route of routes) {
     const response = await fetch(`${origin}${BASE}${route}`)
     expect.soft(response.status, `${BASE}${route}`).toBe(200)
-    for (const url of referencedUrls(await response.text())) {
+    const html = await response.text()
+    for (const url of linkedUrls(html)) {
+      expect.soft(!isBareRelative(url), `${route} references the relative URL ${url}`).toBe(true)
+    }
+    for (const url of referencedUrls(html)) {
       const path = internalPath(url, origin)
       if (path === null) continue
       const clean = path.split('#')[0]?.split('?')[0] ?? ''
@@ -83,12 +117,23 @@ test.describe('deployment sub-path', () => {
 
   test.beforeAll(async () => {
     test.setTimeout(360_000)
+    prepareContent()
     execSync('pnpm build:static', {
-      env: { ...process.env, ASTRO_OUT_DIR: STATIC_DIR, SITE_URL: `${STATIC_ORIGIN}${BASE}` },
+      env: {
+        ...process.env,
+        ASTRO_OUT_DIR: STATIC_DIR,
+        SITE_URL: `${STATIC_ORIGIN}${BASE}`,
+        CONTENT_DIR,
+      },
       stdio: 'pipe',
     })
     execSync('pnpm build:server', {
-      env: { ...process.env, ASTRO_OUT_DIR: SERVER_DIR, SITE_URL: `${SERVER_ORIGIN}${BASE}` },
+      env: {
+        ...process.env,
+        ASTRO_OUT_DIR: SERVER_DIR,
+        SITE_URL: `${SERVER_ORIGIN}${BASE}`,
+        CONTENT_DIR,
+      },
       stdio: 'pipe',
     })
     staticServer = spawn(
@@ -99,7 +144,7 @@ test.describe('deployment sub-path', () => {
       },
     )
     nodeServer = spawn('node', [`${SERVER_DIR}/server/entry.mjs`], {
-      env: { ...process.env, HOST: '127.0.0.1', PORT: String(SERVER_PORT) },
+      env: { ...process.env, HOST: '127.0.0.1', PORT: String(SERVER_PORT), CONTENT_DIR },
       stdio: 'pipe',
     })
     await waitFor(`${STATIC_ORIGIN}${BASE}/`)

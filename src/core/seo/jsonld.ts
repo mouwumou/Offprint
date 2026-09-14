@@ -1,5 +1,6 @@
 import type { SiteConfig } from '../config/schema'
 import type { Post } from '../content'
+import { contentHref } from '../content/asset-url'
 import type { Stats } from '../content/markdown'
 import { resolveLocalized, type Profile, type Publication } from '../schema'
 
@@ -27,7 +28,9 @@ export function personJsonLd(
     name: r(profile.name),
     ...(profile.role ? { jobTitle: r(profile.role) } : {}),
     ...(profile.email ? { email: `mailto:${profile.email}` } : {}),
-    ...(profile.photo ? { image: profile.photo } : {}),
+    // Same rule as every rendered content URL: `assets/…` gets the base, then
+    // an absolute URL for schema.org.
+    ...(profile.photo ? { image: new URL(contentHref(profile.photo), siteUrl).toString() } : {}),
     url: siteUrl,
     ...(profile.affiliation
       ? { affiliation: { '@type': 'Organization', name: r(profile.affiliation) } }

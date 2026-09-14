@@ -4,6 +4,7 @@ import { homePath } from '../config/nav'
 import { container } from '../config/layout'
 import type { Page } from '../content'
 import { getProvider } from '../content'
+import { contentHref } from '../content/asset-url'
 import { renderMarkdown, type RenderedMarkdown } from '../content/markdown'
 import { postsForLanguage } from '../content/posts-view'
 import { useTranslations, type MessageKey } from '../i18n'
@@ -91,7 +92,7 @@ const sectionTitle = (title: LocalizedString | undefined, key: MessageKey): stri
   lang={lang}
   title={name ?? 'Offprint'}
   description={resolveLocalized(profile.tagline, lang, fallback)}
-  image={profile.photo}
+  image={profile.photo ? contentHref(profile.photo) : undefined}
   alternates={uniformAlternates(siteConfig, '/')}
   jsonLd={[
     ...(siteConfig.seo.person
