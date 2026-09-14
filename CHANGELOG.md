@@ -20,7 +20,7 @@ First stable release: the template, its documentation and its deployment paths a
 
 - Tool-agnostic content contract (Markdown + YAML front-matter, zod-validated at build and request time).
 - Notion sync through elog: normalisation, per-post validation, image materialisation, atomic swap; NotionNext databases work unchanged.
-- Three ways to run it: locally, every 30 minutes in GitHub Actions, or in server mode with a Notion webhook for publishing in seconds.
+- Three ways to run it: locally, hourly in GitHub Actions (a one-query pre-check skips quiet hours), or in server mode with a Notion webhook for publishing in seconds.
 
 ### Runtime and deployment
 
@@ -46,3 +46,6 @@ First stable release: the template, its documentation and its deployment paths a
 - Markdown: GFM tables that omit the trailing pipe render as tables again; only rows whose continuation follows on the next line are joined.
 - Config: `i18n.noindex` refuses the default language with a clear message; hiding it used to empty the server-mode sitemap while the static sitemap ignored it.
 - Server mode: the content version now includes `profile.yaml`, so feed ETags and cached OG images refresh after a profile edit between syncs.
+- Sync is idempotent: a run that finds nothing new writes no file (the manifest's timestamp used to change every time, turning every scheduled run into a commit and a deployment); YAML entries keep their date until their bytes change.
+- The static Docker loop skips the build when the content matches the current release.
+- Actions sync runs hourly instead of every 30 minutes, asks Notion first whether anything was edited and skips quiet hours in seconds, rebases before pushing (a race with the author's own push failed the run), and summarises the change in the commit message.

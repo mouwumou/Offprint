@@ -31,7 +31,7 @@ After generating the repository there is nothing to configure: a push to `main` 
 
 ## Docker: static, self-hosted
 
-`compose.static.yaml` at the repository root, two services: `web` (Caddy serving the build) and `sync` (polling every `SYNC_INTERVAL` seconds: sync → build → atomic swap of the output directory). Without Notion credentials it degrades to building the content committed in the repository.
+`compose.static.yaml` at the repository root, two services: `web` (Caddy serving the build) and `sync` (polling every `SYNC_INTERVAL` seconds: sync → build → atomic swap of the output directory; the build is skipped when the content matches the current release). Without Notion credentials it degrades to building the content committed in the repository.
 
 ```bash
 cp .env.example .env          # fill in SITE_URL, NOTION_TOKEN, NOTION_DB

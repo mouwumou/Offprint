@@ -84,7 +84,7 @@ Every file is validated against a schema at build time: a typo fails the build a
 ### Publishing from Notion
 
 - **Locally:** put `NOTION_TOKEN` and `NOTION_DB` in `.env` and run `pnpm sync`. Posts are normalised, validated and swapped into `content/posts/` atomically.
-- **GitHub Pages:** add the same two values as repository secrets and set the repository variable `SYNC_ENABLED=true`. Actions syncs every 30 minutes, commits changed content and redeploys.
+- **GitHub Pages:** add the same two values as repository secrets and set the repository variable `SYNC_ENABLED=true`. Actions checks Notion hourly, syncs only when something was edited, commits only real content changes and redeploys after those.
 - **Server mode:** the sync sidecar polls on an interval, or Notion's webhook hits the site directly; either way pages re-render on the next request, seconds after you publish.
 
 The [Notion database template](docs/en/guide/notion-template.md) defines the database (a NotionNext database plugs in unchanged) and the [sync guide](docs/en/guide/sync.md) covers the three modes and the webhook handshake.
@@ -121,7 +121,7 @@ This repository is a **public template**. It ships sample content, builds on its
 | Kind | Name | When |
 | --- | --- | --- |
 | Variable | `SITE_URL` | Detected automatically on GitHub Pages, sub-paths included; set it for a custom domain or another platform |
-| Variable | `SYNC_ENABLED=true` | To let Actions sync from Notion every 30 minutes |
+| Variable | `SYNC_ENABLED=true` | To let Actions sync from Notion hourly (only when something was edited) |
 | Secret | `NOTION_TOKEN`, `NOTION_DB` | Same |
 
 With nothing set, a push yields a static site on GitHub Pages and the sync workflow shows as skipped. Self-hosted secrets live only in the server's local `.env`. To pick up later template releases, run `scripts/upgrade-from-template.sh` from a checkout of this repository's `main`; it never touches your content, configuration or extensions.

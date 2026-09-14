@@ -35,7 +35,13 @@ pnpm dev                     # 看结果
 
 ## 在 GitHub Actions 里自动同步（static 站）
 
-实例仓库（不是模板）的 **Settings → Variables** 加 `SYNC_ENABLED=true`，**Secrets** 加 `NOTION_TOKEN`、`NOTION_DB`。之后 `Sync from Notion` 工作流每 30 分钟跑一次，也可在 Actions 页手动触发：拉取 → 同步 → 有变化则提交 `content/` → 触发 Pages 部署工作流。从点发布到线上，通常五分钟内。
+实例仓库（不是模板）的 **Settings → Variables** 加 `SYNC_ENABLED=true`，**Secrets** 加 `NOTION_TOKEN`、`NOTION_DB`。之后 `Sync from Notion` 工作流每小时跑一次；想立刻发布，在 Actions 页点 **Run workflow**。每次运行：
+
+1. 先问 Notion 一句"上次运行以来有没有编辑过"（一个查询，不装依赖）。没有就在十几秒内结束，什么都不做。
+2. 有编辑才装依赖、跑同步。同步是幂等的：导出的内容和仓库里的完全一样时不写任何文件，也就没有提交。
+3. 内容真变了才提交 `content/`，提交信息带上变化摘要（几篇新增、更新、删除），推送前先 rebase 到最新的 `main`，然后触发 Pages 部署。
+
+从点发布到线上，通常五分钟内。想改节奏，改 `.github/workflows/sync.yml` 里 `cron` 那一行。
 
 没有这个变量时工作流显示 skipped，模板仓库自己就是这个状态。开了自动同步后，本机推送前先 `git pull --rebase`，因为工作流会自行提交内容。
 

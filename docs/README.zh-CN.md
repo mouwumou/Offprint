@@ -84,7 +84,7 @@ docker compose -f compose.server.yaml up -d --build   # server 模式：按请�
 ### 从 Notion 发布
 
 - **本机：** 把 `NOTION_TOKEN` 和 `NOTION_DB` 写进 `.env`，运行 `pnpm sync`。文章经归一化、校验后原子地切换进 `content/posts/`。
-- **GitHub Pages：** 把同样两个值加为仓库 Secrets，再设置仓库变量 `SYNC_ENABLED=true`。Actions 每 30 分钟同步一次，内容有变化就提交并重新部署。
+- **GitHub Pages：** 把同样两个值加为仓库 Secrets，再设置仓库变量 `SYNC_ENABLED=true`。Actions 每小时问一次 Notion，有编辑才同步，内容真变了才提交并重新部署。
 - **server 模式：** 同步边车按间隔轮询，或者 Notion 的 webhook 直接打到站点；两种方式都让页面在下一次请求时重新渲染，发布后几秒可见。
 
 Notion 数据库怎么建见 [Notion 数据库模板](guide/notion-template.md)，NotionNext 的库可以原样接上；三种同步方式与 webhook 握手见[同步指南](guide/sync.md)。
@@ -121,7 +121,7 @@ flowchart LR
 | 类型 | 名称 | 何时需要 |
 | --- | --- | --- |
 | Variable | `SITE_URL` | GitHub Pages 自动取得（含子路径）；自定义域名或其他平台时设置 |
-| Variable | `SYNC_ENABLED=true` | 要让 Actions 每 30 分钟从 Notion 同步 |
+| Variable | `SYNC_ENABLED=true` | 要让 Actions 每小时从 Notion 同步（有编辑才真正同步） |
 | Secret | `NOTION_TOKEN`、`NOTION_DB` | 同上 |
 
 什么都不设时，推送即得 GitHub Pages 静态站，同步工作流显示 skipped。自托管的密钥只放服务器本地 `.env`。想跟上模板后续版本，从本仓库 `main` 的检出运行 `scripts/upgrade-from-template.sh`，它不会碰你的内容、配置和扩展。
