@@ -25,12 +25,12 @@ const links = profile.links.map((link) => ({ href: contentHref(link.href), label
   <div class="grid gap-8 sm:grid-cols-[220px_1fr] sm:items-center sm:gap-12">
     {
       profile.photo && (
-        <figure class="group relative max-w-[220px]">
+        <figure data-part="hero-photo-frame" class="photo-frame group relative max-w-[220px]">
           <img
             src={profile.photo}
             alt={name}
             data-part="hero-photo"
-            class="hero-photo aspect-[4/5] w-full rounded-md border border-border bg-muted object-cover"
+            class="hero-photo profile-photo rounded-md border border-border bg-muted"
           />
         </figure>
       )

@@ -48,4 +48,5 @@ First stable release: the template, its documentation and its deployment paths a
 - Server mode: the content version now includes `profile.yaml`, so feed ETags and cached OG images refresh after a profile edit between syncs.
 - Sync is idempotent: a run that finds nothing new writes no file (the manifest's timestamp used to change every time, turning every scheduled run into a commit and a deployment); YAML entries keep their date until their bytes change.
 - The static Docker loop skips the build when the content matches the current release.
+- The profile photo is no longer forced into a square (bio header) or 4:5 (hero): it keeps its own proportions between 4:3 and 5:7 and is cropped only beyond that range; themes can widen the range through two CSS variables.
 - Actions sync runs hourly instead of every 30 minutes, asks Notion first whether anything was edited and skips quiet hours in seconds, rebases before pushing (a race with the author's own push failed the run), and summarises the change in the commit message.

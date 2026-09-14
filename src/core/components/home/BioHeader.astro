@@ -7,7 +7,8 @@ import { useTranslations } from '../../i18n'
 import { resolveLocalized } from '../../schema'
 
 // Compact academic header (A2, from the approved layout prototype): the name
-// as an ordinary heading, a small square photo on the right, bio paragraphs,
+// as an ordinary heading, a small photo on the right (its own proportions,
+// see .profile-photo in base.css), bio paragraphs,
 // then one row of quick links — substance in the first viewport, no stage.
 interface Props {
   lang: string
@@ -47,11 +48,13 @@ for (const link of profile.links) {
         <h1 data-part="bio-name" class="font-serif text-3xl tracking-tight">{name}</h1>
         {
           profile.photo && (
-            <img
-              src={profile.photo}
-              alt={name}
-              class="h-24 w-24 shrink-0 rounded-md border border-border object-cover sm:hidden"
-            />
+            <span class="photo-frame w-24 shrink-0 sm:hidden">
+              <img
+                src={profile.photo}
+                alt={name}
+                class="profile-photo rounded-md border border-border"
+              />
+            </span>
           )
         }
       </div>
@@ -75,15 +78,14 @@ for (const link of profile.links) {
     </div>
     {
       profile.photo && (
-        <img
-          src={profile.photo}
-          alt={name}
-          data-part="bio-photo"
-          data-part="bio-photo"
-          data-part="bio-photo"
-          data-part="bio-photo"
-          class="hidden h-40 w-40 shrink-0 rounded-md border border-border object-cover sm:block sm:h-44 sm:w-44"
-        />
+        <span data-part="bio-photo-frame" class="photo-frame hidden w-40 shrink-0 sm:block sm:w-44">
+          <img
+            src={profile.photo}
+            alt={name}
+            data-part="bio-photo"
+            class="profile-photo rounded-md border border-border"
+          />
+        </span>
       )
     }
   </div>

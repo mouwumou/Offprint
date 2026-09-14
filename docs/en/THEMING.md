@@ -77,7 +77,7 @@ Theme CSS uses only two kinds of selector. Both are part of the contract and kep
 | Area | Hooks |
 | --- | --- |
 | Chrome | `site` `main` `site-header` `brand` `nav` `nav-item` `nav-search` `lang-switch` `theme-toggle` `nav-drawer` `site-footer` `footer-name` `footer-affiliation` `footer-links` `footer-colophon` |
-| Home sections | `section` (with `data-section="<section type>"`) `section-label` `section-title` `section-more`; `bio-header` `bio-name` `bio-subtitle` `bio-tagline` `bio-text` `bio-photo` `bio-links`; `hero-name` `hero-photo`; `news-list` `news-item` |
+| Home sections | `section` (with `data-section="<section type>"`) `section-label` `section-title` `section-more`; `bio-header` `bio-name` `bio-subtitle` `bio-tagline` `bio-text` `bio-photo-frame` `bio-photo` `bio-links`; `hero-name` `hero-photo-frame` `hero-photo`; `news-list` `news-item` |
 | List page heads | `page-head` `page-kicker` `page-title` `page-lede` |
 | Publications | `pub-year-group` (with `data-year`) `pub-year` `pub-list` `pub-row` (with `data-key`) `pub-thumb` `pub-title` `pub-meta` `pub-venue`; detail page `pub-detail` `pub-back` `pub-head` `pub-abstract` |
 | Posts | list `post-list` `post-filter` `post-updated` `post-row` (with `data-urlname`) `post-meta` `post-category` `post-lang` `post-title` `post-description` `post-tags`; article `post` `post-back` `post-head` `post-kicker` `post-lede` `post-cover` `post-body` `post-colophon` `post-series` `post-related` `post-toc` |
@@ -85,7 +85,7 @@ Theme CSS uses only two kinds of selector. Both are part of the contract and kep
 
 `<html>` additionally carries `data-theme-name`, `data-labels`, `data-density` and `data-photo`.
 
-**(b) preset classes**: wherever the core switches a style by voice it uses a semantic class rather than a utility, and you can redefine it by class. Page rhythm: `page-top` `article-top` `page-head` `section-gap` `list-tools` `post-row-pad` `site-footer--stack` `site-footer__body` `article-toc`; headings: `page-title` `page-lede` `article-head` `article-title` `article-lede` `kicker`; label register: `ui-label` `ui-meta` `ui-caption` `ui-heading` `ui-heading-sm` `section-label`.
+**(b) preset classes**: wherever the core switches a style by voice it uses a semantic class rather than a utility, and you can redefine it by class. Page rhythm: `page-top` `article-top` `page-head` `section-gap` `list-tools` `post-row-pad` `site-footer--stack` `site-footer__body` `article-toc`; headings: `page-title` `page-lede` `article-head` `article-title` `article-lede` `kicker`; label register: `ui-label` `ui-meta` `ui-caption` `ui-heading` `ui-heading-sm` `section-label`; profile photo: `photo-frame` `profile-photo` (shown at its own proportions, cropped only beyond `--photo-min-ratio` / `--photo-max-ratio`, height over width, 0.75 to 1.4 by default; a theme may change both variables).
 
 Do not rely on Tailwind utility class names (`mt-4`, `text-sm`…): they change with the implementation and are not part of the contract.
 

@@ -77,7 +77,7 @@ theme.css 由构建注入到每一页，且**不在任何 cascade layer 里**—
 | 区域 | 挂钩 |
 | --- | --- |
 | 骨架 | `site` `main` `site-header` `brand` `nav` `nav-item` `nav-search` `lang-switch` `theme-toggle` `nav-drawer` `site-footer` `footer-name` `footer-affiliation` `footer-links` `footer-colophon` |
-| 首页各节 | `section`（并带 `data-section="<节类型>"`）`section-label` `section-title` `section-more`；`bio-header` `bio-name` `bio-subtitle` `bio-tagline` `bio-text` `bio-photo` `bio-links`；`hero-name` `hero-photo`；`news-list` `news-item` |
+| 首页各节 | `section`（并带 `data-section="<节类型>"`）`section-label` `section-title` `section-more`；`bio-header` `bio-name` `bio-subtitle` `bio-tagline` `bio-text` `bio-photo-frame` `bio-photo` `bio-links`；`hero-name` `hero-photo-frame` `hero-photo`；`news-list` `news-item` |
 | 列表页头 | `page-head` `page-kicker` `page-title` `page-lede` |
 | 出版物 | `pub-year-group`（带 `data-year`）`pub-year` `pub-list` `pub-row`（带 `data-key`）`pub-thumb` `pub-title` `pub-meta` `pub-venue`；详情页 `pub-detail` `pub-back` `pub-head` `pub-abstract` |
 | 文章 | 列表 `post-list` `post-filter` `post-updated` `post-row`（带 `data-urlname`）`post-meta` `post-category` `post-lang` `post-title` `post-description` `post-tags`；文章页 `post` `post-back` `post-head` `post-kicker` `post-lede` `post-cover` `post-body` `post-colophon` `post-series` `post-related` `post-toc` |
@@ -85,7 +85,7 @@ theme.css 由构建注入到每一页，且**不在任何 cascade layer 里**—
 
 `<html>` 上另有 `data-theme-name`、`data-labels`、`data-density`、`data-photo`。
 
-**(b) 预设类** —— 核心按腔调切换样式的地方都用语义类而不是工具类，你可以按类重定义：页面节奏 `page-top` `article-top` `page-head` `section-gap` `list-tools` `post-row-pad` `site-footer--stack` `site-footer__body` `article-toc`；标题 `page-title` `page-lede` `article-head` `article-title` `article-lede` `kicker`；标签语域 `ui-label` `ui-meta` `ui-caption` `ui-heading` `ui-heading-sm` `section-label`。
+**(b) 预设类** —— 核心按腔调切换样式的地方都用语义类而不是工具类，你可以按类重定义：页面节奏 `page-top` `article-top` `page-head` `section-gap` `list-tools` `post-row-pad` `site-footer--stack` `site-footer__body` `article-toc`；标题 `page-title` `page-lede` `article-head` `article-title` `article-lede` `kicker`；标签语域 `ui-label` `ui-meta` `ui-caption` `ui-heading` `ui-heading-sm` `section-label`；头像 `photo-frame` `profile-photo`（按原比例显示，超出 `--photo-min-ratio` / `--photo-max-ratio` 的高宽比才裁切，默认 0.75 到 1.4，主题可以改这两个变量）。
 
 不要依赖的：Tailwind 工具类名（`mt-4`、`text-sm`…）——它们随实现变动，不是契约。
 
