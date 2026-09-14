@@ -5,7 +5,7 @@ import { assetUrl } from '../../../core/content/asset-url'
 import { themeVoice } from '../../../core/theme/current'
 import { container } from '../../../core/config/layout'
 import { getProvider } from '../../../core/content'
-import { moduleCopy } from '../../../core/config/copy'
+import { moduleCopy, moduleMetaDescription } from '../../../core/config/copy'
 import { useTranslations, type MessageKey } from '../../../core/i18n'
 import { resolveLocalized } from '../../../core/schema'
 import type { ProjectStatus } from '../../../core/schema'
@@ -31,6 +31,12 @@ if (
 
 const t = useTranslations(lang)
 const copy = moduleCopy(siteConfig, 'projects', lang)
+const metaDescription = moduleMetaDescription(
+  siteConfig,
+  'projects',
+  lang,
+  resolveLocalized((await getProvider().getProfile()).name, lang, siteConfig.i18n.default) ?? '',
+)
 const projects = await getProvider().listProjects()
 const r = (value: Parameters<typeof resolveLocalized>[0]) =>
   resolveLocalized(value, lang, siteConfig.i18n.default)
@@ -59,7 +65,7 @@ function projectLinks(project: (typeof projects)[number]): { label: string; href
 <BaseLayout
   lang={lang}
   title={copy.title}
-  description={copy.description}
+  description={metaDescription}
   alternates={uniformAlternates(siteConfig, '/projects')}
 >
   <div class:list={[container, 'page-top']}>

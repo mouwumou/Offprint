@@ -264,6 +264,14 @@ describe('module landing copy', () => {
       description: undefined,
     })
   })
+
+  it('always has a meta description: the author\'s, else "<title> by <name>"', async () => {
+    const { moduleMetaDescription } = await import('./copy')
+    expect(moduleMetaDescription(defineConfig({}), 'blog', 'en', 'Q')).toBe('Writing by Q')
+    expect(moduleMetaDescription(defineConfig({}), 'publications', 'zh', 'Q')).toBe('Q的论文')
+    const custom = defineConfig({ modules: { blog: { description: 'Short notes.' } } })
+    expect(moduleMetaDescription(custom, 'blog', 'en', 'Q')).toBe('Short notes.')
+  })
 })
 
 describe('i18n.noindex', () => {

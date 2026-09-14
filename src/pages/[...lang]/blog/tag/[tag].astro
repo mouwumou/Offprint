@@ -2,9 +2,10 @@
 import siteConfig from '../../../../core/config/current'
 import BlogIndex from '../../../../core/components/BlogIndex.astro'
 import { getProvider } from '../../../../core/content'
+import { resolveLocalized } from '../../../../core/schema'
 import { filterSlug, fromFilterSlug } from '../../../../core/content/filter-slug'
 import { tagsForLanguage } from '../../../../core/content/posts-view'
-import { moduleCopy } from '../../../../core/config/copy'
+import { moduleCopy, moduleMetaDescription } from '../../../../core/config/copy'
 import { termAlternates } from '../../../../core/seo/alternates'
 import BaseLayout from '../../../../core/components/BaseLayout.astro'
 
@@ -40,11 +41,18 @@ if (activeTag === undefined) {
   return new Response(null, { status: 404, statusText: 'Not Found' })
 }
 const copy = moduleCopy(siteConfig, 'blog', lang)
+const metaDescription = moduleMetaDescription(
+  siteConfig,
+  'blog',
+  lang,
+  resolveLocalized((await getProvider().getProfile()).name, lang, siteConfig.i18n.default) ?? '',
+)
 ---
 
 <BaseLayout
   lang={lang}
   title={`#${activeTag} · ${copy.title}`}
+  description={metaDescription}
   alternates={termAlternates(siteConfig, posts, 'tag', activeTag)}
 >
   <BlogIndex lang={lang} activeTag={activeTag} />

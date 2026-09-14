@@ -35,6 +35,7 @@ export const en = {
   'search.noResults': 'No results for “{q}”.',
   'blog.kicker': 'Writing',
   'blog.title': 'Writing',
+  'meta.landing': '{title} by {name}',
   'blog.filter': 'Filter',
   'blog.all': 'All',
   'blog.pinned': 'Pinned',
