@@ -110,7 +110,7 @@ Notion 里维护一个 publications 数据库，sync 导出为 `publications.yam
 | `location` | LocalizedString | 首页名字下的一行、CV 页、paper 大头区 |
 | `email` | email | 首页快捷链接、CV 页、paper 大头区、结构化数据 |
 | `photo` | `assets/…` 或 URL | 首页头像、paper 大头图、`og:image`。不要求方形：高宽比在 4:3（横）到 5:7（纵）之间按原比例显示，更扁或更长的居中裁到边界 |
-| `tagline` | LocalizedString | 首页 bio 前的引语、paper 大头区、feed 描述、首页分享描述 |
+| `tagline` | LocalizedString | 首页 bio 前的引语、paper 大头区、feed 描述、首页分享描述；没有 tagline 时首页的 meta description 取第一段 bio 的纯文本摘要（160 字内），再没有就用姓名 |
 | `bio` | LocalizedString[] | 首页头部段落、about 块 |
 | `interests` | LocalizedString[] | about 块标签、结构化数据 `knowsAbout` |
 | `orcid` / `scholar` | string | 结构化数据 `sameAs`（页面上的可见链接放 `links`） |
