@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { joinBrokenTableRows, renderMarkdown } from './markdown'
 
 describe('katex version alignment', () => {
@@ -181,6 +181,18 @@ describe('Notion export tolerance', () => {
     expect(html).toContain('<strong>高频词不一定重要</strong>')
     expect(html).toContain('katex')
     expect(html).not.toContain('<pre>')
+  })
+
+  it('renders CJK inside math and display line breaks without KaTeX warnings', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    try {
+      const { html } = await renderMarkdown('$预测框$ 与 $$a \\\\ b$$\n')
+      expect(html).toContain('katex')
+      expect(html).toContain('预测框')
+      expect(warn).not.toHaveBeenCalled()
+    } finally {
+      warn.mockRestore()
+    }
   })
 
   it('keeps fenced code blocks as code', async () => {
