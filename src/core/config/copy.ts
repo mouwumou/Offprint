@@ -29,3 +29,22 @@ export function moduleCopy(
         resolveLocalized(defaults?.description, lang, config.i18n.default))
   return { title, description }
 }
+
+/**
+ * The <meta name="description"> of a module landing page: the author's
+ * description when there is one, otherwise a neutral "<title> by <name>" —
+ * a bare title on the page is fine, a page without a summary is not (search
+ * engines, and the Lighthouse SEO audit, expect one).
+ */
+export function moduleMetaDescription(
+  config: SiteConfig,
+  module: string,
+  lang: string,
+  authorName: string,
+): string {
+  const { title, description } = moduleCopy(config, module, lang)
+  if (description) return description
+  return useTranslations(lang)('meta.landing')
+    .replace('{title}', title)
+    .replace('{name}', authorName)
+}

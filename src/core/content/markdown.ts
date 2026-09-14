@@ -2,6 +2,17 @@ import rehypeShiki from '@shikijs/rehype'
 import { toString as hastToString } from 'hast-util-to-string'
 import rehypeAutolinkHeadings from 'rehype-autolink-headings'
 import rehypeKatex from 'rehype-katex'
+
+/**
+ * KaTeX "strict" mode flags two things that are normal in bilingual notes:
+ * CJK characters inside math (`$预测框$` renders fine) and `\\` line breaks
+ * in display mode (harmless). Everything else still warns in the build log.
+ */
+function katexStrict(errorCode: string): 'ignore' | 'warn' {
+  return errorCode === 'unicodeTextInMathMode' || errorCode === 'newLineInDisplayMode'
+    ? 'ignore'
+    : 'warn'
+}
 import rehypeSanitize, { defaultSchema } from 'rehype-sanitize'
 import rehypeSlug from 'rehype-slug'
 import rehypeStringify from 'rehype-stringify'
@@ -303,7 +314,7 @@ function buildProcessor(): Processor {
     })
     // Always mounted; a no-op unless vfile.data.citations is set per document.
     .use(rehypeCitations)
-    .use(rehypeKatex)
+    .use(rehypeKatex, { strict: katexStrict })
     .use(rehypeShiki, {
       themes: { light: offprintLight, dark: offprintDark },
       defaultColor: 'light',

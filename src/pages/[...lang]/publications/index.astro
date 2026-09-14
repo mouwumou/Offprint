@@ -6,7 +6,8 @@ import { resolveWidget } from '../../../core/widgets/registry'
 import { langPrefix } from '../../../core/config/nav'
 import { container } from '../../../core/config/layout'
 import { getProvider } from '../../../core/content'
-import { moduleCopy } from '../../../core/config/copy'
+import { resolveLocalized } from '../../../core/schema'
+import { moduleCopy, moduleMetaDescription } from '../../../core/config/copy'
 import { useTranslations } from '../../../core/i18n'
 import { themeVoice } from '../../../core/theme/current'
 import { uniformAlternates } from '../../../core/seo/alternates'
@@ -31,6 +32,12 @@ if (
 
 const t = useTranslations(lang)
 const copy = moduleCopy(siteConfig, 'publications', lang)
+const metaDescription = moduleMetaDescription(
+  siteConfig,
+  'publications',
+  lang,
+  resolveLocalized((await getProvider().getProfile()).name, lang, siteConfig.i18n.default) ?? '',
+)
 const prefix = langPrefix(siteConfig, lang)
 // publications.detail: false — plain titles, no per-publication pages.
 const detail = siteConfig.modules.publications.detail !== false
@@ -42,7 +49,7 @@ const years = [...new Set(publications.map((pub) => pub.year))].sort((a, b) => b
 <BaseLayout
   lang={lang}
   title={copy.title}
-  description={copy.description}
+  description={metaDescription}
   alternates={uniformAlternates(siteConfig, '/publications')}
   jsonLd={scholarlyArticlesJsonLd(siteConfig, publications, lang)}
 >

@@ -37,6 +37,7 @@ export const zh: Record<MessageKey, string> = {
   'search.noResults': '没有与「{q}」匹配的结果。',
   'blog.kicker': '文章',
   'blog.title': '文章',
+  'meta.landing': '{name}的{title}',
   'blog.filter': '筛选',
   'blog.all': '全部',
   'blog.pinned': '置顶',
