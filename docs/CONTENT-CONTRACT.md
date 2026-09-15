@@ -141,7 +141,7 @@ posts 数据库（借鉴 NotionNext 的 `type` 列思路，一个数据库同时
 
 ~~publications 数据库~~：已取消（ADR-014 修订 ADR-008）——出版物在仓库直接编辑 `publications.yaml`，不再经 Notion。
 
-sync 的归一化步骤：日期格式统一为 `YYYY-MM-DD`；`categories` 规范为数组；`urlname` 校验 slug；`lang` 缺省回填并告警；未知列进入 `extra`。
+sync 的归一化步骤：日期格式统一为 `YYYY-MM-DD`；`categories` 规范为数组；`urlname` 校验 slug；`lang` 缺省回填并告警；未知列进入 `extra`；指向同一次同步中其他文档的 Notion 页面链接改写为站点路由（`/blog/<urlname>`、`/<slug>`，非默认语言带前缀），其余 Notion 链接原样保留。
 
 ### 7.1 与 elog 1.0 实际导出的差异
 

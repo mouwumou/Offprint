@@ -216,6 +216,39 @@ describe('acquireSyncLock (cross-process mutex)', () => {
 })
 
 describe('stageDocuments', () => {
+  it('turns links between synced Notion pages into site routes', async () => {
+    const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const root = await mkdtemp(join(tmpdir(), 'offprint-links-'))
+    const rawDir = join(root, 'raw')
+    await mkdir(rawDir)
+    const doc = (title: string, id: string, body: string): string =>
+      `---\ntitle: ${title}\ntype: Post\nurlname: ${id}\ndate: '2024-01-01 00:00:00'\nupdated: '2024-01-01 00:00:00'\n---\n\n${body}\n`
+    const a = '11111111-2222-3333-4444-555555555555'
+    const b = '66666666-7777-8888-9999-000000000000'
+    await writeFile(
+      join(rawDir, 'a.md'),
+      doc(
+        'Alpha Post',
+        a,
+        `English body linking to [beta](https://www.notion.so/${b}) and [gone](https://www.notion.so/Old-abcdefabcdefabcdefabcdefabcdefab).`,
+      ),
+    )
+    await writeFile(
+      join(rawDir, 'b.md'),
+      doc('Beta Post', b, 'English body with plenty of latin characters here.'),
+    )
+    try {
+      await stageDocuments({ rawDir, staging: root, defaultLang: 'en', includePages: false })
+      const alpha = await readFile(join(root, 'posts', 'alpha-post.en.md'), 'utf8')
+      expect(alpha).toContain('[beta](/blog/beta-post)')
+      expect(alpha).toContain('(https://www.notion.so/Old-abcdefabcdefabcdefabcdefabcdefab)')
+      expect(warn.mock.calls.some(([m]) => String(m).includes('kept as Notion URLs'))).toBe(true)
+    } finally {
+      warn.mockRestore()
+      await rm(root, { recursive: true, force: true })
+    }
+  })
+
   it('reports a second document that resolves to the same file instead of overwriting the first', async () => {
     const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
     const root = await mkdtemp(join(tmpdir(), 'offprint-stage-'))

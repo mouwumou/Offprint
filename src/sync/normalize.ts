@@ -15,6 +15,12 @@ export type NormalizeResult =
       filename: string
       content: string
       warnings: string[]
+      lang: string
+      /** The post's urlname / the page's slug. */
+      slug: string
+      /** Notion page id (32 hex, no dashes) when the export carried one — lets
+       * links between documents be rewritten to site routes. */
+      notionId: string | undefined
     }
   | { kind: 'skipped'; reason: string }
   | { kind: 'invalid'; issues: string[] }
@@ -95,6 +101,9 @@ export function normalizeDoc(
   let urlname = typeof fm['urlname'] === 'string' ? fm['urlname'] : ''
   const isSlug = /^[a-z0-9-]+$/.test(urlname)
   const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/.test(urlname)
+  // elog's urlname IS the Notion page id (the human slug lives in `slug`, see
+  // above); remember it before a readable slug replaces it.
+  const notionId = isUuid ? urlname.replaceAll('-', '') : undefined
   if (!isSlug || isUuid) {
     const fromTitle = slugify(title)
     if (fromTitle.length > 0) {
@@ -132,6 +141,9 @@ export function normalizeDoc(
       filename: `pages/${urlname}.${lang}.md`,
       content: matter.stringify(body, fm),
       warnings,
+      lang,
+      slug: urlname,
+      notionId,
     }
   }
 
@@ -144,5 +156,8 @@ export function normalizeDoc(
     filename: `posts/${urlname}.${lang}.md`,
     content: matter.stringify(body, fm),
     warnings,
+    lang,
+    slug: urlname,
+    notionId,
   }
 }
