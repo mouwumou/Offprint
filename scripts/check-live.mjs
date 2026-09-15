@@ -52,6 +52,9 @@ for (const page of pages) {
         ? raw.slice(origin.length)
         : null
     if (path === null) continue
+    // Cloudflare-managed paths (email obfuscation, challenges) are injected by
+    // the proxy in front of the site, not built by it.
+    if (path.startsWith('/cdn-cgi/')) continue
     const clean = path.split('#')[0].split('?')[0]
     if (!(clean === BASE || clean.startsWith(`${BASE}/`))) {
       failures.add(`OUTSIDE ${url.pathname} → ${raw}`)
