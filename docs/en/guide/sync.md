@@ -31,6 +31,7 @@ What the sync does and does not do:
 - **Validates each post, isolates errors.** A non-conforming post is logged and skipped; the rest publish as usual. Errors are printed, and in server mode they also appear at `/api/health`.
 - **Materialises images.** Notion-hosted images are signed URLs that expire within hours. By default (`IMAGE_PLATFORM=local`) they are downloaded into `content/assets/` and the links rewritten; the same image is deduplicated by a stable path, so repeated syncs do not download again. Downloads have a 30-second timeout and a 25 MB limit; a failure keeps the original link and never blocks the sync. An external cover URL that no longer resolves is dropped with a warning and the post falls back to the generated OG image.
 - **Swaps atomically.** New content is fully processed in a temporary directory and switched in as one step, with `manifest.json` written last; readers never see a half-finished state.
+- **Links between pages become site links.** A link to another page of the same database (`notion.so/<id>`, `<workspace>.notion.site/…`) is rewritten to the site's own route, such as `/blog/kv-cache` or `/zh/blog/rag-bm25`; links to drafts or to pages outside the database stay as they are and are listed in the log.
 - **The sync log is worth a look.** Detected languages, slugs derived from titles and skipped rows are all printed as warnings. An unexpected URL or language on the site is usually explained there.
 
 ## Automatic sync in GitHub Actions (static sites)

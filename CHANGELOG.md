@@ -46,6 +46,7 @@ First stable release: the template, its documentation and its deployment paths a
 - Markdown: GFM tables that omit the trailing pipe render as tables again; only rows whose continuation follows on the next line are joined.
 - Config: `i18n.noindex` refuses the default language with a clear message; hiding it used to empty the server-mode sitemap while the static sitemap ignored it.
 - Server mode: the content version now includes `profile.yaml`, so feed ETags and cached OG images refresh after a profile edit between syncs.
+- Sync rewrites links between Notion pages into site routes (`/blog/<urlname>`, `/<slug>`, language prefix included); links to drafts or pages outside the database are kept and listed in the log.
 - Sync is idempotent: a run that finds nothing new writes no file (the manifest's timestamp used to change every time, turning every scheduled run into a commit and a deployment); YAML entries keep their date until their bytes change.
 - The static Docker loop skips the build when the content matches the current release.
 - The home page's meta description falls back from the tagline to the first bio paragraph (plain text, trimmed) and then the name, so a profile without a tagline still passes the SEO gate.
